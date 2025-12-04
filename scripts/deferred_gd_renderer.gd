@@ -1,0 +1,2 @@
+extends ORC_RendererBase
+class_name ORC_DeferredGDRenderer

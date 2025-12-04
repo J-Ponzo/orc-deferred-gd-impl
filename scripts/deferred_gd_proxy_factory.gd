@@ -1,0 +1,2 @@
+extends ORC_ProxyFactory
+class_name ORC_DeferredGDProxyFactory
