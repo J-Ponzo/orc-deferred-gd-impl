@@ -12,5 +12,6 @@ metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
 
 [resource]
 script = ExtResource("2_dh4a2")
+pass_name = &"Geometry"
 pass_impl = SubResource("Resource_pqdpk")
 metadata/_custom_type_script = "uid://bi1q4yltghow7"

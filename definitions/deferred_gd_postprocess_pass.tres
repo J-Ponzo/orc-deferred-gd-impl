@@ -12,5 +12,6 @@ metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
 
 [resource]
 script = ExtResource("2_6u44x")
+pass_name = &"PostProcess"
 pass_impl = SubResource("Resource_xtnmq")
 metadata/_custom_type_script = "uid://bi1q4yltghow7"

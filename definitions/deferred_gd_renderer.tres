@@ -1,12 +1,10 @@
-[gd_resource type="Resource" script_class="ORC_Renderer_Def" load_steps=17 format=3 uid="uid://dblhgea7ba65u"]
+[gd_resource type="Resource" script_class="ORC_Renderer_Def" load_steps=22 format=3 uid="uid://dblhgea7ba65u"]
 
 [ext_resource type="Script" uid="uid://b0c0mwr6sl3i8" path="res://addons/open-render-craft/scripts/definitions/attachment_format_def.gd" id="1_vtpec"]
 [ext_resource type="Script" uid="uid://do5oa0i2w0x2n" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_proxy_factory.gd" id="2_4qxru"]
 [ext_resource type="Script" uid="uid://btess53icv55y" path="res://addons/open-render-craft/scripts/definitions/proxy_queue_def.gd" id="2_ce3ch"]
-[ext_resource type="Resource" uid="uid://biuxenmmnc68j" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/attachments/color_attachment.tres" id="2_qq085"]
 [ext_resource type="Script" uid="uid://dc1h8f6w8okcw" path="res://addons/open-render-craft/scripts/definitions/gd_impl_def.gd" id="3_3vk64"]
 [ext_resource type="Script" uid="uid://bi1q4yltghow7" path="res://addons/open-render-craft/scripts/definitions/render_pass_def.gd" id="3_04l8g"]
-[ext_resource type="Resource" uid="uid://3stysha7w2gg" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/attachments/depth_attachment.tres" id="3_fcf0w"]
 [ext_resource type="Script" uid="uid://bugchofvgrin8" path="res://addons/open-render-craft/scripts/definitions/renderer_def.gd" id="4_4qxru"]
 [ext_resource type="Script" uid="uid://dfpvd3mbdqkau" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_renderer.gd" id="5_r7018"]
 [ext_resource type="Resource" uid="uid://dhbqjo6gh4tjr" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_geometry_pass.tres" id="7_mw4l4"]
@@ -14,6 +12,55 @@
 [ext_resource type="Resource" uid="uid://declqq8sh4n51" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_shadow_pass.tres" id="9_qq085"]
 [ext_resource type="Resource" uid="uid://c866i80mmtvql" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_transparent_pass.tres" id="10_fcf0w"]
 [ext_resource type="Resource" uid="uid://bja25tp07qvb2" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_postprocess_pass.tres" id="11_7kcy5"]
+
+[sub_resource type="Resource" id="Resource_albedo"]
+script = ExtResource("1_vtpec")
+attachment_name = &"Albedo"
+format = 96
+usage_flags = Array[int]([2, 1])
+metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
+
+[sub_resource type="Resource" id="Resource_normal"]
+script = ExtResource("1_vtpec")
+attachment_name = &"Normal"
+format = 96
+usage_flags = Array[int]([2, 1])
+metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
+
+[sub_resource type="Resource" id="Resource_orm"]
+script = ExtResource("1_vtpec")
+attachment_name = &"ORM"
+format = 96
+usage_flags = Array[int]([2, 1])
+metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
+
+[sub_resource type="Resource" id="Resource_position"]
+script = ExtResource("1_vtpec")
+attachment_name = &"Position"
+format = 96
+usage_flags = Array[int]([2, 1])
+metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
+
+[sub_resource type="Resource" id="Resource_shaded"]
+script = ExtResource("1_vtpec")
+attachment_name = &"Shaded"
+format = 96
+usage_flags = Array[int]([2, 1])
+metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
+
+[sub_resource type="Resource" id="Resource_postprocessed"]
+script = ExtResource("1_vtpec")
+attachment_name = &"PostProcessed"
+format = 96
+usage_flags = Array[int]([2, 1])
+metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
+
+[sub_resource type="Resource" id="Resource_depth"]
+script = ExtResource("1_vtpec")
+attachment_name = &"Depth"
+format = 125
+usage_flags = Array[int]([4])
+metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
 
 [sub_resource type="Resource" id="Resource_schyl"]
 script = ExtResource("3_3vk64")
@@ -29,20 +76,6 @@ metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
 script = ExtResource("4_4qxru")
 renderer_impl = SubResource("Resource_55m0o")
 proxy_factory_impl = SubResource("Resource_schyl")
-renderer_pass_defs = Dictionary[StringName, ExtResource("3_04l8g")]({
-&"Geometry": ExtResource("7_mw4l4"),
-&"PostProcess": ExtResource("11_7kcy5"),
-&"Shading": ExtResource("8_dmorg"),
-&"Shadow": ExtResource("9_qq085"),
-&"Transparent": ExtResource("10_fcf0w")
-})
-attachment_format_defs = Dictionary[StringName, ExtResource("1_vtpec")]({
-&"Albedo": ExtResource("2_qq085"),
-&"Depth": ExtResource("3_fcf0w"),
-&"Normal": ExtResource("2_qq085"),
-&"ORM": ExtResource("2_qq085"),
-&"Position": ExtResource("2_qq085"),
-&"PostProcessed": ExtResource("2_qq085"),
-&"Shaded": ExtResource("2_qq085")
-})
+renderer_pass_defs = Array[ExtResource("3_04l8g")]([ExtResource("7_mw4l4"), ExtResource("9_qq085"), ExtResource("8_dmorg"), ExtResource("10_fcf0w"), ExtResource("11_7kcy5")])
+attachment_format_defs = Array[ExtResource("1_vtpec")]([SubResource("Resource_albedo"), SubResource("Resource_normal"), SubResource("Resource_orm"), SubResource("Resource_position"), SubResource("Resource_shaded"), SubResource("Resource_postprocessed"), SubResource("Resource_depth")])
 metadata/_custom_type_script = "uid://bugchofvgrin8"
