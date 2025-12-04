@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=6 format=3 uid="uid://c866i80mmtvql"]
+
+[ext_resource type="Script" uid="uid://u2ik3nomvswi" path="res://addons/open-render-craft/scripts/definitions/explicite_pso_def.gd" id="1_2u0g7"]
+[ext_resource type="Script" uid="uid://bi1q4yltghow7" path="res://addons/open-render-craft/scripts/definitions/render_pass_def.gd" id="2_qydj4"]
+[ext_resource type="Script" uid="uid://bdv3nfrrrhnm3" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_transparent_pass.gd" id="2_yig65"]
+[ext_resource type="Script" uid="uid://dc1h8f6w8okcw" path="res://addons/open-render-craft/scripts/definitions/gd_impl_def.gd" id="3_khxjq"]
+
+[sub_resource type="Resource" id="Resource_l7uur"]
+script = ExtResource("3_khxjq")
+gd_script = ExtResource("2_yig65")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
+[resource]
+script = ExtResource("2_qydj4")
+pass_name = &"Transparent"
+pass_impl = SubResource("Resource_l7uur")
+metadata/_custom_type_script = "uid://bi1q4yltghow7"
