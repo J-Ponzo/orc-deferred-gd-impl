@@ -1,0 +1,13 @@
+extends ORC_SecondaryData
+class_name ORC_DeferredGD_MaterialData
+
+var is_instanced : bool
+var nb_instances : int
+var instance_storage_buffer : RID
+
+var surfaces_data : Array[ORC_DeferredGD_SurfaceData]
+var bounding_box : AABB
+var model_matrix_bytes : PackedByteArray
+
+#var skeleton_data : ORC_DeferredGD_SkeletonData
+var invert_bind_pose_array_buffer : RID
