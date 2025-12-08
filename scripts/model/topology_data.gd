@@ -1,4 +1,4 @@
-extends ORC_PrimaryData
+extends ORC_SecondaryData
 class_name ORC_DeferredGD_TopologyData
 
 var unique_id : int

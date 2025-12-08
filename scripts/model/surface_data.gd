@@ -1,4 +1,4 @@
-extends ORC_PrimaryData
+extends ORC_SecondaryData
 class_name ORC_DeferredGD_SurfaceData
 
 var mesh_data : ORC_DeferredGD_MeshData

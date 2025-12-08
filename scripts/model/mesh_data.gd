@@ -1,5 +1,5 @@
-extends ORC_SecondaryData
-class_name ORC_DeferredGD_MaterialData
+extends ORC_PrimaryData
+class_name ORC_DeferredGD_MeshData
 
 var is_instanced : bool
 var nb_instances : int

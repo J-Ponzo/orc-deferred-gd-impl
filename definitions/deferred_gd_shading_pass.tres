@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=8 format=3 uid="uid://b2b365v2njtst"]
+[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=9 format=3 uid="uid://b2b365v2njtst"]
 
-[ext_resource type="Script" uid="uid://u2ik3nomvswi" path="res://addons/open-render-craft/scripts/definitions/explicite_pso_def.gd" id="1_50hfb"]
+[ext_resource type="Script" uid="uid://cgf0wrkdwkdto" path="res://addons/open-render-craft/scripts/definitions/pso_def.gd" id="1_ajpht"]
 [ext_resource type="Script" uid="uid://c1fvan06uwqox" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_shading_pass.gd" id="2_jt7vp"]
 [ext_resource type="Script" uid="uid://bi1q4yltghow7" path="res://addons/open-render-craft/scripts/definitions/render_pass_def.gd" id="2_opxry"]
 [ext_resource type="Script" uid="uid://xkekl1qfnapr" path="res://addons/open-render-craft/scripts/definitions/framebuffer_format_def.gd" id="2_s2q3u"]
 [ext_resource type="Script" uid="uid://dc1h8f6w8okcw" path="res://addons/open-render-craft/scripts/definitions/gd_impl_def.gd" id="3_s2q3u"]
+[ext_resource type="Script" uid="uid://byv4yjobnmtgf" path="res://addons/open-render-craft/scripts/definitions/pso_factory_def.gd" id="5_mllt6"]
 
 [sub_resource type="Resource" id="Resource_mllt6"]
 script = ExtResource("2_s2q3u")

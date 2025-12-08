@@ -1,5 +1,5 @@
-extends ORC_PrimaryData
-class_name ORC_DeferredGD_MeshData
+extends ORC_SecondaryData
+class_name ORC_DeferredGD_MaterialData
 
 var albedo_buffer : RID
 var albedo_tex : RID 
