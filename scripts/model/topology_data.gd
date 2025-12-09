@@ -19,5 +19,3 @@ var uv_buffer : RID
 var uv2_buffer : RID
 var bones_buffer : RID
 var weights_buffer : RID
-
-var vertex_format_mask : int = -1

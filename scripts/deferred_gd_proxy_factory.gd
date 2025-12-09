@@ -38,18 +38,77 @@ func create_mesh_data_from(mesh_node : MeshInstance3D, registry : ORC_ProxyRegis
 
 	for i in range(0, mesh_node.mesh.get_surface_count()):
 		var surface_data : ORC_DeferredGD_SurfaceData = create_surface_data_from(mesh_node.mesh, mesh_data, i, registry)
-		mesh_data.surfaces_data.append(surface_data)
+		if surface_data != null:
+			mesh_data.surfaces_data.append(surface_data)
 
 	return mesh_data
-
+	
 func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, surface_index : int, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_SurfaceData:
+	var material : BaseMaterial3D = mesh.surface_get_material(surface_index)
+	var vf_def : ORC_VertexFormatDef = get_vf_def_from_material(material, false)
+	if !is_vf_compatible_with_mesh_surf(vf_def, mesh, surface_index):
+		return null
+	
 	var surface_data : ORC_DeferredGD_SurfaceData = create_and_register_secondary(ORC_DeferredGD_SurfaceData, registry, mesh_data)
 	surface_data.mesh_data = mesh_data
 	surface_data.topology_data = create_topology_data_from(mesh, mesh_data, surface_index, registry)
-	var material : BaseMaterial3D = mesh.surface_get_material(surface_index)
 	surface_data.material_data = create_material_data_from(material, mesh_data, registry)
 	
+	var vf = ORC_RendererFactory.create_vertex_format(vf_def)
+	var buffers : Array[RID]
+	buffers.append(surface_data.topology_data.position_buffer)
+	if vf_def.has_normal:
+		buffers.append(surface_data.topology_data.normal_buffer)
+	if vf_def.has_tangent:
+		buffers.append(surface_data.topology_data.tangent_buffer)
+	if vf_def.has_color:
+		buffers.append(surface_data.topology_data.color_buffer)
+	if vf_def.has_uv:
+		buffers.append(surface_data.topology_data.uv_buffer)
+	if vf_def.has_uv2:
+		buffers.append(surface_data.topology_data.uv2_buffer)
+	if vf_def.has_bones:
+		buffers.append(surface_data.topology_data.bones_buffer)
+	if vf_def.has_weights:
+		buffers.append(surface_data.topology_data.weights_buffer)
+	surface_data.vertex_array = ORC_RDHelper.get_rd().vertex_array_create(surface_data.topology_data.vertex_count, vf, buffers)
+	
 	return surface_data
+
+func get_vf_def_from_material(material : BaseMaterial3D, is_skeletal : bool) -> ORC_VertexFormatDef:
+		var vf_def : ORC_VertexFormatDef = ORC_VertexFormatDef.new()
+		vf_def.is_2d = false
+		vf_def.has_normal = material.shading_mode != BaseMaterial3D.ShadingMode.SHADING_MODE_UNSHADED
+		vf_def.has_tangent = material.shading_mode != BaseMaterial3D.ShadingMode.SHADING_MODE_UNSHADED
+		vf_def.has_color = false
+		vf_def.has_uv = material.albedo_texture != null or material.normal_texture != null or try_extract_orm_from_material(material) != null
+		vf_def.has_uv2 = false
+		vf_def.has_bones = is_skeletal
+		vf_def.has_weights = is_skeletal
+		return vf_def
+
+# TODO : put in Helper
+func surf_array_has(arrays : Array, type : int) -> bool:
+	return arrays.size() > type and arrays[type] != null
+
+# TODO : put in helper
+func is_vf_compatible_with_mesh_surf(vf_def : ORC_VertexFormatDef, mesh : Mesh, surface_index : int) -> bool:
+	var arrays = mesh.surface_get_arrays(surface_index)
+	if vf_def.has_normal != surf_array_has(arrays, Mesh.ARRAY_NORMAL):
+		return false
+	if vf_def.has_tangent != surf_array_has(arrays, Mesh.ARRAY_TANGENT):
+		return false
+	if vf_def.has_color != surf_array_has(arrays, Mesh.ARRAY_COLOR):
+		return false
+	if vf_def.has_uv != surf_array_has(arrays, Mesh.ARRAY_TEX_UV):
+		return false
+	if vf_def.has_uv2 != surf_array_has(arrays, Mesh.ARRAY_TEX_UV2):
+		return false
+	if vf_def.has_bones != surf_array_has(arrays, Mesh.ARRAY_BONES):
+		return false
+	if vf_def.has_weights != surf_array_has(arrays, Mesh.ARRAY_WEIGHTS):
+		return false
+	return true
 
 func create_topology_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, surface_index : int, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_TopologyData:
 	var unique_id : int = mesh.get_instance_id()
@@ -57,6 +116,44 @@ func create_topology_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData,
 	if topology_data.is_shared():
 		return topology_data
 	topology_data.unique_id = unique_id
+	
+	var arrays = mesh.surface_get_arrays(surface_index)
+	topology_data.index_count = arrays[Mesh.ARRAY_INDEX].size()
+	var byte_array = arrays[Mesh.ARRAY_INDEX].to_byte_array()
+	topology_data.index_buffer = ORC_RDHelper.get_rd().index_buffer_create(arrays[Mesh.ARRAY_INDEX].size(), RenderingDevice.INDEX_BUFFER_FORMAT_UINT32, byte_array)
+	topology_data.index_array = ORC_RDHelper.get_rd().index_array_create(topology_data.index_buffer, 0, topology_data.index_count)
+
+	topology_data.vertex_count = arrays[Mesh.ARRAY_VERTEX].size()
+	byte_array = arrays[Mesh.ARRAY_VERTEX].to_byte_array()
+	topology_data.position_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+	
+	if  surf_array_has(arrays, Mesh.ARRAY_NORMAL):
+		byte_array = arrays[Mesh.ARRAY_NORMAL].to_byte_array()
+		topology_data.normal_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+
+	if surf_array_has(arrays, Mesh.ARRAY_TANGENT):
+		byte_array = arrays[Mesh.ARRAY_TANGENT].to_byte_array()
+		topology_data.tangent_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+
+	if surf_array_has(arrays, Mesh.ARRAY_COLOR):
+		byte_array = arrays[Mesh.ARRAY_COLOR].to_byte_array()
+		topology_data.color_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+
+	if surf_array_has(arrays, Mesh.ARRAY_TEX_UV):
+		byte_array = arrays[Mesh.ARRAY_TEX_UV].to_byte_array()
+		topology_data.uv_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+
+	if surf_array_has(arrays, Mesh.ARRAY_TEX_UV2):
+		byte_array = arrays[Mesh.ARRAY_TEX_UV].to_byte_array()
+		topology_data.uv2_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+
+	if surf_array_has(arrays, Mesh.ARRAY_BONES):
+		byte_array = arrays[Mesh.ARRAY_BONES].to_byte_array()
+		topology_data.bones_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+
+	if surf_array_has(arrays, Mesh.ARRAY_WEIGHTS):
+		byte_array = arrays[Mesh.ARRAY_WEIGHTS].to_byte_array()
+		topology_data.weights_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
 	
 	return topology_data
 
