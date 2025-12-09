@@ -253,7 +253,21 @@ func free_camera_data(cam_data : ORC_DeferredGD_CameraData, registry : ORC_Proxy
 	return destroy_and_unregister_data(cam_data, registry)
 
 func free_material_data(mat_data : ORC_DeferredGD_MaterialData, registry : ORC_ProxyRegistry) -> bool:
-	return false
+	# TODO : check it's de las ref
+	if mat_data.albedo_buffer != RID():
+		ORC_RDHelper.get_rd().free_rid(mat_data.albedo_buffer)
+		mat_data.albedo_buffer = RID()
+	if mat_data.albedo_sampler != RID():
+		ORC_RDHelper.get_rd().free_rid(mat_data.albedo_sampler)
+		mat_data.albedo_sampler = RID()
+	if mat_data.normal_sampler != RID():
+		ORC_RDHelper.get_rd().free_rid(mat_data.normal_sampler)	
+		mat_data.normal_sampler = RID()
+	if mat_data.orm_sampler != RID():
+		ORC_RDHelper.get_rd().free_rid(mat_data.orm_sampler)
+		mat_data.orm_sampler = RID()
+
+	return destroy_and_unregister_data(mat_data, registry)
 
 func free_mesh_data(mesh_data : ORC_DeferredGD_MeshData, registry : ORC_ProxyRegistry) -> bool:
 	return false
