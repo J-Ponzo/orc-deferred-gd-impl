@@ -1,6 +1,8 @@
 extends ORC_SecondaryData
 class_name ORC_DeferredGD_MaterialData
 
+var unique_id : int
+
 var albedo_buffer : RID
 var albedo_tex : RID 
 var albedo_sampler : RID 

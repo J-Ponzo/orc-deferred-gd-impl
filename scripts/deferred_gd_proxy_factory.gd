@@ -253,27 +253,85 @@ func free_camera_data(cam_data : ORC_DeferredGD_CameraData, registry : ORC_Proxy
 	return destroy_and_unregister_data(cam_data, registry)
 
 func free_material_data(mat_data : ORC_DeferredGD_MaterialData, registry : ORC_ProxyRegistry) -> bool:
-	# TODO : check it's de las ref
-	if mat_data.albedo_buffer != RID():
-		ORC_RDHelper.get_rd().free_rid(mat_data.albedo_buffer)
-		mat_data.albedo_buffer = RID()
-	if mat_data.albedo_sampler != RID():
-		ORC_RDHelper.get_rd().free_rid(mat_data.albedo_sampler)
-		mat_data.albedo_sampler = RID()
-	if mat_data.normal_sampler != RID():
-		ORC_RDHelper.get_rd().free_rid(mat_data.normal_sampler)	
-		mat_data.normal_sampler = RID()
-	if mat_data.orm_sampler != RID():
-		ORC_RDHelper.get_rd().free_rid(mat_data.orm_sampler)
-		mat_data.orm_sampler = RID()
+	if !mat_data.is_shared():
+		if mat_data.albedo_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(mat_data.albedo_buffer)
+			mat_data.albedo_buffer = RID()
+		if mat_data.albedo_sampler != RID():
+			ORC_RDHelper.get_rd().free_rid(mat_data.albedo_sampler)
+			mat_data.albedo_sampler = RID()
+		if mat_data.normal_sampler != RID():
+			ORC_RDHelper.get_rd().free_rid(mat_data.normal_sampler)	
+			mat_data.normal_sampler = RID()
+		if mat_data.orm_sampler != RID():
+			ORC_RDHelper.get_rd().free_rid(mat_data.orm_sampler)
+			mat_data.orm_sampler = RID()
 
-	return destroy_and_unregister_data(mat_data, registry)
+	return destroy_and_unregister_data(mat_data, registry, mat_data.unique_id)
 
 func free_mesh_data(mesh_data : ORC_DeferredGD_MeshData, registry : ORC_ProxyRegistry) -> bool:
-	return false
+	if mesh_data.invert_bind_pose_array_buffer != RID():
+		ORC_RDHelper.get_rd().free_rid(mesh_data.invert_bind_pose_array_buffer)
+		mesh_data.invert_bind_pose_array_buffer = RID()
+	if mesh_data.instance_storage_buffer != RID():
+		ORC_RDHelper.get_rd().free_rid(mesh_data.instance_storage_buffer)
+		mesh_data.instance_storage_buffer = RID()
+	
+	var success : bool = true
+	for surface_data in mesh_data.surfaces_data:
+		if !destroy_and_unregister_data(surface_data, registry):
+			success = false
+	
+	return success &&  destroy_and_unregister_data(mesh_data, registry)
 
 func free_surface_data(surface_data : ORC_DeferredGD_SurfaceData, registry : ORC_ProxyRegistry) -> bool:
-	return false
+	if surface_data.vertex_array != RID():
+		ORC_RDHelper.get_rd().free_rid(surface_data.vertex_array)
+		surface_data.vertex_array = RID()
+	if surface_data.shadow_vertex_array != RID():
+		ORC_RDHelper.get_rd().free_rid(surface_data.shadow_vertex_array)
+		surface_data.shadow_vertex_array = RID()
 	
+	var success : bool = true
+	if !destroy_and_unregister_data(surface_data.material_data, registry):
+		success = false
+	if !destroy_and_unregister_data(surface_data.topology_data, registry):
+		success = false
+	
+	return success && destroy_and_unregister_data(surface_data, registry)
+
+# TODO add try_free_rid in helper
 func free_topology_data(topology_data : ORC_DeferredGD_TopologyData, registry : ORC_ProxyRegistry) -> bool:
-	return false
+	if !topology_data.is_shared():
+		if topology_data.index_array != RID():
+			ORC_RDHelper.get_rd().free_rid(topology_data.index_array)
+			topology_data.index_array = RID()
+		if topology_data.index_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(topology_data.index_buffer)
+			topology_data.index_buffer = RID()
+		if topology_data.position_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(topology_data.position_buffer)
+			topology_data.position_buffer = RID()
+		if topology_data.normal_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(topology_data.normal_buffer)
+			topology_data.normal_buffer = RID()
+		if topology_data.tangent_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(topology_data.tangent_buffer)
+			topology_data.tangent_buffer = RID()
+		if topology_data.color_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(topology_data.color_buffer)
+			topology_data.color_buffer = RID()
+		if topology_data.uv_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(topology_data.uv_buffer)
+			topology_data.uv_buffer = RID()
+		if topology_data.uv2_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(topology_data.uv2_buffer)
+			topology_data.uv2_buffer = RID()
+		if topology_data.bones_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(topology_data.bones_buffer)
+			topology_data.bones_buffer = RID()
+		if topology_data.weights_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(topology_data.weights_buffer)
+			topology_data.weights_buffer = RID()
+	
+	return destroy_and_unregister_data(topology_data, registry, topology_data.unique_id)
