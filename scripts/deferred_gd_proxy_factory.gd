@@ -53,6 +53,7 @@ func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, 
 	surface_data.mesh_data = mesh_data
 	surface_data.topology_data = create_topology_data_from(mesh, mesh_data, surface_index, registry)
 	surface_data.material_data = create_material_data_from(material, mesh_data, registry)
+	surface_data.set_flag("IS_TRANSPARENT", is_transparent(surface_data.material_data))
 	
 	var vf = ORC_RendererFactory.create_vertex_format(vf_def)
 	var buffers : Array[RID]
@@ -74,6 +75,9 @@ func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, 
 	surface_data.vertex_array = ORC_RDHelper.get_rd().vertex_array_create(surface_data.topology_data.vertex_count, vf, buffers)
 	
 	return surface_data
+
+func is_transparent(mat_data : ORC_DeferredGD_MaterialData) -> bool:
+	return mat_data.render_mode == ORC_PSODef.ERenderMode.Transparent_Mix or mat_data.render_mode == ORC_PSODef.ERenderMode.Transparent_Add or mat_data.render_mode == ORC_PSODef.ERenderMode.Transparent_Subtract or mat_data.render_mode == ORC_PSODef.ERenderMode.Transparent_Multiply or mat_data.render_mode == ORC_PSODef.ERenderMode.Transparent_PremultAlpha
 
 func get_vf_def_from_material(material : BaseMaterial3D, is_skeletal : bool) -> ORC_VertexFormatDef:
 		var vf_def : ORC_VertexFormatDef = ORC_VertexFormatDef.new()
