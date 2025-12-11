@@ -9,6 +9,7 @@
 
 [sub_resource type="Resource" id="Resource_mllt6"]
 script = ExtResource("2_s2q3u")
+color_keys = Array[StringName]([&"Shaded"])
 metadata/_custom_type_script = "uid://xkekl1qfnapr"
 
 [sub_resource type="Resource" id="Resource_ajpht"]

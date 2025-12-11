@@ -1,10 +1,17 @@
-[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=7 format=3 uid="uid://dhbqjo6gh4tjr"]
+[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=9 format=3 uid="uid://dhbqjo6gh4tjr"]
 
 [ext_resource type="Script" uid="uid://cgf0wrkdwkdto" path="res://addons/open-render-craft/scripts/definitions/pso_def.gd" id="1_uj2m6"]
 [ext_resource type="Script" uid="uid://bi1q4yltghow7" path="res://addons/open-render-craft/scripts/definitions/render_pass_def.gd" id="2_dh4a2"]
+[ext_resource type="Script" uid="uid://xkekl1qfnapr" path="res://addons/open-render-craft/scripts/definitions/framebuffer_format_def.gd" id="2_pqdpk"]
 [ext_resource type="Script" uid="uid://dwwrc2koqnai8" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_geometry_pass.gd" id="2_ys13t"]
 [ext_resource type="Script" uid="uid://dc1h8f6w8okcw" path="res://addons/open-render-craft/scripts/definitions/gd_impl_def.gd" id="3_uj2m6"]
 [ext_resource type="Script" uid="uid://byv4yjobnmtgf" path="res://addons/open-render-craft/scripts/definitions/pso_factory_def.gd" id="4_pqdpk"]
+
+[sub_resource type="Resource" id="Resource_ikl52"]
+script = ExtResource("2_pqdpk")
+depth_key = &"Depth"
+color_keys = Array[StringName]([&"Albedo", &"Normal", &"ORM", &"Position"])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
 
 [sub_resource type="Resource" id="Resource_pqdpk"]
 script = ExtResource("3_uj2m6")
@@ -15,4 +22,5 @@ metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
 script = ExtResource("2_dh4a2")
 pass_name = &"Geometry"
 pass_impl = SubResource("Resource_pqdpk")
+fb_format_def = SubResource("Resource_ikl52")
 metadata/_custom_type_script = "uid://bi1q4yltghow7"
