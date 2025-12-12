@@ -53,7 +53,8 @@ func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, 
 	surface_data.mesh_data = mesh_data
 	surface_data.topology_data = create_topology_data_from(mesh, mesh_data, surface_index, registry)
 	surface_data.material_data = create_material_data_from(material, mesh_data, registry)
-	surface_data.set_flag("IS_TRANSPARENT", is_transparent(surface_data.material_data))
+	surface_data.register_flag_sources([surface_data.topology_data, surface_data.material_data])
+
 	
 	var vf = ORC_RendererFactory.create_vertex_format(vf_def)
 	var buffers : Array[RID]
@@ -98,19 +99,19 @@ func surf_array_has(arrays : Array, type : int) -> bool:
 # TODO : put in helper
 func is_vf_compatible_with_mesh_surf(vf_def : ORC_VertexFormatDef, mesh : Mesh, surface_index : int) -> bool:
 	var arrays = mesh.surface_get_arrays(surface_index)
-	if vf_def.has_normal != surf_array_has(arrays, Mesh.ARRAY_NORMAL):
+	if vf_def.has_normal && !surf_array_has(arrays, Mesh.ARRAY_NORMAL):
 		return false
-	if vf_def.has_tangent != surf_array_has(arrays, Mesh.ARRAY_TANGENT):
+	if vf_def.has_tangent && !surf_array_has(arrays, Mesh.ARRAY_TANGENT):
 		return false
-	if vf_def.has_color != surf_array_has(arrays, Mesh.ARRAY_COLOR):
+	if vf_def.has_color && !surf_array_has(arrays, Mesh.ARRAY_COLOR):
 		return false
-	if vf_def.has_uv != surf_array_has(arrays, Mesh.ARRAY_TEX_UV):
+	if vf_def.has_uv && !surf_array_has(arrays, Mesh.ARRAY_TEX_UV):
 		return false
-	if vf_def.has_uv2 != surf_array_has(arrays, Mesh.ARRAY_TEX_UV2):
+	if vf_def.has_uv2 && !surf_array_has(arrays, Mesh.ARRAY_TEX_UV2):
 		return false
-	if vf_def.has_bones != surf_array_has(arrays, Mesh.ARRAY_BONES):
+	if vf_def.has_bones && !surf_array_has(arrays, Mesh.ARRAY_BONES):
 		return false
-	if vf_def.has_weights != surf_array_has(arrays, Mesh.ARRAY_WEIGHTS):
+	if vf_def.has_weights && !surf_array_has(arrays, Mesh.ARRAY_WEIGHTS):
 		return false
 	return true
 
@@ -207,6 +208,9 @@ func create_material_data_from(material : BaseMaterial3D, mesh_data : ORC_Deferr
 			material_data.render_mode = ORC_PSODef.ERenderMode.Transparent_Multiply
 		elif material.blend_mode == BaseMaterial3D.BlendMode.BLEND_MODE_PREMULT_ALPHA:
 			material_data.render_mode = ORC_PSODef.ERenderMode.Transparent_PremultAlpha
+
+	# TODO pass rendermode only
+	material_data.set_flag("IS_TRANSPARENT", is_transparent(material_data))
 
 	return material_data
 
