@@ -20,11 +20,9 @@ func render_override() -> void:
 	var matrices_uniform_set : RID = RID()
 
 	for surface_data : ORC_DeferredGD_SurfaceData in renderer.opaque_surfaces_data:
-		print("draw surface")
 		var pso : ORC_PSO = (pso_factories["Material"] as ORC_PSOFactory).get_or_create_pso_from_data(surface_data)
 		if pso != previous_pso:
 			previous_pso = pso
-
 			if draw_list != -1:
 				ORC_RDHelper.get_rd().draw_list_end()
 				ORC_RDHelper.get_rd().free_rid(matrices_uniform_set)
