@@ -1,5 +1,17 @@
 #version 450
 
+layout(location = 0) out vec4 frag_albedo;
+layout(location = 1) out vec4 frag_normal;
+layout(location = 2) out vec4 frag_position;
+layout(location = 3) out vec4 frag_orm;
+
+layout(set = 1, binding = 0) uniform SurfParams { 
+	vec4 albedo;
+};
+
 void main() {
-	frag_color = vec4(1.0);
+	frag_albedo = albedo;
+	frag_normal = vec4(0.0, 1.0, 0.0, 1.0);
+	frag_position = vec4(0.0, 0.0, 1.0, 1.0);
+	frag_orm = vec4(1.0, 0.0, 1.0, 1.0);
 }

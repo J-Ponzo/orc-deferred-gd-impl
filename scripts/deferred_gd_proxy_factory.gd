@@ -38,8 +38,7 @@ func create_mesh_data_from(mesh_node : MeshInstance3D, registry : ORC_ProxyRegis
 
 	for i in range(0, mesh_node.mesh.get_surface_count()):
 		var surface_data : ORC_DeferredGD_SurfaceData = create_surface_data_from(mesh_node.mesh, mesh_data, i, registry)
-		if surface_data != null:
-			mesh_data.surfaces_data.append(surface_data)
+		mesh_data.surfaces_data.append(surface_data)
 
 	return mesh_data
 	
@@ -50,6 +49,7 @@ func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, 
 		return null
 	
 	var surface_data : ORC_DeferredGD_SurfaceData = create_and_register_secondary(ORC_DeferredGD_SurfaceData, registry, mesh_data)
+	surface_data.vf_def = vf_def
 	surface_data.mesh_data = mesh_data
 	surface_data.topology_data = create_topology_data_from(mesh, mesh_data, surface_index, registry)
 	surface_data.material_data = create_material_data_from(material, mesh_data, registry)
@@ -77,8 +77,8 @@ func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, 
 	
 	return surface_data
 
-func is_transparent(mat_data : ORC_DeferredGD_MaterialData) -> bool:
-	return mat_data.render_mode == ORC_PSODef.ERenderMode.Transparent_Mix or mat_data.render_mode == ORC_PSODef.ERenderMode.Transparent_Add or mat_data.render_mode == ORC_PSODef.ERenderMode.Transparent_Subtract or mat_data.render_mode == ORC_PSODef.ERenderMode.Transparent_Multiply or mat_data.render_mode == ORC_PSODef.ERenderMode.Transparent_PremultAlpha
+func is_transparent(render_mode : ORC_PSODef.ERenderMode) -> bool:
+	return render_mode == ORC_PSODef.ERenderMode.Transparent_Mix or render_mode == ORC_PSODef.ERenderMode.Transparent_Add or render_mode == ORC_PSODef.ERenderMode.Transparent_Subtract or render_mode == ORC_PSODef.ERenderMode.Transparent_Multiply or render_mode == ORC_PSODef.ERenderMode.Transparent_PremultAlpha
 
 func get_vf_def_from_material(material : BaseMaterial3D, is_skeletal : bool) -> ORC_VertexFormatDef:
 		var vf_def : ORC_VertexFormatDef = ORC_VertexFormatDef.new()
@@ -209,8 +209,7 @@ func create_material_data_from(material : BaseMaterial3D, mesh_data : ORC_Deferr
 		elif material.blend_mode == BaseMaterial3D.BlendMode.BLEND_MODE_PREMULT_ALPHA:
 			material_data.render_mode = ORC_PSODef.ERenderMode.Transparent_PremultAlpha
 
-	# TODO pass rendermode only
-	material_data.set_flag("IS_TRANSPARENT", is_transparent(material_data))
+	material_data.set_flag("IS_TRANSPARENT", is_transparent(material_data.render_mode))
 
 	return material_data
 

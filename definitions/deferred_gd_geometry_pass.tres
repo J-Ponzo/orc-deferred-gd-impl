@@ -6,12 +6,12 @@
 [ext_resource type="Script" uid="uid://dwwrc2koqnai8" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_geometry_pass.gd" id="2_ys13t"]
 [ext_resource type="Script" uid="uid://dc1h8f6w8okcw" path="res://addons/open-render-craft/scripts/definitions/gd_impl_def.gd" id="3_uj2m6"]
 [ext_resource type="Script" uid="uid://byv4yjobnmtgf" path="res://addons/open-render-craft/scripts/definitions/pso_factory_def.gd" id="4_pqdpk"]
-[ext_resource type="Script" uid="uid://bck12y8cg4p1" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_material_pso_factory.gd" id="6_ikl52"]
+[ext_resource type="Script" uid="uid://bck12y8cg4p1" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_geometry_pso_factory.gd" id="6_ikl52"]
 
 [sub_resource type="Resource" id="Resource_ikl52"]
 script = ExtResource("2_pqdpk")
 depth_key = &"Depth"
-color_keys = Array[StringName]([&"Albedo", &"Normal", &"ORM", &"Position"])
+color_keys = Array[StringName]([&"Albedo", &"Normal", &"Position", &"ORM"])
 metadata/_custom_type_script = "uid://xkekl1qfnapr"
 
 [sub_resource type="Resource" id="Resource_pqdpk"]
