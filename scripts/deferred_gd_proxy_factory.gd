@@ -44,74 +44,73 @@ func create_mesh_data_from(mesh_node : MeshInstance3D, registry : ORC_ProxyRegis
 	
 func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, surface_index : int, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_SurfaceData:
 	var material : BaseMaterial3D = mesh.surface_get_material(surface_index)
-	var vf_def : ORC_VertexFormatDef = get_vf_def_from_material(material, false)
-	if !is_vf_compatible_with_mesh_surf(vf_def, mesh, surface_index):
+	var vf_info : ORC_VertexFormatInfo = get_vf_info_from_material(material, false)
+	if !is_vf_compatible_with_mesh_surf(vf_info, mesh, surface_index):
 		return null
 	
 	var surface_data : ORC_DeferredGD_SurfaceData = create_and_register_secondary(ORC_DeferredGD_SurfaceData, registry, mesh_data)
-	surface_data.vf_def = vf_def
 	surface_data.mesh_data = mesh_data
 	surface_data.topology_data = create_topology_data_from(mesh, mesh_data, surface_index, registry)
 	surface_data.material_data = create_material_data_from(material, mesh_data, registry)
 	surface_data.register_flag_sources([surface_data.topology_data, surface_data.material_data])
 
-	
-	var vf = ORC_RendererFactory.create_vertex_format(vf_def)
+	var vf : int = ORC_RDHelper.create_vertex_format(vf_info)
 	var buffers : Array[RID]
 	buffers.append(surface_data.topology_data.position_buffer)
-	if vf_def.has_normal:
+	if vf_info.has_normal:
 		buffers.append(surface_data.topology_data.normal_buffer)
-	if vf_def.has_tangent:
+	if vf_info.has_tangent:
 		buffers.append(surface_data.topology_data.tangent_buffer)
-	if vf_def.has_color:
+	if vf_info.has_color:
 		buffers.append(surface_data.topology_data.color_buffer)
-	if vf_def.has_uv:
+	if vf_info.has_uv:
 		buffers.append(surface_data.topology_data.uv_buffer)
-	if vf_def.has_uv2:
+	if vf_info.has_uv2:
 		buffers.append(surface_data.topology_data.uv2_buffer)
-	if vf_def.has_bones:
+	if vf_info.has_bones:
 		buffers.append(surface_data.topology_data.bones_buffer)
-	if vf_def.has_weights:
+	if vf_info.has_weights:
 		buffers.append(surface_data.topology_data.weights_buffer)
 	surface_data.vertex_array = ORC_RDHelper.get_rd().vertex_array_create(surface_data.topology_data.vertex_count, vf, buffers)
-	
+	surface_data.vertex_format = vf
+
 	return surface_data
 
 func is_transparent(render_mode : ORC_PSODef.ERenderMode) -> bool:
 	return render_mode == ORC_PSODef.ERenderMode.Transparent_Mix or render_mode == ORC_PSODef.ERenderMode.Transparent_Add or render_mode == ORC_PSODef.ERenderMode.Transparent_Subtract or render_mode == ORC_PSODef.ERenderMode.Transparent_Multiply or render_mode == ORC_PSODef.ERenderMode.Transparent_PremultAlpha
 
-func get_vf_def_from_material(material : BaseMaterial3D, is_skeletal : bool) -> ORC_VertexFormatDef:
-		var vf_def : ORC_VertexFormatDef = ORC_VertexFormatDef.new()
-		vf_def.is_2d = false
-		vf_def.has_normal = material.shading_mode != BaseMaterial3D.ShadingMode.SHADING_MODE_UNSHADED
-		vf_def.has_tangent = material.shading_mode != BaseMaterial3D.ShadingMode.SHADING_MODE_UNSHADED
-		vf_def.has_color = false
-		vf_def.has_uv = material.albedo_texture != null or material.normal_texture != null or try_extract_orm_from_material(material) != null
-		vf_def.has_uv2 = false
-		vf_def.has_bones = is_skeletal
-		vf_def.has_weights = is_skeletal
-		return vf_def
+func get_vf_info_from_material(material : BaseMaterial3D, is_skeletal : bool) -> ORC_VertexFormatInfo:
+	var vf_info : ORC_VertexFormatInfo = ORC_VertexFormatInfo.new()
+	vf_info.is_2d = false
+	vf_info.has_normal = material.shading_mode != BaseMaterial3D.ShadingMode.SHADING_MODE_UNSHADED
+	vf_info.has_tangent = material.shading_mode != BaseMaterial3D.ShadingMode.SHADING_MODE_UNSHADED
+	vf_info.has_color = false
+	vf_info.has_uv = material.albedo_texture != null or material.normal_texture != null or try_extract_orm_from_material(material) != null
+	vf_info.has_uv2 = false
+	vf_info.has_bones = is_skeletal
+	vf_info.has_weights = is_skeletal
+	return vf_info
 
 # TODO : put in Helper
 func surf_array_has(arrays : Array, type : int) -> bool:
 	return arrays.size() > type and arrays[type] != null
 
 # TODO : put in helper
-func is_vf_compatible_with_mesh_surf(vf_def : ORC_VertexFormatDef, mesh : Mesh, surface_index : int) -> bool:
+func is_vf_compatible_with_mesh_surf(vf_info : ORC_VertexFormatInfo, mesh : Mesh, surface_index : int) -> bool:
 	var arrays = mesh.surface_get_arrays(surface_index)
-	if vf_def.has_normal && !surf_array_has(arrays, Mesh.ARRAY_NORMAL):
+	if vf_info.has_normal && !surf_array_has(arrays, Mesh.ARRAY_NORMAL):
 		return false
-	if vf_def.has_tangent && !surf_array_has(arrays, Mesh.ARRAY_TANGENT):
+	if vf_info.has_tangent && !surf_array_has(arrays, Mesh.ARRAY_TANGENT):
 		return false
-	if vf_def.has_color && !surf_array_has(arrays, Mesh.ARRAY_COLOR):
+	if vf_info.has_color && !surf_array_has(arrays, Mesh.ARRAY_COLOR):
 		return false
-	if vf_def.has_uv && !surf_array_has(arrays, Mesh.ARRAY_TEX_UV):
+	if vf_info.has_uv && !surf_array_has(arrays, Mesh.ARRAY_TEX_UV):
 		return false
-	if vf_def.has_uv2 && !surf_array_has(arrays, Mesh.ARRAY_TEX_UV2):
+	if vf_info.has_uv2 && !surf_array_has(arrays, Mesh.ARRAY_TEX_UV2):
 		return false
-	if vf_def.has_bones && !surf_array_has(arrays, Mesh.ARRAY_BONES):
+	if vf_info.has_bones && !surf_array_has(arrays, Mesh.ARRAY_BONES):
 		return false
-	if vf_def.has_weights && !surf_array_has(arrays, Mesh.ARRAY_WEIGHTS):
+	if vf_info.has_weights && !surf_array_has(arrays, Mesh.ARRAY_WEIGHTS):
 		return false
 	return true
 

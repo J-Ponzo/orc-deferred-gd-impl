@@ -3,20 +3,24 @@ extends ORC_PSOFactory
 func create_pso_from_data_override(proxy_data : ORC_ProxyData, vertex_src : String, fragment_src : String) -> ORC_PSO:
 	var surface_data : ORC_DeferredGD_SurfaceData = proxy_data as ORC_DeferredGD_SurfaceData
 	
-	var pso_def : ORC_PSODef = ORC_PSODef.new()
-	pso_def.fragment_shader_raw_src = fragment_src
-	pso_def.vertex_shader_raw_src = vertex_src
-	
-	pso_def.vertex_format_def = surface_data.vf_def
+	var defines : Array[StringName] = []
 
-	pso_def.depth_stencil_state = ORC_PSODepthStencilDef.new()
-	pso_def.depth_stencil_state.enable_depth_test = true
-	pso_def.depth_stencil_state.enable_depth_write = true
-	pso_def.depth_stencil_state.depth_compare_operator = RenderingDevice.CompareOperator.COMPARE_OP_LESS
+	var pso_info : ORC_PSOInfo = ORC_PSOInfo.new()
+	pso_info.vertex_shader_src = ORC_ShaderPreprocessor.preprocess("", vertex_src, defines)
+	pso_info.fragment_shader_src = ORC_ShaderPreprocessor.preprocess("", fragment_src, defines)
+	pso_info.vertex_format = surface_data.vertex_format
 
+	pso_info.rasterization_state = RDPipelineRasterizationState.new()
+	pso_info.multisample_state = RDPipelineMultisampleState.new()
+
+	pso_info.depth_stencil_state = RDPipelineDepthStencilState.new()
+	pso_info.depth_stencil_state.enable_depth_test = true
+	pso_info.depth_stencil_state.enable_depth_write = true
+	pso_info.depth_stencil_state.depth_compare_operator = RenderingDevice.CompareOperator.COMPARE_OP_LESS
+
+	pso_info.color_blend_state = RDPipelineColorBlendState.new()
 	for i in range(4):
-		var blend_attachment_def : ORC_PSOColorBlendAttachmentDef = ORC_PSOColorBlendAttachmentDef.new()
-		pso_def.blend_attachments.append(blend_attachment_def)
-	
-	var pso : ORC_PSO = ORC_RendererFactory.create_pso(pso_def, self.render_pass.framebuffer_format)
-	return pso
+		var blend_attachment : RDPipelineColorBlendStateAttachment = RDPipelineColorBlendStateAttachment.new()
+		pso_info.color_blend_state.attachments.append(blend_attachment)
+
+	return ORC_RDHelper.create_pso(pso_info, self.render_pass.framebuffer_format)
