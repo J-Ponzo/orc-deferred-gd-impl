@@ -1,14 +1,12 @@
 extends ORC_PSOFactory
 
-func create_pso_from_data_override(proxy_data : ORC_ProxyData, vertex_src : String, fragment_src : String) -> ORC_PSO:
-	var surface_data : ORC_DeferredGD_SurfaceData = proxy_data as ORC_DeferredGD_SurfaceData
-	
-	var defines : Array[StringName] = []
+func create_pso_override(flags_mask : int, vertex_format : int, vertex_src : String, fragment_src : String) -> ORC_PSO:
+	var defines : Array[StringName] = render_pass.renderer.scene_proxy.get_flags_from_mask(flags_mask)
 
 	var pso_info : ORC_PSOInfo = ORC_PSOInfo.new()
 	pso_info.vertex_shader_src = ORC_ShaderPreprocessor.preprocess("", vertex_src, defines)
 	pso_info.fragment_shader_src = ORC_ShaderPreprocessor.preprocess("", fragment_src, defines)
-	pso_info.vertex_format = surface_data.vertex_format
+	pso_info.vertex_format = vertex_format
 
 	pso_info.rasterization_state = RDPipelineRasterizationState.new()
 	pso_info.multisample_state = RDPipelineMultisampleState.new()

@@ -20,7 +20,7 @@ func render_override() -> void:
 	var matrices_uniform_set : RID = RID()
 
 	for surface_data : ORC_DeferredGD_SurfaceData in renderer.opaque_surfaces_data:
-		var pso : ORC_PSO = (pso_factories["Material"] as ORC_PSOFactory).get_or_create_pso_from_data(surface_data)
+		var pso : ORC_PSO = (pso_factories["Material"] as ORC_PSOFactory).get_or_create_pso(surface_data.get_flags_mask(), surface_data.vertex_format)
 		if pso != previous_pso:
 			previous_pso = pso
 			if draw_list != -1:
