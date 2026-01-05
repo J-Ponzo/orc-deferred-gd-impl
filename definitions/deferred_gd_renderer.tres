@@ -95,8 +95,8 @@ metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
 [sub_resource type="Resource" id="Resource_a3fh4"]
 script = ExtResource("5_fcf0w")
 type = SubResource("Resource_cmh2p")
-flag_names = Array[StringName]([&"IS_TRANSPARENT"])
-flag_values = Array[bool]([false])
+flag_names = Array[StringName]([&"IS_TRANSPARENT", &"SHADOW_ONLY"])
+flag_values = Array[bool]([false, false])
 metadata/_custom_type_script = "uid://ncajj0vcwae2"
 
 [sub_resource type="Resource" id="Resource_2ve1y"]

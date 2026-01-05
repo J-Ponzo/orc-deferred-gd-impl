@@ -40,6 +40,9 @@ func create_mesh_data_from(mesh_node : MeshInstance3D, registry : ORC_ProxyRegis
 		var surface_data : ORC_DeferredGD_SurfaceData = create_surface_data_from(mesh_node.mesh, mesh_data, i, registry)
 		mesh_data.surfaces_data.append(surface_data)
 
+	mesh_data.set_flag("SHADOW", mesh_node.cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+	mesh_data.set_flag("SHADOW_ONLY", mesh_node.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
+
 	return mesh_data
 	
 func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, surface_index : int, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_SurfaceData:
@@ -52,7 +55,7 @@ func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, 
 	surface_data.mesh_data = mesh_data
 	surface_data.topology_data = create_topology_data_from(mesh, mesh_data, surface_index, registry)
 	surface_data.material_data = create_material_data_from(material, mesh_data, registry)
-	surface_data.register_flag_sources([surface_data.topology_data, surface_data.material_data])
+	surface_data.register_flag_sources([mesh_data,surface_data.topology_data, surface_data.material_data])
 
 	var vf : int = ORC_RDHelper.create_vertex_format(vf_info)
 	var buffers : Array[RID]

@@ -76,3 +76,7 @@ func create_texture_sampler_uniform(texture_rid : RID, sampler_rid : RID, bindin
 	uniform.add_id(texture_rid)
 
 	return uniform
+
+func cleanup_override() -> void:
+	super_cleanup()
+	print("ORC_DeferredGDGeometryPass.cleanup()")
