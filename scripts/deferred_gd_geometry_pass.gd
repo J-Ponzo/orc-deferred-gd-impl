@@ -36,22 +36,43 @@ func render_override() -> void:
 			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, matrices_uniform_set, 0)
 			ORC_RDHelper.get_rd().draw_list_bind_render_pipeline(draw_list, pso.pipeline)
 
-		var albedo_uniform : RDUniform = RDUniform.new()
-		albedo_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
-		albedo_uniform.binding = 0
-		albedo_uniform.add_id(surface_data.material_data.albedo_buffer)
+		var material_uniforms : Array[RDUniform] = []
+		var color_uniform : RDUniform = RDUniform.new()
+		color_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
+		color_uniform.binding = 0
+		color_uniform.add_id(surface_data.material_data.albedo_buffer)
+		material_uniforms.append(color_uniform)
+		if surface_data.has_flag("ALBEDO_MAP"):
+			var albedo_uniform : RDUniform = create_texture_sampler_uniform(surface_data.material_data.albedo_tex, surface_data.material_data.albedo_sampler, 1)
+			material_uniforms.append(albedo_uniform)
+		if surface_data.has_flag("NORMAL_MAP"):
+			var normal_uniform : RDUniform = create_texture_sampler_uniform(surface_data.material_data.normal_tex, surface_data.material_data.normal_sampler, 2)
+			material_uniforms.append(normal_uniform)
+		if surface_data.has_flag("ORM_MAP"):
+			var orm_uniform : RDUniform = create_texture_sampler_uniform(surface_data.material_data.orm_tex, surface_data.material_data.orm_sampler, 3)
+			material_uniforms.append(orm_uniform)
+		var material_uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create(material_uniforms, pso.shader_program, 1)
+		ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, material_uniform_set, 1)	
 
-		var albedo_uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create([albedo_uniform], pso.shader_program, 1)
-
-		ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, albedo_uniform_set, 1)
+		ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, material_uniform_set, 1)
 		ORC_RDHelper.get_rd().draw_list_bind_vertex_array(draw_list, surface_data.vertex_array)
 		ORC_RDHelper.get_rd().draw_list_bind_index_array(draw_list, surface_data.topology_data.index_array)
 		ORC_RDHelper.get_rd().draw_list_set_push_constant(draw_list, surface_data.mesh_data.model_matrix_bytes, surface_data.mesh_data.model_matrix_bytes.size())
 		ORC_RDHelper.get_rd().draw_list_draw(draw_list, true, 1)
 
-		ORC_RDHelper.get_rd().free_rid(albedo_uniform_set)
+		ORC_RDHelper.get_rd().free_rid(material_uniform_set)
 
 	# free last pso batch resources (if any)
 	if is_first_surface == false:
 		ORC_RDHelper.get_rd().draw_list_end()
 		ORC_RDHelper.get_rd().free_rid(matrices_uniform_set)
+
+# TODO move to RDHelper
+func create_texture_sampler_uniform(texture_rid : RID, sampler_rid : RID, binding : int) -> RDUniform:
+	var uniform := RDUniform.new()
+	uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_SAMPLER_WITH_TEXTURE
+	uniform.binding = binding
+	uniform.add_id(sampler_rid)
+	uniform.add_id(texture_rid)
+
+	return uniform

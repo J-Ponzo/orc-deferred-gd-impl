@@ -1,5 +1,15 @@
 #version 450
 
+layout(location = 0) in vec3 v_world_position;
+
+#if defined(ALBEDO_MAP) || defined(NORMAL_MAP) || defined(ORM_MAP)
+layout(location = 1) in vec2 v_uv; 
+#endif
+
+#ifdef LIT
+layout(location = 2) in mat3 TBN;
+#endif
+
 layout(location = 0) out vec4 frag_albedo;
 layout(location = 1) out vec4 frag_normal;
 layout(location = 2) out vec4 frag_position;
@@ -9,9 +19,46 @@ layout(set = 1, binding = 0) uniform SurfParams {
 	vec4 albedo;
 };
 
+#ifdef ALBEDO_MAP
+layout(set = 1, binding = 1) uniform sampler2D albedo_tex;
+#endif
+#ifdef NORMAL_MAP
+layout(set = 1, binding = 2) uniform sampler2D normal_tex;
+#endif
+#ifdef ORM_MAP
+layout(set = 1, binding = 3) uniform sampler2D orm_tex;
+#endif
+
 void main() {
-	frag_albedo = albedo;
-	frag_normal = vec4(0.0, 1.0, 0.0, 1.0);
-	frag_position = vec4(0.0, 0.0, 1.0, 1.0);
-	frag_orm = vec4(1.0, 0.0, 1.0, 1.0);
+	vec4 linear_albedo = albedo;
+	linear_albedo.rgb = /*srgb_to_rgb(*/linear_albedo.rgb/*)*/;
+	vec4 surf_color = linear_albedo;
+#ifdef ALBEDO_MAP
+	vec4 linear_sampled_albedo = texture(albedo_tex, v_uv);
+	linear_sampled_albedo.rgb = /*srgb_to_rgb(*/linear_sampled_albedo.rgb/*)*/;
+	surf_color *= linear_sampled_albedo;
+#endif
+
+#ifdef LIT
+	#ifdef NORMAL_MAP
+	vec3 surf_normal = texture(normal_tex, v_uv).xyz * 2.0 - 1.0;
+	#else
+	vec3 surf_normal = vec3(0.0, 0.0, -1.0);
+	#endif
+	vec3 normal = TBN * surf_normal;
+	
+	#ifdef ORM_MAP
+	vec3 surf_orm = texture(orm_tex, v_uv).rgb;
+	#else
+	vec3 surf_orm = vec3(1.0, 1.0, 0.0);
+	#endif
+#else
+	vec3 normal = vec3(0.0, 0.0, 0.0);
+	vec3 surf_orm = vec3(1.0, 1.0, 0.0);
+#endif
+
+	frag_albedo = surf_color;
+	frag_normal = vec4(normal, 1.0);
+	frag_position = vec4(v_world_position, 1.0);
+	frag_orm = vec4(surf_orm, 1.0);
 }

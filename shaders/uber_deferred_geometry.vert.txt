@@ -2,6 +2,26 @@
 
 layout(location = 0) in vec3 a_position;
 
+#ifdef LIT
+layout(location = 1) in vec3 a_normal;
+layout(location = 2) in vec4 a_tangent;
+#endif
+
+// TODO : should be location = 3
+#if defined(ALBEDO_MAP) || defined(NORMAL_MAP) || defined(ORM_MAP)
+layout(location = 4) in vec2 a_uv;
+#endif
+
+layout(location = 0) out vec3 v_world_position;
+
+#if defined(ALBEDO_MAP) || defined(NORMAL_MAP)
+layout(location = 1) out vec2 v_uv;
+#endif
+
+#ifdef LIT
+layout(location = 2) out mat3 TBN;
+#endif
+
 layout(set = 0, binding = 0) uniform Matrices {
 	mat4 view;
 	mat4 projection;
@@ -11,6 +31,26 @@ layout(push_constant) uniform Model {
 	mat4 model;
 };
 
-void main() { 
+void main() {
+	vec4 transformed_position = vec4(a_position, 1.0);
+	
+	transformed_position = model * transformed_position;
+	v_world_position = transformed_position.xyz;
+
+#ifdef LIT
+	mat3 normal_matrix = transpose(inverse(mat3(model)));
+	
+    vec3 T = normalize(normal_matrix * a_tangent.xyz);
+    vec3 N = normalize(normal_matrix * a_normal);
+
+    vec3 B = cross(N, T) * a_tangent.w;
+    TBN = mat3(T, B, -N);       // Not sure why we needs -N but light is ok like this (TODO investigate)
+#endif
+
+#if defined(ALBEDO_MAP) || defined(NORMAL_MAP)	
+	 v_uv = a_uv;
+#endif
+    gl_Position = projection * view * transformed_position;
+
 	gl_Position = projection * view * model * vec4(a_position, 1.0);
 }

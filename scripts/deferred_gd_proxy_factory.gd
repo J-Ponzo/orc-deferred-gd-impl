@@ -175,13 +175,16 @@ func create_material_data_from(material : BaseMaterial3D, mesh_data : ORC_Deferr
 	if material.albedo_texture != null:
 		material_data.albedo_tex = RenderingServer.texture_get_rd_texture(material.albedo_texture)
 		material_data.albedo_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+		material_data.set_flag("ALBEDO_MAP", true)
 	if material.normal_texture != null:
 		material_data.normal_tex = RenderingServer.texture_get_rd_texture(material.normal_texture)
 		material_data.normal_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+		material_data.set_flag("NORMAL_MAP", true)
 	var orm_tex : Texture2D = try_extract_orm_from_material(material)
 	if orm_tex != null:
 		material_data.orm_tex = RenderingServer.texture_get_rd_texture(orm_tex)
 		material_data.orm_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+		material_data.set_flag("ORM_MAP", true)
 
 	if material.cull_mode == BaseMaterial3D.CullMode.CULL_BACK:
 		material_data.cull_mode = RenderingDevice.PolygonCullMode.POLYGON_CULL_BACK
@@ -208,6 +211,7 @@ func create_material_data_from(material : BaseMaterial3D, mesh_data : ORC_Deferr
 		elif material.blend_mode == BaseMaterial3D.BlendMode.BLEND_MODE_PREMULT_ALPHA:
 			material_data.render_mode = ORC_PSODef.ERenderMode.Transparent_PremultAlpha
 
+	material_data.set_flag("LIT", material.shading_mode != BaseMaterial3D.ShadingMode.SHADING_MODE_UNSHADED)
 	material_data.set_flag("IS_TRANSPARENT", is_transparent(material_data.render_mode))
 
 	return material_data
