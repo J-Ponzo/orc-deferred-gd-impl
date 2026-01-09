@@ -118,7 +118,7 @@ func is_vf_compatible_with_mesh_surf(vf_info : ORC_VertexFormatInfo, mesh : Mesh
 	return true
 
 func create_topology_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, surface_index : int, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_TopologyData:
-	var unique_id : int = mesh.get_instance_id()
+	var unique_id : int = hash(str(mesh.get_instance_id()) + str(surface_index))
 	var topology_data : ORC_DeferredGD_TopologyData = create_and_register_secondary(ORC_DeferredGD_TopologyData, registry, mesh_data, unique_id)
 	if topology_data.is_shared():
 		return topology_data
