@@ -54,11 +54,32 @@ func render_override() -> void:
 		var material_uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create(material_uniforms, pso.shader_program, 1)
 		ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, material_uniform_set, 1)	
 
+		var bone_pose_uniform_set : RID = RID()
+		var bind_pose_uniform_set : RID = RID()
+		if surface_data.has_flag("SKELETAL"):
+			var bone_pose_uniform : RDUniform = RDUniform.new()
+			bone_pose_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
+			bone_pose_uniform.binding = 0
+			bone_pose_uniform.add_id(surface_data.mesh_data.skeleton_data.global_bone_pose_array_buffer)
+			bone_pose_uniform_set = ORC_RDHelper.get_rd().uniform_set_create([bone_pose_uniform], pso.shader_program, 2)
+			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, bone_pose_uniform_set, 2)
+
+			var bind_pose_uniform : RDUniform = RDUniform.new()
+			bind_pose_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
+			bind_pose_uniform.binding = 0
+			bind_pose_uniform.add_id(surface_data.mesh_data.skin_data.invert_bind_pose_array_buffer)
+			bind_pose_uniform_set = ORC_RDHelper.get_rd().uniform_set_create([bind_pose_uniform], pso.shader_program, 4)
+			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, bind_pose_uniform_set, 4)
+
 		ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, material_uniform_set, 1)
 		ORC_RDHelper.get_rd().draw_list_bind_vertex_array(draw_list, surface_data.vertex_array)
 		ORC_RDHelper.get_rd().draw_list_bind_index_array(draw_list, surface_data.topology_data.index_array)
 		ORC_RDHelper.get_rd().draw_list_set_push_constant(draw_list, surface_data.mesh_data.model_matrix_bytes, surface_data.mesh_data.model_matrix_bytes.size())
 		ORC_RDHelper.get_rd().draw_list_draw(draw_list, true, 1)
+
+		if surface_data.has_flag("SKELETAL"):
+			ORC_RDHelper.get_rd().free_rid(bone_pose_uniform_set)
+			ORC_RDHelper.get_rd().free_rid(bind_pose_uniform_set)
 
 		ORC_RDHelper.get_rd().free_rid(material_uniform_set)
 

@@ -7,6 +7,8 @@ func create_proxy_from_override(node : Node) -> ORC_ProxyObject:
 		proxy_object = ORC_DeferredGD_CameraProxy.new()
 	elif node is MeshInstance3D:
 		proxy_object = ORC_DeferredGD_MeshProxy.new()
+	elif node is Skeleton3D:
+		proxy_object = ORC_DeferredGD_SkeletonProxy.new()
 	return proxy_object
 	
 func create_data_from_override(node : Node, registry : ORC_ProxyRegistry) -> ORC_PrimaryData:
@@ -15,6 +17,8 @@ func create_data_from_override(node : Node, registry : ORC_ProxyRegistry) -> ORC
 		primary_data = create_camera_data_from(node, registry)
 	elif node is MeshInstance3D:
 		primary_data = create_mesh_data_from(node, registry)
+	elif node is Skeleton3D:
+		primary_data = create_skeleton_data_from(node, registry)
 	return primary_data;
 
 func create_camera_data_from(cam_node : Camera3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_CameraData:
@@ -34,7 +38,15 @@ func create_mesh_data_from(mesh_node : MeshInstance3D, registry : ORC_ProxyRegis
 	mesh_data.bounding_box = mesh_node.get_aabb()
 	mesh_data.model_matrix_bytes = ORC_RDHelper.proj_to_bytes(Projection(mesh_node.global_transform))
 
-	# TODO Handle skeleton & skin
+	var skin : Skin = mesh_node.skin
+	var node_at_skeleton_path = mesh_node.get_node_or_null(mesh_node.skeleton)
+	var skeleton : Skeleton3D = null
+	if node_at_skeleton_path != null and node_at_skeleton_path is Skeleton3D:
+		skeleton = node_at_skeleton_path
+	if skeleton != null && skin != null:
+		mesh_data.skin_data = create_skin_data_from(skin, mesh_data, registry)
+		mesh_data.skeleton_data = create_skeleton_data_from(skeleton, registry)
+		mesh_data.set_flag("SKELETAL", true)
 
 	for i in range(0, mesh_node.mesh.get_surface_count()):
 		var surface_data : ORC_DeferredGD_SurfaceData = create_surface_data_from(mesh_node.mesh, mesh_data, i, registry)
@@ -44,10 +56,52 @@ func create_mesh_data_from(mesh_node : MeshInstance3D, registry : ORC_ProxyRegis
 	mesh_data.set_flag("SHADOW_ONLY", mesh_node.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY)
 
 	return mesh_data
-	
+
+# TODO : support variable bone counts ?
+func create_skin_data_from(skin : Skin, mesh_data : ORC_DeferredGD_MeshData, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_SkinData:
+	var unique_id : int = skin.get_instance_id()
+	var skin_data : ORC_DeferredGD_SkinData = create_and_register_secondary(ORC_DeferredGD_SkinData, registry, mesh_data, unique_id)
+	if skin_data.is_shared():
+		return skin_data
+	skin_data.instance_id = unique_id
+
+	var invert_bind_poses : Array[Projection] = []
+	invert_bind_poses.resize(128)
+	for bind_idx in range(skin.get_bind_count()):
+		invert_bind_poses[bind_idx] = Projection(skin.get_bind_pose(bind_idx))
+	for i in range(invert_bind_poses.size(), 128):
+		invert_bind_poses[i] = Projection()
+
+	var byte_array : PackedByteArray = ORC_RDHelper.projs_to_bytes(invert_bind_poses)
+	skin_data.invert_bind_pose_array_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(byte_array.size(), byte_array)
+
+	return skin_data
+
+# TODO : support variable bone counts ?
+func create_skeleton_data_from(skeleton : Skeleton3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_SkeletonData:
+	var unique_id : int = skeleton.get_instance_id()
+	var skeleton_data : ORC_DeferredGD_SkeletonData = create_and_register_primary(ORC_DeferredGD_SkeletonData, registry, unique_id)
+	if skeleton_data.is_shared():
+		return skeleton_data
+	skeleton_data.instance_id = unique_id
+
+	var global_bone_poses : Array[Projection] = []
+	global_bone_poses.resize(128)
+	for bone_idx in range(skeleton.get_bone_count()):
+		var global_bone_pose : Projection = Projection(skeleton.get_bone_global_pose(bone_idx))
+		global_bone_poses[bone_idx] = global_bone_pose
+	for i in range(skeleton.get_bone_count(), 128):
+		global_bone_poses[i] = Projection()
+
+	var global_bone_pose_array : PackedByteArray = ORC_RDHelper.projs_to_bytes(global_bone_poses)
+	skeleton_data.global_bone_pose_array_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(global_bone_pose_array.size(), global_bone_pose_array)
+
+	return skeleton_data
+
 func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, surface_index : int, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_SurfaceData:
 	var material : BaseMaterial3D = mesh.surface_get_material(surface_index)
-	var vf_info : ORC_VertexFormatInfo = get_vf_info_from_material(material, false)
+	var is_skeletal : bool = mesh_data.has_flag("SKELETAL")
+	var vf_info : ORC_VertexFormatInfo = get_vf_info_from_material(material, is_skeletal)
 	if !is_vf_compatible_with_mesh_surf(vf_info, mesh, surface_index):
 		return null
 	

@@ -12,6 +12,13 @@ layout(location = 2) in vec4 a_tangent;
 layout(location = 4) in vec2 a_uv;
 #endif
 
+#ifdef SKELETAL
+// TODO handle variable bone count
+#define MAX_BONES 128
+layout(location = 6) in ivec4 a_bones;
+layout(location = 7) in vec4 a_weights;
+#endif
+
 layout(location = 0) out vec3 v_world_position;
 
 #if defined(ALBEDO_MAP) || defined(NORMAL_MAP)
@@ -27,30 +34,53 @@ layout(set = 0, binding = 0) uniform Matrices {
 	mat4 projection;
 };
 
+#ifdef SKELETAL
+layout(set = 2, binding = 0) uniform BonePose {
+    mat4 globale_bone_pose_matrices[MAX_BONES];
+};
+
+layout(set = 4, binding = 0) uniform BindPose {
+    mat4 invert_bind_pose_matrices[MAX_BONES];
+};
+#endif
+
 layout(push_constant) uniform Model {
 	mat4 model;
 };
 
 void main() {
 	vec4 transformed_position = vec4(a_position, 1.0);
-	
+#ifdef SKELETAL
+	mat4 skin_matrix =
+		a_weights.x * globale_bone_pose_matrices[a_bones.x] * invert_bind_pose_matrices[a_bones.x] +
+        a_weights.y * globale_bone_pose_matrices[a_bones.y] * invert_bind_pose_matrices[a_bones.y] +
+        a_weights.z * globale_bone_pose_matrices[a_bones.z] * invert_bind_pose_matrices[a_bones.z] +
+        a_weights.w * globale_bone_pose_matrices[a_bones.w] * invert_bind_pose_matrices[a_bones.w];
+
+	transformed_position = skin_matrix * transformed_position;
+#endif
 	transformed_position = model * transformed_position;
 	v_world_position = transformed_position.xyz;
 
 #ifdef LIT
 	mat3 normal_matrix = transpose(inverse(mat3(model)));
 	
+    #ifdef SKELETAL
+	vec3 skinned_normal = mat3(skin_matrix) * a_normal;
+    vec3 skinned_tangent = mat3(skin_matrix) * a_tangent.xyz;
+	vec3 T = normalize(normal_matrix * skinned_tangent);
+    vec3 N = normalize(normal_matrix * skinned_normal);
+	#else
     vec3 T = normalize(normal_matrix * a_tangent.xyz);
     vec3 N = normalize(normal_matrix * a_normal);
+	#endif
 
     vec3 B = cross(N, T) * a_tangent.w;
     TBN = mat3(T, B, -N);       // Not sure why we needs -N but light is ok like this (TODO investigate)
 #endif
 
-#if defined(ALBEDO_MAP) || defined(NORMAL_MAP)	
+#if defined(ALBEDO_MAP) || defined(NORMAL_MAP) || defined(ORM_MAP)
 	 v_uv = a_uv;
 #endif
     gl_Position = projection * view * transformed_position;
-
-	gl_Position = projection * view * model * vec4(a_position, 1.0);
 }
