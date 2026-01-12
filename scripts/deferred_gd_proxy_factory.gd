@@ -9,6 +9,12 @@ func create_proxy_from_override(node : Node) -> ORC_ProxyObject:
 		proxy_object = ORC_DeferredGD_MeshProxy.new()
 	elif node is Skeleton3D:
 		proxy_object = ORC_DeferredGD_SkeletonProxy.new()
+	elif node is OmniLight3D:
+		proxy_object = ORC_DeferredGD_OmniLightProxy.new()
+	elif node is SpotLight3D:
+		proxy_object = ORC_DeferredGD_SpotLightProxy.new()
+	elif node is DirectionalLight3D:
+		proxy_object = ORC_DeferredGD_DirectionalLightProxy.new()
 	return proxy_object
 	
 func create_data_from_override(node : Node, registry : ORC_ProxyRegistry) -> ORC_PrimaryData:
@@ -19,6 +25,12 @@ func create_data_from_override(node : Node, registry : ORC_ProxyRegistry) -> ORC
 		primary_data = create_mesh_data_from(node, registry)
 	elif node is Skeleton3D:
 		primary_data = create_skeleton_data_from(node, registry)
+	elif node is OmniLight3D:
+		primary_data = create_omni_light_data_from(node, registry)
+	elif node is SpotLight3D:
+		primary_data = create_spot_light_data_from(node, registry)
+	elif node is DirectionalLight3D:
+		primary_data = create_directional_light_data_from(node, registry)
 	return primary_data;
 
 func create_camera_data_from(cam_node : Camera3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_CameraData:
@@ -63,7 +75,7 @@ func create_skin_data_from(skin : Skin, mesh_data : ORC_DeferredGD_MeshData, reg
 	var skin_data : ORC_DeferredGD_SkinData = create_and_register_secondary(ORC_DeferredGD_SkinData, registry, mesh_data, unique_id)
 	if skin_data.is_shared():
 		return skin_data
-	skin_data.instance_id = unique_id
+	skin_data.unique_id = unique_id
 
 	var invert_bind_poses : Array[Projection] = []
 	invert_bind_poses.resize(128)
@@ -83,7 +95,7 @@ func create_skeleton_data_from(skeleton : Skeleton3D, registry : ORC_ProxyRegist
 	var skeleton_data : ORC_DeferredGD_SkeletonData = create_and_register_primary(ORC_DeferredGD_SkeletonData, registry, unique_id)
 	if skeleton_data.is_shared():
 		return skeleton_data
-	skeleton_data.instance_id = unique_id
+	skeleton_data.unique_id = unique_id
 
 	var global_bone_poses : Array[Projection] = []
 	global_bone_poses.resize(128)
@@ -295,8 +307,108 @@ static func try_extract_orm_from_material(material : BaseMaterial3D) -> Texture2
 
 	return texture
 
+func create_omni_light_data_from(omni_node : OmniLight3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_OmniLightData:
+	var omni_data : ORC_DeferredGD_OmniLightData = create_and_register_primary(ORC_DeferredGD_OmniLightData, registry)
+	omni_data.shadow_enabled = omni_node.shadow_enabled
+	omni_data.color = omni_node.light_color
+	omni_data.intensity = omni_node.light_energy
+	omni_data.location = omni_node.global_position
+	omni_data.range = omni_node.omni_range
+	omni_data.attenuation = omni_node.omni_attenuation
+
+	var global_transform : Transform3D
+	var basis : Basis
+	basis = basis.scaled(Vector3(omni_data.range, omni_data.range, omni_data.range))
+	global_transform.basis = basis
+	global_transform.origin = omni_data.location
+	omni_data.model_matrix_bytes = ORC_RDHelper.proj_to_bytes(Projection(global_transform))
+
+	omni_data.light_params_buffer_floats.append(omni_data.location.x)
+	omni_data.light_params_buffer_floats.append(omni_data.location.y)
+	omni_data.light_params_buffer_floats.append(omni_data.location.z)
+	omni_data.light_params_buffer_floats.append(omni_data.intensity)
+	var linear_color : Color = omni_data.color
+	omni_data.light_params_buffer_floats.append(linear_color.r)
+	omni_data.light_params_buffer_floats.append(linear_color.g)
+	omni_data.light_params_buffer_floats.append(linear_color.b)
+	omni_data.light_params_buffer_floats.append(omni_data.range)
+	omni_data.light_params_buffer_floats.append(0.0)
+	omni_data.light_params_buffer_floats.append(0.0)
+	omni_data.light_params_buffer_floats.append(0.0)
+	omni_data.light_params_buffer_floats.append(omni_data.attenuation)
+
+	omni_data.light_buffer_bytes = omni_data.light_params_buffer_floats.to_byte_array()
+
+	return omni_data
+
+func create_spot_light_data_from(spot_node : SpotLight3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_SpotLightData:
+	var spot_data : ORC_DeferredGD_SpotLightData = create_and_register_primary(ORC_DeferredGD_SpotLightData, registry)
+	spot_data.shadow_enabled = spot_node.shadow_enabled
+	spot_data.color = spot_node.light_color
+	spot_data.intensity = spot_node.light_energy
+	spot_data.location = spot_node.global_position
+	spot_data.direction = -spot_node.global_basis.z
+	spot_data.angle = deg_to_rad(spot_node.spot_angle)
+	spot_data.angle_attenuation = spot_node.spot_angle_attenuation
+	spot_data.range = spot_node.spot_range
+	spot_data.attenuation = spot_node.spot_attenuation
+
+	var radius = spot_data.range * tan(spot_data.angle)
+	var basis : Basis = Basis.IDENTITY
+	basis.x = radius * spot_node.global_basis.x.normalized()
+	basis.y = radius * spot_node.global_basis.y.normalized()
+	basis.z = spot_data.range * spot_node.global_basis.z.normalized()
+	var global_transform : Transform3D
+	global_transform.basis = basis
+	global_transform.origin = spot_data.location
+	spot_data.model_matrix_bytes = ORC_RDHelper.proj_to_bytes(Projection(global_transform))
+
+	spot_data.light_params_buffer_floats.append(spot_data.location.x)
+	spot_data.light_params_buffer_floats.append(spot_data.location.y)
+	spot_data.light_params_buffer_floats.append(spot_data.location.z)
+	spot_data.light_params_buffer_floats.append(spot_data.angle)
+	spot_data.light_params_buffer_floats.append(spot_data.direction.x)
+	spot_data.light_params_buffer_floats.append(spot_data.direction.y)
+	spot_data.light_params_buffer_floats.append(spot_data.direction.z)
+	spot_data.light_params_buffer_floats.append(spot_data.intensity)
+	var linear_color : Color = spot_data.color
+	spot_data.light_params_buffer_floats.append(linear_color.r)
+	spot_data.light_params_buffer_floats.append(linear_color.g)
+	spot_data.light_params_buffer_floats.append(linear_color.b)
+	spot_data.light_params_buffer_floats.append(spot_data.angle_attenuation)
+	spot_data.light_params_buffer_floats.append(spot_data.range)
+	spot_data.light_params_buffer_floats.append(spot_data.attenuation)
+	spot_data.light_params_buffer_floats.append(0.0)
+	spot_data.light_params_buffer_floats.append(0.0)
+
+	spot_data.light_buffer_bytes = spot_data.light_params_buffer_floats.to_byte_array()
+
+	return spot_data
+
+func create_directional_light_data_from(directional_node : DirectionalLight3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_DirectionalLightData:
+	var directional_data : ORC_DeferredGD_DirectionalLightData = create_and_register_primary(ORC_DeferredGD_DirectionalLightData, registry)
+	directional_data.shadow_enabled = directional_node.shadow_enabled
+	directional_data.color = directional_node.light_color
+	directional_data.intensity = directional_node.light_energy
+	directional_data.direction = -directional_node.global_basis.z
+	directional_data.shadow_max_distance = directional_node.directional_shadow_max_distance
+
+	directional_data.light_params_buffer_floats.append(directional_data.direction.x)
+	directional_data.light_params_buffer_floats.append(directional_data.direction.y)
+	directional_data.light_params_buffer_floats.append(directional_data.direction.z)
+	directional_data.light_params_buffer_floats.append(directional_data.intensity)
+	var linear_color : Color = directional_data.color
+	directional_data.light_params_buffer_floats.append(linear_color.r)
+	directional_data.light_params_buffer_floats.append(linear_color.g)
+	directional_data.light_params_buffer_floats.append(linear_color.b)
+	directional_data.light_params_buffer_floats.append(0.0)
+
+	directional_data.light_buffer_bytes = directional_data.light_params_buffer_floats.to_byte_array()
+
+	return directional_data
+
 func free_proxy_override(proxy_object : ORC_ProxyObject) -> bool:
-		return true
+	return true
 		
 func free_data_override(data : ORC_ProxyData, registry : ORC_ProxyRegistry) -> bool:
 	if data is ORC_DeferredGD_CameraData:
@@ -309,6 +421,16 @@ func free_data_override(data : ORC_ProxyData, registry : ORC_ProxyRegistry) -> b
 		return free_surface_data(data, registry)
 	elif data is ORC_DeferredGD_TopologyData:
 		return free_topology_data(data, registry)
+	elif data is ORC_DeferredGD_SkinData:
+		return free_skin_data(data, registry)
+	elif data is ORC_DeferredGD_SkeletonData:
+		return free_skeleton_data(data, registry)
+	elif data is ORC_DeferredGD_OmniLightData:
+		return free_omni_light_data(data, registry)
+	elif data is ORC_DeferredGD_SpotLightData:
+		return free_spot_light_data(data, registry)
+	elif data is ORC_DeferredGD_DirectionalLightData:
+		return free_directional_light_data(data, registry)
 	
 	return false
 
@@ -402,3 +524,26 @@ func free_topology_data(topology_data : ORC_DeferredGD_TopologyData, registry : 
 			topology_data.weights_buffer = RID()
 	
 	return destroy_and_unregister_data(topology_data, registry, topology_data.unique_id)
+
+func free_skin_data(skin_data : ORC_DeferredGD_SkinData, registry : ORC_ProxyRegistry) -> bool:
+	if !skin_data.is_shared():
+		if skin_data.invert_bind_pose_array_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(skin_data.invert_bind_pose_array_buffer)
+			skin_data.invert_bind_pose_array_buffer = RID()
+	return destroy_and_unregister_data(skin_data, registry, skin_data.unique_id)
+
+func free_skeleton_data(skeleton_data : ORC_DeferredGD_SkeletonData, registry : ORC_ProxyRegistry) -> bool:
+	if !skeleton_data.is_shared():
+		if skeleton_data.invert_bind_pose_array_buffer != RID():
+			ORC_RDHelper.get_rd().free_rid(skeleton_data.global_bone_pose_array_buffer)
+			skeleton_data.global_bone_pose_array_buffer = RID()
+	return destroy_and_unregister_data(skeleton_data, registry, skeleton_data.unique_id)
+
+func free_omni_light_data(omni_light_data : ORC_DeferredGD_OmniLightData, registry : ORC_ProxyRegistry) -> bool:
+	return destroy_and_unregister_data(omni_light_data, registry)
+
+func free_spot_light_data(spot_light_data : ORC_DeferredGD_SpotLightData, registry : ORC_ProxyRegistry) -> bool:
+	return destroy_and_unregister_data(spot_light_data, registry)
+
+func free_directional_light_data(directional_light_data : ORC_DeferredGD_DirectionalLightData, registry : ORC_ProxyRegistry) -> bool:
+	return destroy_and_unregister_data(directional_light_data, registry)
