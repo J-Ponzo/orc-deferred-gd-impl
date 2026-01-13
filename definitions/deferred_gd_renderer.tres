@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ORC_Renderer_Def" load_steps=32 format=3 uid="uid://dblhgea7ba65u"]
+[gd_resource type="Resource" script_class="ORC_Renderer_Def" load_steps=53 format=3 uid="uid://dblhgea7ba65u"]
 
 [ext_resource type="Script" uid="uid://b0c0mwr6sl3i8" path="res://addons/open-render-craft/scripts/definitions/attachment_format_def.gd" id="1_vtpec"]
 [ext_resource type="Script" uid="uid://do5oa0i2w0x2n" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_proxy_factory.gd" id="2_4qxru"]
@@ -13,7 +13,10 @@
 [ext_resource type="Resource" uid="uid://dhbqjo6gh4tjr" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_geometry_pass.tres" id="7_mw4l4"]
 [ext_resource type="Script" uid="uid://c4837l6d6vmpv" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/model/surface_data.gd" id="8_7kcy5"]
 [ext_resource type="Resource" uid="uid://b2b365v2njtst" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_shading_pass.tres" id="8_dmorg"]
+[ext_resource type="Script" uid="uid://1pdp71bjraf3" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/model/spot_light_data.gd" id="9_cmh2p"]
 [ext_resource type="Resource" uid="uid://declqq8sh4n51" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_shadow_pass.tres" id="9_qq085"]
+[ext_resource type="Script" uid="uid://bgaaxrbbo8kxi" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/model/omni_light_data.gd" id="9_rtrrn"]
+[ext_resource type="Script" uid="uid://d4gisottqrub4" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/model/directional_light_data.gd" id="10_e8vrw"]
 [ext_resource type="Resource" uid="uid://c866i80mmtvql" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_transparent_pass.tres" id="10_fcf0w"]
 [ext_resource type="Resource" uid="uid://bja25tp07qvb2" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_postprocess_pass.tres" id="11_7kcy5"]
 
@@ -105,6 +108,114 @@ queue_name = &"opaque_surfaces"
 init_query = SubResource("Resource_a3fh4")
 metadata/_custom_type_script = "uid://btess53icv55y"
 
+[sub_resource type="Resource" id="Resource_sp7wg"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("9_rtrrn")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
+[sub_resource type="Resource" id="Resource_h6olp"]
+script = ExtResource("5_fcf0w")
+type = SubResource("Resource_sp7wg")
+flag_names = Array[StringName]([&"CAST_SHADOW_SPOT"])
+flag_values = Array[bool]([false])
+metadata/_custom_type_script = "uid://ncajj0vcwae2"
+
+[sub_resource type="Resource" id="Resource_hpioa"]
+script = ExtResource("2_ce3ch")
+queue_name = &"omnis_no_shadow"
+init_query = SubResource("Resource_h6olp")
+metadata/_custom_type_script = "uid://btess53icv55y"
+
+[sub_resource type="Resource" id="Resource_tshxc"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("9_rtrrn")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
+[sub_resource type="Resource" id="Resource_wlda7"]
+script = ExtResource("5_fcf0w")
+type = SubResource("Resource_tshxc")
+flag_names = Array[StringName]([&"CAST_SHADOW_OMNI"])
+flag_values = Array[bool]([true])
+metadata/_custom_type_script = "uid://ncajj0vcwae2"
+
+[sub_resource type="Resource" id="Resource_eyfpo"]
+script = ExtResource("2_ce3ch")
+queue_name = &"omnis_shadow"
+init_query = SubResource("Resource_wlda7")
+metadata/_custom_type_script = "uid://btess53icv55y"
+
+[sub_resource type="Resource" id="Resource_evyn4"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("9_cmh2p")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
+[sub_resource type="Resource" id="Resource_rh3oc"]
+script = ExtResource("5_fcf0w")
+type = SubResource("Resource_evyn4")
+flag_names = Array[StringName]([&"CAST_SHADOW_SPOT"])
+flag_values = Array[bool]([false])
+metadata/_custom_type_script = "uid://ncajj0vcwae2"
+
+[sub_resource type="Resource" id="Resource_8verb"]
+script = ExtResource("2_ce3ch")
+queue_name = &"spots_no_shadow"
+init_query = SubResource("Resource_rh3oc")
+metadata/_custom_type_script = "uid://btess53icv55y"
+
+[sub_resource type="Resource" id="Resource_o21uw"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("9_cmh2p")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
+[sub_resource type="Resource" id="Resource_0rsil"]
+script = ExtResource("5_fcf0w")
+type = SubResource("Resource_o21uw")
+flag_names = Array[StringName]([&"CAST_SHADOW_SPOT"])
+flag_values = Array[bool]([true])
+metadata/_custom_type_script = "uid://ncajj0vcwae2"
+
+[sub_resource type="Resource" id="Resource_offot"]
+script = ExtResource("2_ce3ch")
+queue_name = &"spots_shadow"
+init_query = SubResource("Resource_0rsil")
+metadata/_custom_type_script = "uid://btess53icv55y"
+
+[sub_resource type="Resource" id="Resource_4q0fd"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("10_e8vrw")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
+[sub_resource type="Resource" id="Resource_0cg1o"]
+script = ExtResource("5_fcf0w")
+type = SubResource("Resource_4q0fd")
+flag_names = Array[StringName]([&"CAST_SHADOW_DIRECTIONAL"])
+flag_values = Array[bool]([false])
+metadata/_custom_type_script = "uid://ncajj0vcwae2"
+
+[sub_resource type="Resource" id="Resource_ni5ol"]
+script = ExtResource("2_ce3ch")
+queue_name = &"directionals_no_shadow"
+init_query = SubResource("Resource_0cg1o")
+metadata/_custom_type_script = "uid://btess53icv55y"
+
+[sub_resource type="Resource" id="Resource_7brqu"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("10_e8vrw")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
+[sub_resource type="Resource" id="Resource_bcfwi"]
+script = ExtResource("5_fcf0w")
+type = SubResource("Resource_7brqu")
+flag_names = Array[StringName]([&"CAST_SHADOW_DIRECTIONAL"])
+flag_values = Array[bool]([true])
+metadata/_custom_type_script = "uid://ncajj0vcwae2"
+
+[sub_resource type="Resource" id="Resource_io8al"]
+script = ExtResource("2_ce3ch")
+queue_name = &"directionals_shadow"
+init_query = SubResource("Resource_bcfwi")
+metadata/_custom_type_script = "uid://btess53icv55y"
+
 [sub_resource type="Resource" id="Resource_55m0o"]
 script = ExtResource("3_3vk64")
 gd_script = ExtResource("5_r7018")
@@ -116,5 +227,5 @@ renderer_impl = SubResource("Resource_55m0o")
 proxy_factory_impl = SubResource("Resource_schyl")
 renderer_pass_defs = Array[ExtResource("3_04l8g")]([ExtResource("7_mw4l4"), ExtResource("9_qq085"), ExtResource("8_dmorg"), ExtResource("10_fcf0w"), ExtResource("11_7kcy5")])
 attachment_format_defs = Array[ExtResource("1_vtpec")]([SubResource("Resource_albedo"), SubResource("Resource_normal"), SubResource("Resource_orm"), SubResource("Resource_position"), SubResource("Resource_shaded"), SubResource("Resource_postprocessed"), SubResource("Resource_depth")])
-proxy_queue_defs = Array[ExtResource("2_ce3ch")]([SubResource("Resource_demyq"), SubResource("Resource_2ve1y")])
+proxy_queue_defs = Array[ExtResource("2_ce3ch")]([SubResource("Resource_demyq"), SubResource("Resource_2ve1y"), SubResource("Resource_hpioa"), SubResource("Resource_eyfpo"), SubResource("Resource_8verb"), SubResource("Resource_offot"), SubResource("Resource_ni5ol"), SubResource("Resource_io8al")])
 metadata/_custom_type_script = "uid://bugchofvgrin8"
