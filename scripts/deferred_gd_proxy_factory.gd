@@ -309,6 +309,7 @@ static func try_extract_orm_from_material(material : BaseMaterial3D) -> Texture2
 
 func create_omni_light_data_from(omni_node : OmniLight3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_OmniLightData:
 	var omni_data : ORC_DeferredGD_OmniLightData = create_and_register_primary(ORC_DeferredGD_OmniLightData, registry)
+	omni_data.set_flag("OMNI", true)
 	omni_data.set_flag("CAST_SHADOW_OMNI", omni_node.shadow_enabled)
 	omni_data.color = omni_node.light_color
 	omni_data.intensity = omni_node.light_energy
@@ -343,6 +344,7 @@ func create_omni_light_data_from(omni_node : OmniLight3D, registry : ORC_ProxyRe
 
 func create_spot_light_data_from(spot_node : SpotLight3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_SpotLightData:
 	var spot_data : ORC_DeferredGD_SpotLightData = create_and_register_primary(ORC_DeferredGD_SpotLightData, registry)
+	spot_data.set_flag("SPOT", true)
 	spot_data.set_flag("CAST_SHADOW_SPOT", spot_node.shadow_enabled)
 	spot_data.color = spot_node.light_color
 	spot_data.intensity = spot_node.light_energy
@@ -387,6 +389,7 @@ func create_spot_light_data_from(spot_node : SpotLight3D, registry : ORC_ProxyRe
 
 func create_directional_light_data_from(directional_node : DirectionalLight3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_DirectionalLightData:
 	var directional_data : ORC_DeferredGD_DirectionalLightData = create_and_register_primary(ORC_DeferredGD_DirectionalLightData, registry)
+	directional_data.set_flag("DIRECTIONAL", true)
 	directional_data.set_flag("CAST_SHADOW_DIRECTIONAL", directional_node.shadow_enabled)
 	directional_data.color = directional_node.light_color
 	directional_data.intensity = directional_node.light_energy

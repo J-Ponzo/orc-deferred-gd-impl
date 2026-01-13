@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=9 format=3 uid="uid://b2b365v2njtst"]
+[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=12 format=3 uid="uid://b2b365v2njtst"]
 
 [ext_resource type="Script" uid="uid://cgf0wrkdwkdto" path="res://addons/open-render-craft/scripts/definitions/pso_def.gd" id="1_ajpht"]
 [ext_resource type="Script" uid="uid://c1fvan06uwqox" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_shading_pass.gd" id="2_jt7vp"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://xkekl1qfnapr" path="res://addons/open-render-craft/scripts/definitions/framebuffer_format_def.gd" id="2_s2q3u"]
 [ext_resource type="Script" uid="uid://dc1h8f6w8okcw" path="res://addons/open-render-craft/scripts/definitions/gd_impl_def.gd" id="3_s2q3u"]
 [ext_resource type="Script" uid="uid://byv4yjobnmtgf" path="res://addons/open-render-craft/scripts/definitions/pso_factory_def.gd" id="5_mllt6"]
+[ext_resource type="Script" uid="uid://bqruhr32kavxa" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_shading_pso_factory.gd" id="6_mllt6"]
 
 [sub_resource type="Resource" id="Resource_mllt6"]
 script = ExtResource("2_s2q3u")
@@ -17,9 +18,24 @@ script = ExtResource("3_s2q3u")
 gd_script = ExtResource("2_jt7vp")
 metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
 
+[sub_resource type="Resource" id="Resource_q31dj"]
+script = ExtResource("3_s2q3u")
+gd_script = ExtResource("6_mllt6")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
+[sub_resource type="Resource" id="Resource_sfxxk"]
+script = ExtResource("5_mllt6")
+factory_impl = SubResource("Resource_q31dj")
+uber_vertex_shader_path = "res://orc-renderers-impl/orc-deferred-gd-impl/shaders/uber_deferred_shading.vert.txt"
+uber_fragment_shader_path = "res://orc-renderers-impl/orc-deferred-gd-impl/shaders/uber_deferred_shading.frag.txt"
+metadata/_custom_type_script = "uid://byv4yjobnmtgf"
+
 [resource]
 script = ExtResource("2_opxry")
 pass_name = &"Shading"
 pass_impl = SubResource("Resource_ajpht")
 fb_format_def = SubResource("Resource_mllt6")
+pso_factory_defs = Dictionary[StringName, ExtResource("5_mllt6")]({
+&"Light": SubResource("Resource_sfxxk")
+})
 metadata/_custom_type_script = "uid://bi1q4yltghow7"

@@ -1,0 +1,55 @@
+#version 450
+
+#ifdef DIRECTIONAL
+layout(location = 0) in vec2 a_position;
+#else
+layout(location = 0) in vec3 a_position;
+#endif
+
+// TODO USE INCLUDE FOR THIS
+layout(push_constant) uniform PushConstants {
+#ifdef DIRECTIONAL
+	vec3 light_direction;
+    float light_intensity;
+    vec3 light_color;
+    float _pad;		//16 bytes align
+#endif
+
+#if defined(OMNI) || defined(SPOT) 
+    mat4 model;
+#endif
+
+#ifdef OMNI
+	vec3 light_position;
+    float light_intensity;
+    vec3 light_color;
+    float light_range;
+	vec3 _pad;		//16 bytes align
+	float light_attenuation;
+#endif
+
+#ifdef SPOT
+    vec3 light_position;
+	float light_angle;
+    vec3 light_direction;
+    float light_intensity;
+    vec3 light_color;
+    float light_angle_attenuation;
+	float light_range;
+	float light_attenuation;
+	vec2 _pad;		//16 bytes align
+#endif
+ };
+
+layout(set = 1, binding = 0) uniform Matrices {
+    mat4 view;
+    mat4 projection;
+} camera;
+
+void main() {
+#ifdef DIRECTIONAL
+	gl_Position = vec4(a_position, 0.0, 1.0);
+#else
+	gl_Position =  camera.projection * camera.view * model * vec4(a_position, 1.0);
+#endif
+}

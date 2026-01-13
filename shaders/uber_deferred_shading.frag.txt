@@ -1,0 +1,108 @@
+#version 450
+
+layout(location = 0) out vec4 frag_color;
+
+layout(set = 0, binding = 0) uniform Globals {
+	vec4 cam_world_position;
+    vec2 screen_size;
+    vec2 _pad; // 16 bytes align
+} globals;
+
+// TODO USE INCLUDE FOR THIS
+layout(push_constant) uniform PushConstants {
+#ifdef DIRECTIONAL
+	vec3 light_direction;
+    float light_intensity;
+    vec3 light_color;
+    float _pad;		//16 bytes align
+#endif
+
+#if defined(OMNI) || defined(SPOT)
+    mat4 model;
+#endif
+
+#ifdef OMNI
+	vec3 light_position;
+    float light_intensity;
+    vec3 light_color;
+    float light_range;
+	vec3 _pad;		//16 bytes align
+	float light_attenuation;
+#endif
+
+#ifdef SPOT
+    vec3 light_position;
+	float light_angle;
+    vec3 light_direction;
+    float light_intensity;
+    vec3 light_color;
+    float light_angle_attenuation;
+	float light_range;
+	float light_attenuation;
+	vec2 _pad;		//16 bytes align
+#endif
+ };
+
+layout(set = 0, binding = 1) uniform sampler2D albedo_tex;
+layout(set = 0, binding = 2) uniform sampler2D normal_tex;
+layout(set = 0, binding = 3) uniform sampler2D position_tex;
+layout(set = 0, binding = 4) uniform sampler2D orm_tex;
+
+#include "res://orc-renderers-impl/orc-deferred-gd-impl/shaders/light.glslinc.txt"
+
+void main() {
+	vec2 uv = (gl_FragCoord.xy) / globals.screen_size;
+	vec3 albedo = texture(albedo_tex, uv).rgb;
+    vec3 normal = texture(normal_tex, uv).xyz;
+    vec3 world_position = texture(position_tex, uv).xyz;
+	vec3 orm = texture(orm_tex, uv).xyz;
+
+	vec3 cam_vec = normalize(globals.cam_world_position.xyz - world_position);
+
+	vec3 f0 = F0(orm.z, 0.5, albedo);
+	f0 = mix(vec3(0.04), albedo, orm.z);
+	float specular_amount = 0.5;
+	vec3 energy_compensation = vec3(1.0);
+
+	vec3 light_col = light_color.rgb * light_intensity;//srgb_to_rgb(light_color.rgb) * light_intensity;
+#if defined(OMNI) || defined(SPOT)
+	light_col *= PI;
+#endif
+
+	vec3 light_dir;
+#ifdef DIRECTIONAL
+	light_dir = -light_direction;
+#else
+	vec3 to_light = light_position - world_position;
+	float distance = length(to_light);
+	light_dir = normalize(to_light);
+#endif
+
+	float attenuation_factor = 1.0;
+#if defined(OMNI) || defined(SPOT)
+	float nd = distance / light_range;
+	nd *= nd;
+	nd *= nd; // nd^4
+	nd = max(1.0 - nd, 0.0);
+	nd *= nd; // nd^2
+	attenuation_factor = nd * pow(max(distance, 0.0001), -light_attenuation);
+#endif
+#ifdef SPOT
+	float cos_cone_angle = cos(light_angle);
+	float scos = max(dot(-light_dir, light_direction), cos_cone_angle);
+	float spot_rim = max(0.0001, (1.0 - scos) / (1.0 - cos_cone_angle));
+	attenuation_factor *= 1.0 - pow(spot_rim, 1.0 / light_angle_attenuation);
+#endif
+
+vec3 diffuse_light = vec3(0.0);
+	vec3 specular_light = vec3(0.0);
+	light_compute(normal, light_dir, cam_vec, 0.0, light_col, attenuation_factor, f0, orm.y, orm.z, specular_amount, energy_compensation, diffuse_light, specular_light);	
+	
+	float ao = 1.0;//orm.x;
+	float metallic = 0.0;//orm.z;
+
+	diffuse_light *= albedo;
+	vec3 shaded_color = (diffuse_light + specular_light) * ao * (1.0 - metallic);
+
+	frag_color = vec4(shaded_color, 1.0);
+}

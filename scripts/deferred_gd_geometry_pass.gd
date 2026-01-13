@@ -1,25 +1,25 @@
-extends ORC_RenderPassBase
+extends ORC_DeferredGDRendererPass
 class_name ORC_DeferredGDGeometryPass
 
 func setup_override() -> void:
-	super_setup()
+	super()
 	print("ORC_DeferredGDGeometryPass.setup()")
 
 func render_override() -> void:
-	if renderer.current_cam_data == null:
+	if deferred_gd_renderer.current_cam_data == null:
 		return
 
 	var matrices_uniform : RDUniform = RDUniform.new()
 	matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	matrices_uniform.binding = 0
-	matrices_uniform.add_id(renderer.current_cam_data.matrices_uniform_buffer)
+	matrices_uniform.add_id(deferred_gd_renderer.current_cam_data.matrices_uniform_buffer)
 
 	var is_first_surface : bool = true
 	var previous_pso : ORC_PSO = null
 	var draw_list : int = -1
 	var matrices_uniform_set : RID = RID()
 
-	for surface_data : ORC_DeferredGD_SurfaceData in renderer.opaque_surfaces_data:
+	for surface_data : ORC_DeferredGD_SurfaceData in deferred_gd_renderer.opaque_surfaces_data:
 		var pso : ORC_PSO = (pso_factories["Material"] as ORC_PSOFactory).get_or_create_pso(surface_data.get_flags_mask(), surface_data.vertex_format)
 		if pso != previous_pso:
 			previous_pso = pso
