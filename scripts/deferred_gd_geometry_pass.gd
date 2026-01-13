@@ -43,13 +43,13 @@ func render_override() -> void:
 		color_uniform.add_id(surface_data.material_data.albedo_buffer)
 		material_uniforms.append(color_uniform)
 		if surface_data.has_flag("ALBEDO_MAP"):
-			var albedo_uniform : RDUniform = create_texture_sampler_uniform(surface_data.material_data.albedo_tex, surface_data.material_data.albedo_sampler, 1)
+			var albedo_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(surface_data.material_data.albedo_tex, surface_data.material_data.albedo_sampler, 1)
 			material_uniforms.append(albedo_uniform)
 		if surface_data.has_flag("NORMAL_MAP"):
-			var normal_uniform : RDUniform = create_texture_sampler_uniform(surface_data.material_data.normal_tex, surface_data.material_data.normal_sampler, 2)
+			var normal_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(surface_data.material_data.normal_tex, surface_data.material_data.normal_sampler, 2)
 			material_uniforms.append(normal_uniform)
 		if surface_data.has_flag("ORM_MAP"):
-			var orm_uniform : RDUniform = create_texture_sampler_uniform(surface_data.material_data.orm_tex, surface_data.material_data.orm_sampler, 3)
+			var orm_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(surface_data.material_data.orm_tex, surface_data.material_data.orm_sampler, 3)
 			material_uniforms.append(orm_uniform)
 		var material_uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create(material_uniforms, pso.shader_program, 1)
 		ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, material_uniform_set, 1)	
@@ -87,16 +87,6 @@ func render_override() -> void:
 	if is_first_surface == false:
 		ORC_RDHelper.get_rd().draw_list_end()
 		ORC_RDHelper.get_rd().free_rid(matrices_uniform_set)
-
-# TODO move to RDHelper
-func create_texture_sampler_uniform(texture_rid : RID, sampler_rid : RID, binding : int) -> RDUniform:
-	var uniform := RDUniform.new()
-	uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_SAMPLER_WITH_TEXTURE
-	uniform.binding = binding
-	uniform.add_id(sampler_rid)
-	uniform.add_id(texture_rid)
-
-	return uniform
 
 func cleanup_override() -> void:
 	super_cleanup()
