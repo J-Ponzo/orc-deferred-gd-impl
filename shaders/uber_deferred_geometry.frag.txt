@@ -30,13 +30,9 @@ layout(set = 1, binding = 3) uniform sampler2D orm_tex;
 #endif
 
 void main() {
-	vec4 linear_albedo = albedo;
-	linear_albedo.rgb = /*srgb_to_rgb(*/linear_albedo.rgb/*)*/;
-	vec4 surf_color = linear_albedo;
+	vec4 surf_color = albedo;
 #ifdef ALBEDO_MAP
-	vec4 linear_sampled_albedo = texture(albedo_tex, v_uv);
-	linear_sampled_albedo.rgb = /*srgb_to_rgb(*/linear_sampled_albedo.rgb/*)*/;
-	surf_color *= linear_sampled_albedo;
+	surf_color *= texture(albedo_tex, v_uv);
 #endif
 
 #ifdef LIT

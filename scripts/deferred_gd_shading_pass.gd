@@ -110,7 +110,7 @@ func render_override() -> void:
 		ORC_RDHelper.get_rd().draw_list_end()
 
 func cleanup_override() -> void:
-	super_cleanup()
+	super()
 
 	ORC_RDHelper.get_rd().free_rid(albedo_map_sampler)
 	ORC_RDHelper.get_rd().free_rid(normal_map_sampler)

@@ -54,7 +54,7 @@ func update_override() -> void:
 	if node.light_color != color_last_frame:
 		primary_data.color = node.light_color
 		color_last_frame = node.light_color
-		var linear_color : Color = primary_data.color
+		var linear_color : Color = primary_data.color.srgb_to_linear()
 		primary_data.light_params_buffer_floats[8] = linear_color.r
 		primary_data.light_params_buffer_floats[9] = linear_color.g
 		primary_data.light_params_buffer_floats[10] = linear_color.b

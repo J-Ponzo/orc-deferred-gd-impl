@@ -2,6 +2,10 @@ extends ORC_ProxyFactory
 class_name ORC_DeferredGDProxyFactory
 
 func create_proxy_from_override(node : Node) -> ORC_ProxyObject:
+	# TODO : Remove this
+	if node is Light3D && (node.visible == false or node.shadow_enabled):
+		return null
+
 	var proxy_object : ORC_ProxyObject = null
 	if node is Camera3D:
 		proxy_object = ORC_DeferredGD_CameraProxy.new()
@@ -242,7 +246,7 @@ func create_material_data_from(material : BaseMaterial3D, mesh_data : ORC_Deferr
 	material_data.albedo_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 	if material.albedo_texture != null:
-		material_data.albedo_tex = RenderingServer.texture_get_rd_texture(material.albedo_texture)
+		material_data.albedo_tex = RenderingServer.texture_get_rd_texture(material.albedo_texture, true)
 		material_data.albedo_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
 		material_data.set_flag("ALBEDO_MAP", true)
 	if material.normal_texture != null:
@@ -328,7 +332,7 @@ func create_omni_light_data_from(omni_node : OmniLight3D, registry : ORC_ProxyRe
 	omni_data.light_params_buffer_floats.append(omni_data.location.y)
 	omni_data.light_params_buffer_floats.append(omni_data.location.z)
 	omni_data.light_params_buffer_floats.append(omni_data.intensity)
-	var linear_color : Color = omni_data.color
+	var linear_color : Color = omni_data.color.srgb_to_linear()
 	omni_data.light_params_buffer_floats.append(linear_color.r)
 	omni_data.light_params_buffer_floats.append(linear_color.g)
 	omni_data.light_params_buffer_floats.append(linear_color.b)
@@ -373,7 +377,7 @@ func create_spot_light_data_from(spot_node : SpotLight3D, registry : ORC_ProxyRe
 	spot_data.light_params_buffer_floats.append(spot_data.direction.y)
 	spot_data.light_params_buffer_floats.append(spot_data.direction.z)
 	spot_data.light_params_buffer_floats.append(spot_data.intensity)
-	var linear_color : Color = spot_data.color
+	var linear_color : Color = spot_data.color.srgb_to_linear()
 	spot_data.light_params_buffer_floats.append(linear_color.r)
 	spot_data.light_params_buffer_floats.append(linear_color.g)
 	spot_data.light_params_buffer_floats.append(linear_color.b)
@@ -400,7 +404,7 @@ func create_directional_light_data_from(directional_node : DirectionalLight3D, r
 	directional_data.light_params_buffer_floats.append(directional_data.direction.y)
 	directional_data.light_params_buffer_floats.append(directional_data.direction.z)
 	directional_data.light_params_buffer_floats.append(directional_data.intensity)
-	var linear_color : Color = directional_data.color
+	var linear_color : Color = directional_data.color.srgb_to_linear()
 	directional_data.light_params_buffer_floats.append(linear_color.r)
 	directional_data.light_params_buffer_floats.append(linear_color.g)
 	directional_data.light_params_buffer_floats.append(linear_color.b)

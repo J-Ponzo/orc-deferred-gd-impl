@@ -47,9 +47,10 @@ func pre_render_override() -> void:
 func render_override() -> void:
 	get_render_pass("Geometry").render()
 	get_render_pass("Shading").render()
+	get_render_pass("PostProcess").render()
 
 func get_render_target_override() -> RID:
-	return get_attachment("Shaded")
+	return get_attachment("PostProcessed")
 
 func cleanup_override() -> void:
 	pass

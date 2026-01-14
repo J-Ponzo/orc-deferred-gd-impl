@@ -1,11 +1,45 @@
-[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=9 format=3 uid="uid://bja25tp07qvb2"]
+[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=20 format=3 uid="uid://bja25tp07qvb2"]
 
 [ext_resource type="Script" uid="uid://cgf0wrkdwkdto" path="res://addons/open-render-craft/scripts/definitions/pso_def.gd" id="1_nrebm"]
 [ext_resource type="Script" uid="uid://bi1q4yltghow7" path="res://addons/open-render-craft/scripts/definitions/render_pass_def.gd" id="2_6u44x"]
 [ext_resource type="Script" uid="uid://c642afav0kiuc" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_postprocess_pass.gd" id="2_hbs1w"]
+[ext_resource type="Script" uid="uid://bxkqcwrgvvuqd" path="res://addons/open-render-craft/scripts/definitions/pso_color_blend_attachment_def.gd" id="2_ud366"]
 [ext_resource type="Script" uid="uid://xkekl1qfnapr" path="res://addons/open-render-craft/scripts/definitions/framebuffer_format_def.gd" id="2_xtnmq"]
+[ext_resource type="Script" uid="uid://c4csq7vbovjon" path="res://addons/open-render-craft/scripts/definitions/pso_depth_stencil_def.gd" id="3_06m7i"]
 [ext_resource type="Script" uid="uid://dc1h8f6w8okcw" path="res://addons/open-render-craft/scripts/definitions/gd_impl_def.gd" id="3_nrebm"]
+[ext_resource type="Script" uid="uid://brmq4g6t63kkj" path="res://addons/open-render-craft/scripts/definitions/pso_multisample_def.gd" id="4_djee0"]
 [ext_resource type="Script" uid="uid://byv4yjobnmtgf" path="res://addons/open-render-craft/scripts/definitions/pso_factory_def.gd" id="4_xtnmq"]
+[ext_resource type="Script" uid="uid://c3ghgnrwli3is" path="res://addons/open-render-craft/scripts/definitions/pso_rasterization_def.gd" id="5_63mns"]
+[ext_resource type="Script" uid="uid://dlbhrl3tgxkem" path="res://addons/open-render-craft/scripts/definitions/vertex_format_def.gd" id="6_06m7i"]
+
+[sub_resource type="Resource" id="Resource_ud366"]
+script = ExtResource("2_ud366")
+metadata/_custom_type_script = "uid://bxkqcwrgvvuqd"
+
+[sub_resource type="Resource" id="Resource_kbp1e"]
+script = ExtResource("3_06m7i")
+
+[sub_resource type="Resource" id="Resource_obard"]
+script = ExtResource("4_djee0")
+
+[sub_resource type="Resource" id="Resource_qmor3"]
+script = ExtResource("5_63mns")
+
+[sub_resource type="Resource" id="Resource_djee0"]
+script = ExtResource("6_06m7i")
+is_2d = true
+metadata/_custom_type_script = "uid://dlbhrl3tgxkem"
+
+[sub_resource type="Resource" id="Resource_0kssf"]
+script = ExtResource("1_nrebm")
+vertex_shader_path = "res://orc-renderers-impl/orc-deferred-gd-impl/shaders/post_process.vert.txt"
+fragment_shader_path = "res://orc-renderers-impl/orc-deferred-gd-impl/shaders/post_process.frag.txt"
+vertex_format_def = SubResource("Resource_djee0")
+rasterization_state = SubResource("Resource_qmor3")
+multisample_state = SubResource("Resource_obard")
+depth_stencil_state = SubResource("Resource_kbp1e")
+blend_attachments = Array[ExtResource("2_ud366")]([SubResource("Resource_ud366")])
+metadata/_custom_type_script = "uid://cgf0wrkdwkdto"
 
 [sub_resource type="Resource" id="Resource_acvlg"]
 script = ExtResource("2_xtnmq")
@@ -23,4 +57,7 @@ script = ExtResource("2_6u44x")
 pass_name = &"PostProcess"
 pass_impl = SubResource("Resource_xtnmq")
 fb_format_def = SubResource("Resource_acvlg")
+direct_pso_defs = Dictionary[StringName, ExtResource("1_nrebm")]({
+&"post_process": SubResource("Resource_0kssf")
+})
 metadata/_custom_type_script = "uid://bi1q4yltghow7"
