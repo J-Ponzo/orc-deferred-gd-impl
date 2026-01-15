@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ORC_Renderer_Def" load_steps=53 format=3 uid="uid://dblhgea7ba65u"]
+[gd_resource type="Resource" script_class="ORC_Renderer_Def" load_steps=61 format=3 uid="uid://dblhgea7ba65u"]
 
 [ext_resource type="Script" uid="uid://b0c0mwr6sl3i8" path="res://addons/open-render-craft/scripts/definitions/attachment_format_def.gd" id="1_vtpec"]
 [ext_resource type="Script" uid="uid://do5oa0i2w0x2n" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_proxy_factory.gd" id="2_4qxru"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://t3cacy5x1gwe" path="res://addons/open-render-craft/scripts/definitions/impl_def.gd" id="7_cmh2p"]
 [ext_resource type="Resource" uid="uid://dhbqjo6gh4tjr" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_geometry_pass.tres" id="7_mw4l4"]
 [ext_resource type="Script" uid="uid://c4837l6d6vmpv" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/model/surface_data.gd" id="8_7kcy5"]
+[ext_resource type="Script" uid="uid://cqqydem71j26m" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_visible_filter_processor.gd" id="8_demyq"]
 [ext_resource type="Resource" uid="uid://b2b365v2njtst" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_shading_pass.tres" id="8_dmorg"]
 [ext_resource type="Script" uid="uid://1pdp71bjraf3" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/model/spot_light_data.gd" id="9_cmh2p"]
 [ext_resource type="Resource" uid="uid://declqq8sh4n51" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_shadow_pass.tres" id="9_qq085"]
@@ -84,10 +85,16 @@ script = ExtResource("5_fcf0w")
 type = SubResource("Resource_e8vrw")
 metadata/_custom_type_script = "uid://ncajj0vcwae2"
 
+[sub_resource type="Resource" id="Resource_e7vj6"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("8_demyq")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
 [sub_resource type="Resource" id="Resource_demyq"]
 script = ExtResource("2_ce3ch")
 queue_name = &"cameras"
 init_query = SubResource("Resource_rtrrn")
+processors = Array[ExtResource("7_cmh2p")]([SubResource("Resource_e7vj6")])
 metadata/_custom_type_script = "uid://btess53icv55y"
 
 [sub_resource type="Resource" id="Resource_cmh2p"]
@@ -120,10 +127,16 @@ flag_names = Array[StringName]([&"CAST_SHADOW_SPOT"])
 flag_values = Array[bool]([false])
 metadata/_custom_type_script = "uid://ncajj0vcwae2"
 
+[sub_resource type="Resource" id="Resource_gbk5u"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("8_demyq")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
 [sub_resource type="Resource" id="Resource_hpioa"]
 script = ExtResource("2_ce3ch")
 queue_name = &"omnis_no_shadow"
 init_query = SubResource("Resource_h6olp")
+processors = Array[ExtResource("7_cmh2p")]([SubResource("Resource_gbk5u")])
 metadata/_custom_type_script = "uid://btess53icv55y"
 
 [sub_resource type="Resource" id="Resource_tshxc"]
@@ -138,10 +151,16 @@ flag_names = Array[StringName]([&"CAST_SHADOW_OMNI"])
 flag_values = Array[bool]([true])
 metadata/_custom_type_script = "uid://ncajj0vcwae2"
 
+[sub_resource type="Resource" id="Resource_s2k1g"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("8_demyq")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
 [sub_resource type="Resource" id="Resource_eyfpo"]
 script = ExtResource("2_ce3ch")
 queue_name = &"omnis_shadow"
 init_query = SubResource("Resource_wlda7")
+processors = Array[ExtResource("7_cmh2p")]([SubResource("Resource_s2k1g")])
 metadata/_custom_type_script = "uid://btess53icv55y"
 
 [sub_resource type="Resource" id="Resource_evyn4"]
@@ -156,10 +175,16 @@ flag_names = Array[StringName]([&"CAST_SHADOW_SPOT"])
 flag_values = Array[bool]([false])
 metadata/_custom_type_script = "uid://ncajj0vcwae2"
 
+[sub_resource type="Resource" id="Resource_kg17c"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("8_demyq")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
 [sub_resource type="Resource" id="Resource_8verb"]
 script = ExtResource("2_ce3ch")
 queue_name = &"spots_no_shadow"
 init_query = SubResource("Resource_rh3oc")
+processors = Array[ExtResource("7_cmh2p")]([SubResource("Resource_kg17c")])
 metadata/_custom_type_script = "uid://btess53icv55y"
 
 [sub_resource type="Resource" id="Resource_o21uw"]
@@ -174,10 +199,16 @@ flag_names = Array[StringName]([&"CAST_SHADOW_SPOT"])
 flag_values = Array[bool]([true])
 metadata/_custom_type_script = "uid://ncajj0vcwae2"
 
+[sub_resource type="Resource" id="Resource_m3x7a"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("8_demyq")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
 [sub_resource type="Resource" id="Resource_offot"]
 script = ExtResource("2_ce3ch")
 queue_name = &"spots_shadow"
 init_query = SubResource("Resource_0rsil")
+processors = Array[ExtResource("7_cmh2p")]([SubResource("Resource_m3x7a")])
 metadata/_custom_type_script = "uid://btess53icv55y"
 
 [sub_resource type="Resource" id="Resource_4q0fd"]
@@ -192,10 +223,16 @@ flag_names = Array[StringName]([&"CAST_SHADOW_DIRECTIONAL"])
 flag_values = Array[bool]([false])
 metadata/_custom_type_script = "uid://ncajj0vcwae2"
 
+[sub_resource type="Resource" id="Resource_xt17d"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("8_demyq")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
 [sub_resource type="Resource" id="Resource_ni5ol"]
 script = ExtResource("2_ce3ch")
 queue_name = &"directionals_no_shadow"
 init_query = SubResource("Resource_0cg1o")
+processors = Array[ExtResource("7_cmh2p")]([SubResource("Resource_xt17d")])
 metadata/_custom_type_script = "uid://btess53icv55y"
 
 [sub_resource type="Resource" id="Resource_7brqu"]
@@ -210,10 +247,16 @@ flag_names = Array[StringName]([&"CAST_SHADOW_DIRECTIONAL"])
 flag_values = Array[bool]([true])
 metadata/_custom_type_script = "uid://ncajj0vcwae2"
 
+[sub_resource type="Resource" id="Resource_m5vqx"]
+script = ExtResource("3_3vk64")
+gd_script = ExtResource("8_demyq")
+metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
+
 [sub_resource type="Resource" id="Resource_io8al"]
 script = ExtResource("2_ce3ch")
 queue_name = &"directionals_shadow"
 init_query = SubResource("Resource_bcfwi")
+processors = Array[ExtResource("7_cmh2p")]([SubResource("Resource_m5vqx")])
 metadata/_custom_type_script = "uid://btess53icv55y"
 
 [sub_resource type="Resource" id="Resource_55m0o"]

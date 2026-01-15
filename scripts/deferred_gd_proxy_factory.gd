@@ -2,10 +2,6 @@ extends ORC_ProxyFactory
 class_name ORC_DeferredGDProxyFactory
 
 func create_proxy_from_override(node : Node) -> ORC_ProxyObject:
-	# TODO : Remove this
-	if node is Light3D && (node.visible == false or node.shadow_enabled):
-		return null
-
 	var proxy_object : ORC_ProxyObject = null
 	if node is Camera3D:
 		proxy_object = ORC_DeferredGD_CameraProxy.new()
