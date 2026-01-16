@@ -1,13 +1,34 @@
 extends ORC_RendererBase
 class_name ORC_DeferredGDRenderer
 
+const MAIN_OR_XPlus_SHADOW_ATTACH = "Main_Or_+X_Shadow_Attach"
+const XMinus_SHADOW_ATTACH = "-X_Shadow_Attach"
+const YPlus_SHADOW_ATTACH = "+Y_Shadow_Attach"
+const YMinus_SHADOW_ATTACH = "-Y_Shadow_Attach"
+const ZPlus_SHADOW_ATTACH = "+Z_Shadow_Attach"
+const ZMinus_SHADOW_ATTACH = "-Z_Shadow_Attach"
+
+# TODO : make a c++ Info variant for this so we can access it from both gdscript and c++
+var shadow_attach_def : ORC_AttachmentFormat_Def
+
 var current_cam_data : ORC_DeferredGD_CameraData
 var opaque_surfaces_data : Array[ORC_DeferredGD_SurfaceData]
 var no_shadow_light_data : Array[ORC_DeferredGD_LightData]
 var shadow_light_data : Array[ORC_DeferredGD_LightData]
 
 func setup_override() -> void:
-	pass
+	shadow_attach_def = ORC_AttachmentFormat_Def.new()
+	shadow_attach_def.format = RenderingDevice.DATA_FORMAT_D32_SFLOAT
+	shadow_attach_def.usage_flags = [RenderingDevice.TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT]
+	shadow_attach_def.width = 4096
+	shadow_attach_def.height = 4096
+
+	create_attachment(MAIN_OR_XPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+	create_attachment(XMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+	create_attachment(YPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+	create_attachment(YMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+	create_attachment(ZPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+	create_attachment(ZMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
 
 func pre_render_override() -> void:
 	super_pre_render()
@@ -47,6 +68,9 @@ func pre_render_override() -> void:
 func render_override() -> void:
 	get_render_pass("Geometry").render()
 	get_render_pass("Shading").render()
+	for light_data : ORC_DeferredGD_LightData in shadow_light_data:
+		get_render_pass("Shadow").single_render_call(light_data)
+		get_render_pass("Shading").single_render_call(light_data)
 	get_render_pass("PostProcess").render()
 
 func get_render_target_override() -> RID:

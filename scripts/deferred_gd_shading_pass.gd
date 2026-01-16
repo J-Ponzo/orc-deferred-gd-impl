@@ -109,6 +109,24 @@ func render_override() -> void:
 	if is_first_light == false:
 		ORC_RDHelper.get_rd().draw_list_end()
 
+# TODO : refacto this for better framework integration and reuseage
+func single_render_call(light_data : ORC_DeferredGD_LightData) -> void:
+	if light_data.has_flag("DIRECTIONAL"):
+		directional_draw_pass(light_data as ORC_DeferredGD_DirectionalLightData)
+	elif light_data.has_flag("OMNI"):
+		omni_draw_pass(light_data as ORC_DeferredGD_OmniLightData)
+	elif light_data.has_flag("SPOT"):
+		spot_draw_pass(light_data as ORC_DeferredGD_SpotLightData)
+
+func directional_draw_pass(light_data : ORC_DeferredGD_DirectionalLightData) -> void:
+	print("SHADING " + light_data.proxy_object.node.name)
+
+func omni_draw_pass(light_data : ORC_DeferredGD_OmniLightData) -> void:
+	print("SHADING " + light_data.proxy_object.node.name)
+
+func spot_draw_pass(light_data : ORC_DeferredGD_SpotLightData) -> void:
+	print("SHADING " + light_data.proxy_object.node.name)
+
 func cleanup_override() -> void:
 	super()
 
