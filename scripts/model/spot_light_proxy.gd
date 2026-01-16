@@ -1,4 +1,4 @@
-extends ORC_ProxyObject
+extends ORC_DeferredGD_LightProxy
 class_name ORC_DeferredGD_SpotLightProxy
 
 var color_last_frame : Color
@@ -11,6 +11,8 @@ var angle_last_frame : float
 var angle_attenuation_last_frame : float
 
 func update_override() -> void:
+	super()
+	
 	var has_changed = false 
 	if node.global_position != location_last_frame:
 		primary_data.location = node.global_position
@@ -40,6 +42,7 @@ func update_override() -> void:
 		primary_data.light_params_buffer_floats[3] = primary_data.angle
 		has_changed = true
 
+	var has_moved = false 
 	if has_changed:
 		var radius = primary_data.range * tan(primary_data.angle)
 		var basis : Basis = Basis.IDENTITY
@@ -50,6 +53,7 @@ func update_override() -> void:
 		global_transform.basis = basis
 		global_transform.origin = primary_data.location
 		primary_data.model_matrix_bytes = ORC_RDHelper.proj_to_bytes(Projection(global_transform))
+		has_moved = true 
 
 	if node.light_color != color_last_frame:
 		primary_data.color = node.light_color
@@ -81,3 +85,17 @@ func update_override() -> void:
 	# TODO handle light_buffer_bytes values directly to improve performance
 	if has_changed:
 		primary_data.light_buffer_bytes = primary_data.light_params_buffer_floats.to_byte_array()
+
+	if has_shadow_changed || has_moved:
+		var view : Projection = Projection(node.global_transform.affine_inverse())
+
+		var proj : Projection = Projection()
+		var fov: float = 2.0 * rad_to_deg(primary_data.angle)
+		var aspect: float = 1.0
+		var near: float = 0.01
+		var far: float = primary_data.range
+		proj = Projection.create_perspective(fov, aspect, near, far)
+
+		var bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(view)
+		bytes.append_array(ORC_RDHelper.proj_to_bytes(proj))
+		primary_data.shadow_matrices_uniform_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
