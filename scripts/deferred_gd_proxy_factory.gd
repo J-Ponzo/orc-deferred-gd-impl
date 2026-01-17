@@ -124,8 +124,16 @@ func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, 
 	surface_data.register_flag_sources([mesh_data,surface_data.topology_data, surface_data.material_data])
 
 	var vf : int = ORC_RDHelper.create_vertex_format(vf_info)
+	surface_data.vertex_format = vf
+
 	var buffers : Array[RID]
 	buffers.append(surface_data.topology_data.position_buffer)
+
+	# TODO : find special shadow mesh if set
+	var shadow_vf_info : ORC_VertexFormatInfo = ORC_VertexFormatInfo.new()
+	var shadow_buffers : Array[RID]
+	shadow_buffers.append(surface_data.topology_data.position_buffer)
+
 	if vf_info.has_normal:
 		buffers.append(surface_data.topology_data.normal_buffer)
 	if vf_info.has_tangent:
@@ -138,10 +146,16 @@ func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, 
 		buffers.append(surface_data.topology_data.uv2_buffer)
 	if vf_info.has_bones:
 		buffers.append(surface_data.topology_data.bones_buffer)
+		shadow_buffers.append(surface_data.topology_data.bones_buffer)
+		shadow_vf_info.has_bones = true
 	if vf_info.has_weights:
 		buffers.append(surface_data.topology_data.weights_buffer)
+		shadow_buffers.append(surface_data.topology_data.weights_buffer)
+		shadow_vf_info.has_weights = true
+
+	var shadow_vf : int = ORC_RDHelper.create_vertex_format(shadow_vf_info)
+	surface_data.shadow_vertex_array = ORC_RDHelper.get_rd().vertex_array_create(surface_data.topology_data.vertex_count, shadow_vf, shadow_buffers)
 	surface_data.vertex_array = ORC_RDHelper.get_rd().vertex_array_create(surface_data.topology_data.vertex_count, vf, buffers)
-	surface_data.vertex_format = vf
 
 	return surface_data
 
@@ -462,9 +476,6 @@ func free_material_data(mat_data : ORC_DeferredGD_MaterialData, registry : ORC_P
 	return destroy_and_unregister_data(mat_data, registry, mat_data.unique_id)
 
 func free_mesh_data(mesh_data : ORC_DeferredGD_MeshData, registry : ORC_ProxyRegistry) -> bool:
-	if mesh_data.invert_bind_pose_array_buffer != RID():
-		ORC_RDHelper.get_rd().free_rid(mesh_data.invert_bind_pose_array_buffer)
-		mesh_data.invert_bind_pose_array_buffer = RID()
 	if mesh_data.instance_storage_buffer != RID():
 		ORC_RDHelper.get_rd().free_rid(mesh_data.instance_storage_buffer)
 		mesh_data.instance_storage_buffer = RID()

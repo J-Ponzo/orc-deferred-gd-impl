@@ -6,6 +6,7 @@ var intensity_last_frame : float
 var direction_last_frame : Vector3
 var shadow_max_distance_last_frame : float
 
+# TODO : try to factorise this and initialisation in proxy factory
 func update_override() -> void:
 	super()
 
@@ -44,18 +45,22 @@ func update_override() -> void:
 	if has_changed:
 		primary_data.light_buffer_bytes = primary_data.light_params_buffer_floats.to_byte_array()
 
-	# var current_cam : CameraData = scene_proxy.current_cam
-	# if has_shadow_changed || has_moved || current_cam.proxy_object.changed_last_frame:
-	# 	# var corners : Array = TL_UberDeferredRenderer.get_camera_frustum_corners(cam)
-	# 	var corners : Array = get_max_dist_based_corners(current_cam.proxy_object.node, primary_data.shadow_max_distance)
+	var deferred_gd_renderer : ORC_DeferredGDRenderer = ORC_RendererBase.get_instance() as ORC_DeferredGDRenderer
+	var current_cam : ORC_DeferredGD_CameraData = deferred_gd_renderer.current_cam_data
 
-	# 	var light_view_transform : Transform3D = construct_directional_view_transform(corners, primary_data.direction)
-	# 	var light_view : Projection = Projection(light_view_transform)
-	# 	var light_proj : Projection = construct_directional_proj(corners, light_view_transform)
+	if has_shadow_changed || has_moved || current_cam.proxy_object.changed_last_frame:
+		var light_proj : Projection
+		var light_view : Projection
 
-	# 	var bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(Projection(light_view))
-	# 	bytes.append_array(ORC_RDHelper.proj_to_bytes(light_proj))
-	# 	primary_data.shadow_matrices_uniform_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		if current_cam != null:
+			var corners : Array = get_max_dist_based_corners(current_cam.proxy_object.node, primary_data.shadow_max_distance)
+			var light_view_transform : Transform3D = construct_directional_view_transform(corners, primary_data.direction)
+			light_view = Projection(light_view_transform)
+			light_proj = construct_directional_proj(corners, light_view_transform)
+
+		var bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(Projection(light_view))
+		bytes.append_array(ORC_RDHelper.proj_to_bytes(light_proj))
+		primary_data.shadow_matrices_uniform_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 static func get_camera_frustum_corners(cam: Camera3D) -> Array[Vector3]:
 	var near = cam.near

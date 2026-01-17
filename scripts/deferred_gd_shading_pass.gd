@@ -119,13 +119,13 @@ func single_render_call(light_data : ORC_DeferredGD_LightData) -> void:
 		spot_draw_pass(light_data as ORC_DeferredGD_SpotLightData)
 
 func directional_draw_pass(light_data : ORC_DeferredGD_DirectionalLightData) -> void:
-	print("SHADING " + light_data.proxy_object.node.name)
+	pass
 
 func omni_draw_pass(light_data : ORC_DeferredGD_OmniLightData) -> void:
-	print("SHADING " + light_data.proxy_object.node.name)
+	pass
 
 func spot_draw_pass(light_data : ORC_DeferredGD_SpotLightData) -> void:
-	print("SHADING " + light_data.proxy_object.node.name)
+	pass
 
 func cleanup_override() -> void:
 	super()

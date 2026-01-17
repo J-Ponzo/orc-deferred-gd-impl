@@ -3,8 +3,22 @@ class_name ORC_DeferredGDShadowPass
 
 var shadow_framebuffers : Dictionary[StringName, RID]
 
+var vf_static : int
+var vf_skeletal : int
+var static_flag_mask : int
+var skeletal_flag_mask : int
+
 func setup_override() -> void:
 	super()
+
+	var vf_info : ORC_VertexFormatInfo = ORC_VertexFormatInfo.new()
+	vf_static = ORC_RDHelper.create_vertex_format(vf_info)
+	vf_info.has_bones = true
+	vf_info.has_weights = true
+	vf_skeletal = ORC_RDHelper.create_vertex_format(vf_info)
+
+	static_flag_mask = deferred_gd_renderer.scene_proxy.get_mask_from_flags([])
+	skeletal_flag_mask = deferred_gd_renderer.scene_proxy.get_mask_from_flags(["SKELETAL"])
 
 	# TODO : why not seting things up in a data driven way ? 
 	var shadow_attachment_format : RDAttachmentFormat = ORC_RendererFactory.create_attachment_format(deferred_gd_renderer.shadow_attach_def)
@@ -98,11 +112,9 @@ func shadow_map_draw_pass(surfaces_data : Array[ORC_DeferredGD_SurfaceData], uni
 	
 	for surface_data : ORC_DeferredGD_SurfaceData in surfaces_data:
 		var is_skeletal : bool = surface_data.has_flag("SKELETAL")
-		var vf_info : ORC_VertexFormatInfo = ORC_VertexFormatInfo.new()
-		vf_info.has_bones = is_skeletal
-		vf_info.has_weights = is_skeletal
-		var vf : int = ORC_RDHelper.create_vertex_format(vf_info)
-		var pso : ORC_PSO = (pso_factories["Shadow"] as ORC_PSOFactory).get_or_create_pso(surface_data.get_flags_mask(), vf)
+		var vf : int = vf_skeletal if is_skeletal else vf_static
+		var flags_mask : int = skeletal_flag_mask if is_skeletal else static_flag_mask
+		var pso : ORC_PSO = (pso_factories["Shadow"] as ORC_PSOFactory).get_or_create_pso(flags_mask, vf)
 		if pso != previous_pso:
 			previous_pso = pso
 			if draw_list != -1:
@@ -121,8 +133,8 @@ func shadow_map_draw_pass(surfaces_data : Array[ORC_DeferredGD_SurfaceData], uni
 
 	# TODO cache skeletal GPU resources and / or clean them
 		if is_skeletal:
-			var mesh_data : ORC_DeferredGD_MeshData = surface_data.mesh_data
-			var skeleton_data : ORC_DeferredGD_SkeletonData = mesh_data.skeleton_data
+			var skeleton_data : ORC_DeferredGD_SkeletonData = surface_data.mesh_data.skeleton_data
+			var skin_data : ORC_DeferredGD_SkinData = surface_data.mesh_data.skin_data
 
 			var bone_pose_uniform : RDUniform = RDUniform.new()
 			bone_pose_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
@@ -134,12 +146,12 @@ func shadow_map_draw_pass(surfaces_data : Array[ORC_DeferredGD_SurfaceData], uni
 			var bind_pose_uniform : RDUniform = RDUniform.new()
 			bind_pose_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 			bind_pose_uniform.binding = 0
-			bind_pose_uniform.add_id(mesh_data.invert_bind_pose_array_buffer)
+			bind_pose_uniform.add_id(skin_data.invert_bind_pose_array_buffer)
 			var bind_pose_uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create([bind_pose_uniform], pso.shader_program, 4)
 			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, bind_pose_uniform_set, 4)
 
 		
-		ORC_RDHelper.get_rd().draw_list_bind_vertex_array(draw_list, surface_data.vertex_array)
+		ORC_RDHelper.get_rd().draw_list_bind_vertex_array(draw_list, surface_data.shadow_vertex_array)
 		ORC_RDHelper.get_rd().draw_list_bind_index_array(draw_list, surface_data.topology_data.index_array)
 		ORC_RDHelper.get_rd().draw_list_set_push_constant(draw_list, surface_data.mesh_data.model_matrix_bytes, surface_data.mesh_data.model_matrix_bytes.size())
 		ORC_RDHelper.get_rd().draw_list_draw(draw_list, true, 1)

@@ -11,6 +11,3 @@ var skin_data : ORC_DeferredGD_SkinData
 var surfaces_data : Array[ORC_DeferredGD_SurfaceData]
 var bounding_box : AABB
 var model_matrix_bytes : PackedByteArray
-
-#var skeleton_data : ORC_DeferredGD_SkeletonData
-var invert_bind_pose_array_buffer : RID
