@@ -123,7 +123,7 @@ metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
 [sub_resource type="Resource" id="Resource_h6olp"]
 script = ExtResource("5_fcf0w")
 type = SubResource("Resource_sp7wg")
-flag_names = Array[StringName]([&"CAST_SHADOW_SPOT"])
+flag_names = Array[StringName]([&"CAST_SHADOW_OMNI"])
 flag_values = Array[bool]([false])
 metadata/_custom_type_script = "uid://ncajj0vcwae2"
 

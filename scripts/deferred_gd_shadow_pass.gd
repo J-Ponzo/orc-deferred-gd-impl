@@ -122,7 +122,7 @@ func shadow_map_draw_pass(surfaces_data : Array[ORC_DeferredGD_SurfaceData], uni
 
 			var uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create(uniforms, pso.shader_program, 0)
 			# TODO : not sure we need 4 of this
-			var clear_colors = [Color(0.0, 0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0, 1.0)]
+			var clear_colors : Array[Color] = [Color(0.0, 0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0, 1.0)]
 			var draw_flags : int = RenderingDevice.DRAW_CLEAR_ALL if is_first_surface else RenderingDevice.DRAW_IGNORE_ALL
 			draw_list = ORC_RDHelper.get_rd().draw_list_begin(framebuffer, draw_flags, clear_colors)
 			

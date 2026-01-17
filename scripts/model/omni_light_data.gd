@@ -8,5 +8,6 @@ var location : Vector3
 var range : float
 var attenuation : float
 
+# TODO : shadow_matrices_uniform_buffers & packed_shadow_matrices_uniform_buffer are exclty the same data but in different layouts. The former is used in shadow_pass and the later in shading_pass. This is not optimal. Refacto needed.
 var shadow_matrices_uniform_buffers : Dictionary[StringName, RID]
-var shading_matrices_uniform_buffer : RID   # TODO might be not needed
+var packed_shadow_matrices_uniform_buffer : RID  
