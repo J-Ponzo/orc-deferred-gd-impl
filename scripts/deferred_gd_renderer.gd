@@ -68,9 +68,10 @@ func pre_render_override() -> void:
 func render_override() -> void:
 	get_render_pass("Geometry").render()
 	get_render_pass("Shading").render()
-	for light_data : ORC_DeferredGD_LightData in shadow_light_data:
-		get_render_pass("Shadow").single_render_call(light_data)
-		get_render_pass("Shading").single_render_call(light_data)
+	# for light_data : ORC_DeferredGD_LightData in shadow_light_data:
+	# 	# get_render_pass("Shadow").single_render_call(light_data)
+	# 	get_render_pass("Shading").single_shadow_call(light_data)
+	# 	get_render_pass("Shading").single_render_call(light_data)
 	get_render_pass("PostProcess").render()
 
 func get_render_target_override() -> RID:
