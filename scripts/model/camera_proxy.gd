@@ -21,7 +21,6 @@ func update_override() -> void:
 		has_changed = true
 
 	if has_changed:
-		ORC_RDHelper.get_rd().free_rid(primary_data.matrices_uniform_buffer)
 		var bytes = primary_data.view_matrix_bytes
 		bytes.append_array(primary_data.projection_matrix_bytes)
-		primary_data.matrices_uniform_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		primary_data.matrices_uniform_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)

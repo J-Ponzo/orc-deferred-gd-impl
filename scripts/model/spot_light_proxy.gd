@@ -98,4 +98,4 @@ func update_override() -> void:
 
 		var bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(view)
 		bytes.append_array(ORC_RDHelper.proj_to_bytes(proj))
-		primary_data.shadow_matrices_uniform_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		primary_data.shadow_matrices_uniform_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)

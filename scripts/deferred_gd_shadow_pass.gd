@@ -3,6 +3,10 @@ class_name ORC_DeferredGDShadowPass
 
 var shadow_framebuffers : Dictionary[StringName, RID]
 
+var uniform_set : ORC_SetRID
+var bone_pose_uniform_set : ORC_SetRID
+var bind_pose_uniform_set : ORC_SetRID
+
 var vf_static : int
 var vf_skeletal : int
 var static_flag_mask : int
@@ -10,6 +14,10 @@ var skeletal_flag_mask : int
 
 func setup_override() -> void:
 	super()
+
+	uniform_set = ORC_SetRID.new()
+	bone_pose_uniform_set = ORC_SetRID.new()
+	bind_pose_uniform_set = ORC_SetRID.new()
 
 	var vf_info : ORC_VertexFormatInfo = ORC_VertexFormatInfo.new()
 	vf_static = ORC_RDHelper.create_vertex_format(vf_info)
@@ -47,7 +55,7 @@ func directional_draw_pass(light_data : ORC_DeferredGD_DirectionalLightData) -> 
 	var matrices_uniform : RDUniform = RDUniform.new()
 	matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	matrices_uniform.binding = 0
-	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffer)
+	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffer.rid)
 
 	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.opaque_surfaces_data
 	shadow_map_draw_pass(surfaces_data, [matrices_uniform], shadow_framebuffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH])
@@ -56,7 +64,7 @@ func omni_draw_pass(light_data : ORC_DeferredGD_OmniLightData) -> void:
 	var matrices_uniform : RDUniform = RDUniform.new()
 	matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	matrices_uniform.binding = 0
-	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH])
+	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH].rid)
 
 	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.opaque_surfaces_data
 	shadow_map_draw_pass(surfaces_data, [matrices_uniform], shadow_framebuffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH])
@@ -64,35 +72,35 @@ func omni_draw_pass(light_data : ORC_DeferredGD_OmniLightData) -> void:
 	matrices_uniform = RDUniform.new()		# TODO we need to clean those RDUniforms
 	matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	matrices_uniform.binding = 0
-	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH])
+	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH].rid)
 
 	shadow_map_draw_pass(surfaces_data, [matrices_uniform], shadow_framebuffers[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH])
 
 	matrices_uniform = RDUniform.new()		# TODO we need to clean those RDUniforms
 	matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	matrices_uniform.binding = 0
-	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH])
+	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH].rid)
 
 	shadow_map_draw_pass(surfaces_data, [matrices_uniform], shadow_framebuffers[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH])
 
 	matrices_uniform = RDUniform.new()		# TODO we need to clean those RDUniforms
 	matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	matrices_uniform.binding = 0
-	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH])
+	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH].rid)
 
 	shadow_map_draw_pass(surfaces_data, [matrices_uniform], shadow_framebuffers[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH])
 
 	matrices_uniform = RDUniform.new()		# TODO we need to clean those RDUniforms
 	matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	matrices_uniform.binding = 0
-	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH])
+	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH].rid)
 
 	shadow_map_draw_pass(surfaces_data, [matrices_uniform], shadow_framebuffers[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH])
 
 	matrices_uniform = RDUniform.new()		# TODO we need to clean those RDUniforms
 	matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	matrices_uniform.binding = 0
-	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH])
+	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH].rid)
 
 	shadow_map_draw_pass(surfaces_data, [matrices_uniform], shadow_framebuffers[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH])
 
@@ -100,7 +108,7 @@ func spot_draw_pass(light_data : ORC_DeferredGD_SpotLightData) -> void:
 	var matrices_uniform : RDUniform = RDUniform.new()
 	matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	matrices_uniform.binding = 0
-	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffer)
+	matrices_uniform.add_id(light_data.shadow_matrices_uniform_buffer.rid)
 
 	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.opaque_surfaces_data
 	shadow_map_draw_pass(surfaces_data, [matrices_uniform], shadow_framebuffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH])
@@ -120,13 +128,13 @@ func shadow_map_draw_pass(surfaces_data : Array[ORC_DeferredGD_SurfaceData], uni
 			if draw_list != -1:
 				ORC_RDHelper.get_rd().draw_list_end()
 
-			var uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create(uniforms, pso.shader_program, 0)
+			uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create(uniforms, pso.shader_program, 0)
 			# TODO : not sure we need 4 of this
 			var clear_colors : Array[Color] = [Color(0.0, 0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0, 1.0), Color(0.0, 0.0, 0.0, 1.0)]
 			var draw_flags : int = RenderingDevice.DRAW_CLEAR_ALL if is_first_surface else RenderingDevice.DRAW_IGNORE_ALL
 			draw_list = ORC_RDHelper.get_rd().draw_list_begin(framebuffer, draw_flags, clear_colors)
 			
-			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, uniform_set, 0)
+			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, uniform_set.rid, 0)
 			ORC_RDHelper.get_rd().draw_list_bind_render_pipeline(draw_list, pso.pipeline)
 
 			is_first_surface = false	
@@ -139,20 +147,20 @@ func shadow_map_draw_pass(surfaces_data : Array[ORC_DeferredGD_SurfaceData], uni
 			var bone_pose_uniform : RDUniform = RDUniform.new()
 			bone_pose_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 			bone_pose_uniform.binding = 0
-			bone_pose_uniform.add_id(skeleton_data.global_bone_pose_array_buffer)
-			var bone_pose_uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create([bone_pose_uniform], pso.shader_program, 2)
-			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, bone_pose_uniform_set, 2)
+			bone_pose_uniform.add_id(skeleton_data.global_bone_pose_array_buffer.rid)
+			bone_pose_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create([bone_pose_uniform], pso.shader_program, 2)
+			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, bone_pose_uniform_set.rid, 2)
 
 			var bind_pose_uniform : RDUniform = RDUniform.new()
 			bind_pose_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 			bind_pose_uniform.binding = 0
-			bind_pose_uniform.add_id(skin_data.invert_bind_pose_array_buffer)
-			var bind_pose_uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create([bind_pose_uniform], pso.shader_program, 4)
-			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, bind_pose_uniform_set, 4)
+			bind_pose_uniform.add_id(skin_data.invert_bind_pose_array_buffer.rid)
+			bind_pose_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create([bind_pose_uniform], pso.shader_program, 4)
+			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, bind_pose_uniform_set.rid, 4)
 
 		
-		ORC_RDHelper.get_rd().draw_list_bind_vertex_array(draw_list, surface_data.shadow_vertex_array)
-		ORC_RDHelper.get_rd().draw_list_bind_index_array(draw_list, surface_data.topology_data.index_array)
+		ORC_RDHelper.get_rd().draw_list_bind_vertex_array(draw_list, surface_data.shadow_vertex_array.rid)
+		ORC_RDHelper.get_rd().draw_list_bind_index_array(draw_list, surface_data.topology_data.index_array.rid)
 		ORC_RDHelper.get_rd().draw_list_set_push_constant(draw_list, surface_data.mesh_data.model_matrix_bytes, surface_data.mesh_data.model_matrix_bytes.size())
 		ORC_RDHelper.get_rd().draw_list_draw(draw_list, true, 1)
 
@@ -162,3 +170,7 @@ func shadow_map_draw_pass(surfaces_data : Array[ORC_DeferredGD_SurfaceData], uni
 
 func cleanup_override() -> void:
 	super()
+
+	uniform_set.free_rid()
+	bone_pose_uniform_set.free_rid()
+	bind_pose_uniform_set.free_rid()

@@ -80,32 +80,32 @@ func update_override() -> void:
 		var proj_bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(proj)
 		var bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH])
 		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH] = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 		# X-
 		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH])
 		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH] = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 		# Y+
 		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH])
 		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH] = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 		# Y-
 		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH])
 		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH] = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 		# Z+
 		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH])
 		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH] = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 		# Z-
 		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH])
 		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH] = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 		# All matrices for shading pass
 		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH])
@@ -115,7 +115,7 @@ func update_override() -> void:
 		bytes.append_array(ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH]))
 		bytes.append_array(ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH]))
 		bytes.append_array(ORC_RDHelper.proj_to_bytes(proj))
-		primary_data.packed_shadow_matrices_uniform_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		primary_data.packed_shadow_matrices_uniform_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 static var omni_view_dirs : Dictionary[StringName, Vector3] = {
 	ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH : Vector3(1, 0, 0),

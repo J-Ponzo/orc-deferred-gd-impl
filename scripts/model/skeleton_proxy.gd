@@ -13,5 +13,4 @@ func update_override() -> void:
 		global_bone_poses[bone_idx] = global_bone_pose
 
 	var global_bone_pose_array : PackedByteArray = ORC_RDHelper.projs_to_bytes(global_bone_poses)
-	ORC_RDHelper.get_rd().buffer_update(primary_data.global_bone_pose_array_buffer, 0, SIZEOF_MAT4 * global_bone_poses.size(), global_bone_pose_array)
-
+	ORC_RDHelper.get_rd().buffer_update(primary_data.global_bone_pose_array_buffer.rid, 0, SIZEOF_MAT4 * global_bone_poses.size(), global_bone_pose_array)

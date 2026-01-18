@@ -11,4 +11,4 @@ var direction : Vector3
 var angle : float
 var angle_attenuation : float
 
-var shadow_matrices_uniform_buffer : RID
+var shadow_matrices_uniform_buffer : ORC_BufferRID = ORC_BufferRID.new()

@@ -42,7 +42,7 @@ func create_camera_data_from(cam_node : Camera3D, registry : ORC_ProxyRegistry) 
 	var bytes = cam_data.view_matrix_bytes
 	bytes.append_array(cam_data.projection_matrix_bytes)
 
-	cam_data.matrices_uniform_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+	cam_data.matrices_uniform_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 	return cam_data
 	
 func create_mesh_data_from(mesh_node : MeshInstance3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_MeshData:
@@ -85,7 +85,7 @@ func create_skin_data_from(skin : Skin, mesh_data : ORC_DeferredGD_MeshData, reg
 		invert_bind_poses[i] = Projection()
 
 	var byte_array : PackedByteArray = ORC_RDHelper.projs_to_bytes(invert_bind_poses)
-	skin_data.invert_bind_pose_array_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(byte_array.size(), byte_array)
+	skin_data.invert_bind_pose_array_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(byte_array.size(), byte_array)
 
 	return skin_data
 
@@ -106,7 +106,7 @@ func create_skeleton_data_from(skeleton : Skeleton3D, registry : ORC_ProxyRegist
 		global_bone_poses[i] = Projection()
 
 	var global_bone_pose_array : PackedByteArray = ORC_RDHelper.projs_to_bytes(global_bone_poses)
-	skeleton_data.global_bone_pose_array_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(global_bone_pose_array.size(), global_bone_pose_array)
+	skeleton_data.global_bone_pose_array_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(global_bone_pose_array.size(), global_bone_pose_array)
 
 	return skeleton_data
 
@@ -127,35 +127,35 @@ func create_surface_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData, 
 	surface_data.vertex_format = vf
 
 	var buffers : Array[RID]
-	buffers.append(surface_data.topology_data.position_buffer)
+	buffers.append(surface_data.topology_data.position_buffer.rid)
 
 	# TODO : find special shadow mesh if set
 	var shadow_vf_info : ORC_VertexFormatInfo = ORC_VertexFormatInfo.new()
 	var shadow_buffers : Array[RID]
-	shadow_buffers.append(surface_data.topology_data.position_buffer)
+	shadow_buffers.append(surface_data.topology_data.position_buffer.rid)
 
 	if vf_info.has_normal:
-		buffers.append(surface_data.topology_data.normal_buffer)
+		buffers.append(surface_data.topology_data.normal_buffer.rid)
 	if vf_info.has_tangent:
-		buffers.append(surface_data.topology_data.tangent_buffer)
+		buffers.append(surface_data.topology_data.tangent_buffer.rid)
 	if vf_info.has_color:
-		buffers.append(surface_data.topology_data.color_buffer)
+		buffers.append(surface_data.topology_data.color_buffer.rid)
 	if vf_info.has_uv:
-		buffers.append(surface_data.topology_data.uv_buffer)
+		buffers.append(surface_data.topology_data.uv_buffer.rid)
 	if vf_info.has_uv2:
-		buffers.append(surface_data.topology_data.uv2_buffer)
+		buffers.append(surface_data.topology_data.uv2_buffer.rid)
 	if vf_info.has_bones:
-		buffers.append(surface_data.topology_data.bones_buffer)
-		shadow_buffers.append(surface_data.topology_data.bones_buffer)
+		buffers.append(surface_data.topology_data.bones_buffer.rid)
+		shadow_buffers.append(surface_data.topology_data.bones_buffer.rid)
 		shadow_vf_info.has_bones = true
 	if vf_info.has_weights:
-		buffers.append(surface_data.topology_data.weights_buffer)
-		shadow_buffers.append(surface_data.topology_data.weights_buffer)
+		buffers.append(surface_data.topology_data.weights_buffer.rid)
+		shadow_buffers.append(surface_data.topology_data.weights_buffer.rid)
 		shadow_vf_info.has_weights = true
 
 	var shadow_vf : int = ORC_RDHelper.create_vertex_format(shadow_vf_info)
-	surface_data.shadow_vertex_array = ORC_RDHelper.get_rd().vertex_array_create(surface_data.topology_data.vertex_count, shadow_vf, shadow_buffers)
-	surface_data.vertex_array = ORC_RDHelper.get_rd().vertex_array_create(surface_data.topology_data.vertex_count, vf, buffers)
+	surface_data.shadow_vertex_array.rid = ORC_RDHelper.get_rd().vertex_array_create(surface_data.topology_data.vertex_count, shadow_vf, shadow_buffers)
+	surface_data.vertex_array.rid = ORC_RDHelper.get_rd().vertex_array_create(surface_data.topology_data.vertex_count, vf, buffers)
 
 	return surface_data
 
@@ -207,40 +207,40 @@ func create_topology_data_from(mesh : Mesh, mesh_data : ORC_DeferredGD_MeshData,
 	var arrays = mesh.surface_get_arrays(surface_index)
 	topology_data.index_count = arrays[Mesh.ARRAY_INDEX].size()
 	var byte_array = arrays[Mesh.ARRAY_INDEX].to_byte_array()
-	topology_data.index_buffer = ORC_RDHelper.get_rd().index_buffer_create(arrays[Mesh.ARRAY_INDEX].size(), RenderingDevice.INDEX_BUFFER_FORMAT_UINT32, byte_array)
-	topology_data.index_array = ORC_RDHelper.get_rd().index_array_create(topology_data.index_buffer, 0, topology_data.index_count)
+	topology_data.index_buffer.rid = ORC_RDHelper.get_rd().index_buffer_create(arrays[Mesh.ARRAY_INDEX].size(), RenderingDevice.INDEX_BUFFER_FORMAT_UINT32, byte_array)
+	topology_data.index_array.rid = ORC_RDHelper.get_rd().index_array_create(topology_data.index_buffer.rid, 0, topology_data.index_count)
 
 	topology_data.vertex_count = arrays[Mesh.ARRAY_VERTEX].size()
 	byte_array = arrays[Mesh.ARRAY_VERTEX].to_byte_array()
-	topology_data.position_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+	topology_data.position_buffer.rid = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
 	
 	if  surf_array_has(arrays, Mesh.ARRAY_NORMAL):
 		byte_array = arrays[Mesh.ARRAY_NORMAL].to_byte_array()
-		topology_data.normal_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+		topology_data.normal_buffer.rid = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
 
 	if surf_array_has(arrays, Mesh.ARRAY_TANGENT):
 		byte_array = arrays[Mesh.ARRAY_TANGENT].to_byte_array()
-		topology_data.tangent_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+		topology_data.tangent_buffer.rid = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
 
 	if surf_array_has(arrays, Mesh.ARRAY_COLOR):
 		byte_array = arrays[Mesh.ARRAY_COLOR].to_byte_array()
-		topology_data.color_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+		topology_data.color_buffer.rid = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
 
 	if surf_array_has(arrays, Mesh.ARRAY_TEX_UV):
 		byte_array = arrays[Mesh.ARRAY_TEX_UV].to_byte_array()
-		topology_data.uv_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+		topology_data.uv_buffer.rid = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
 
 	if surf_array_has(arrays, Mesh.ARRAY_TEX_UV2):
 		byte_array = arrays[Mesh.ARRAY_TEX_UV].to_byte_array()
-		topology_data.uv2_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+		topology_data.uv2_buffer.rid = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
 
 	if surf_array_has(arrays, Mesh.ARRAY_BONES):
 		byte_array = arrays[Mesh.ARRAY_BONES].to_byte_array()
-		topology_data.bones_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+		topology_data.bones_buffer.rid = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
 
 	if surf_array_has(arrays, Mesh.ARRAY_WEIGHTS):
 		byte_array = arrays[Mesh.ARRAY_WEIGHTS].to_byte_array()
-		topology_data.weights_buffer = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
+		topology_data.weights_buffer.rid = ORC_RDHelper.get_rd().vertex_buffer_create(byte_array.size(), byte_array)
 	
 	return topology_data
 
@@ -253,20 +253,20 @@ func create_material_data_from(material : BaseMaterial3D, mesh_data : ORC_Deferr
 
 	var albedo_floats_array : PackedFloat32Array = [material.albedo_color.r, material.albedo_color.g, material.albedo_color.b, material.albedo_color.a]
 	var bytes : PackedByteArray =  albedo_floats_array.to_byte_array()
-	material_data.albedo_buffer = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+	material_data.albedo_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 	if material.albedo_texture != null:
-		material_data.albedo_tex = RenderingServer.texture_get_rd_texture(material.albedo_texture, true)
-		material_data.albedo_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+		material_data.albedo_tex.rid = RenderingServer.texture_get_rd_texture(material.albedo_texture, true)
+		material_data.albedo_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
 		material_data.set_flag("ALBEDO_MAP", true)
 	if material.normal_texture != null:
-		material_data.normal_tex = RenderingServer.texture_get_rd_texture(material.normal_texture)
-		material_data.normal_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+		material_data.normal_tex.rid = RenderingServer.texture_get_rd_texture(material.normal_texture)
+		material_data.normal_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
 		material_data.set_flag("NORMAL_MAP", true)
 	var orm_tex : Texture2D = try_extract_orm_from_material(material)
 	if orm_tex != null:
-		material_data.orm_tex = RenderingServer.texture_get_rd_texture(orm_tex)
-		material_data.orm_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+		material_data.orm_tex.rid = RenderingServer.texture_get_rd_texture(orm_tex)
+		material_data.orm_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
 		material_data.set_flag("ORM_MAP", true)
 
 	if material.cull_mode == BaseMaterial3D.CullMode.CULL_BACK:
@@ -452,33 +452,20 @@ func free_data_override(data : ORC_ProxyData, registry : ORC_ProxyRegistry) -> b
 	return false
 
 func free_camera_data(cam_data : ORC_DeferredGD_CameraData, registry : ORC_ProxyRegistry) -> bool:
-	if cam_data.matrices_uniform_buffer != RID():
-		ORC_RDHelper.get_rd().free_rid(cam_data.matrices_uniform_buffer)
-		cam_data.matrices_uniform_buffer = RID()
-
+	cam_data.matrices_uniform_buffer.free_rid()
 	return destroy_and_unregister_data(cam_data, registry)
 
 func free_material_data(mat_data : ORC_DeferredGD_MaterialData, registry : ORC_ProxyRegistry) -> bool:
 	if !mat_data.is_shared():
-		if mat_data.albedo_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(mat_data.albedo_buffer)
-			mat_data.albedo_buffer = RID()
-		if mat_data.albedo_sampler != RID():
-			ORC_RDHelper.get_rd().free_rid(mat_data.albedo_sampler)
-			mat_data.albedo_sampler = RID()
-		if mat_data.normal_sampler != RID():
-			ORC_RDHelper.get_rd().free_rid(mat_data.normal_sampler)	
-			mat_data.normal_sampler = RID()
-		if mat_data.orm_sampler != RID():
-			ORC_RDHelper.get_rd().free_rid(mat_data.orm_sampler)
-			mat_data.orm_sampler = RID()
+		mat_data.albedo_buffer.free_rid()
+		mat_data.albedo_sampler.free_rid()
+		mat_data.normal_sampler.free_rid()
+		mat_data.orm_sampler.free_rid()
 
 	return destroy_and_unregister_data(mat_data, registry, mat_data.unique_id)
 
 func free_mesh_data(mesh_data : ORC_DeferredGD_MeshData, registry : ORC_ProxyRegistry) -> bool:
-	if mesh_data.instance_storage_buffer != RID():
-		ORC_RDHelper.get_rd().free_rid(mesh_data.instance_storage_buffer)
-		mesh_data.instance_storage_buffer = RID()
+	mesh_data.instance_storage_buffer.free_rid()
 	
 	var success : bool = true
 	for surface_data in mesh_data.surfaces_data:
@@ -488,12 +475,8 @@ func free_mesh_data(mesh_data : ORC_DeferredGD_MeshData, registry : ORC_ProxyReg
 	return success &&  destroy_and_unregister_data(mesh_data, registry)
 
 func free_surface_data(surface_data : ORC_DeferredGD_SurfaceData, registry : ORC_ProxyRegistry) -> bool:
-	if surface_data.vertex_array != RID():
-		ORC_RDHelper.get_rd().free_rid(surface_data.vertex_array)
-		surface_data.vertex_array = RID()
-	if surface_data.shadow_vertex_array != RID():
-		ORC_RDHelper.get_rd().free_rid(surface_data.shadow_vertex_array)
-		surface_data.shadow_vertex_array = RID()
+	surface_data.vertex_array.free_rid()
+	surface_data.shadow_vertex_array.free_rid()
 	
 	var success : bool = true
 	if !destroy_and_unregister_data(surface_data.material_data, registry):
@@ -506,58 +489,39 @@ func free_surface_data(surface_data : ORC_DeferredGD_SurfaceData, registry : ORC
 # TODO add try_free_rid in helper
 func free_topology_data(topology_data : ORC_DeferredGD_TopologyData, registry : ORC_ProxyRegistry) -> bool:
 	if !topology_data.is_shared():
-		if topology_data.index_array != RID():
-			ORC_RDHelper.get_rd().free_rid(topology_data.index_array)
-			topology_data.index_array = RID()
-		if topology_data.index_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(topology_data.index_buffer)
-			topology_data.index_buffer = RID()
-		if topology_data.position_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(topology_data.position_buffer)
-			topology_data.position_buffer = RID()
-		if topology_data.normal_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(topology_data.normal_buffer)
-			topology_data.normal_buffer = RID()
-		if topology_data.tangent_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(topology_data.tangent_buffer)
-			topology_data.tangent_buffer = RID()
-		if topology_data.color_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(topology_data.color_buffer)
-			topology_data.color_buffer = RID()
-		if topology_data.uv_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(topology_data.uv_buffer)
-			topology_data.uv_buffer = RID()
-		if topology_data.uv2_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(topology_data.uv2_buffer)
-			topology_data.uv2_buffer = RID()
-		if topology_data.bones_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(topology_data.bones_buffer)
-			topology_data.bones_buffer = RID()
-		if topology_data.weights_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(topology_data.weights_buffer)
-			topology_data.weights_buffer = RID()
+		topology_data.index_array.free_rid()
+		topology_data.index_buffer.free_rid()
+		topology_data.position_buffer.free_rid()
+		topology_data.normal_buffer.free_rid()
+		topology_data.tangent_buffer.free_rid()
+		topology_data.color_buffer.free_rid()
+		topology_data.uv_buffer.free_rid()
+		topology_data.uv2_buffer.free_rid()
+		topology_data.bones_buffer.free_rid()
+		topology_data.weights_buffer.free_rid()
 	
 	return destroy_and_unregister_data(topology_data, registry, topology_data.unique_id)
 
 func free_skin_data(skin_data : ORC_DeferredGD_SkinData, registry : ORC_ProxyRegistry) -> bool:
 	if !skin_data.is_shared():
-		if skin_data.invert_bind_pose_array_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(skin_data.invert_bind_pose_array_buffer)
-			skin_data.invert_bind_pose_array_buffer = RID()
+		skin_data.invert_bind_pose_array_buffer.free_rid()
 	return destroy_and_unregister_data(skin_data, registry, skin_data.unique_id)
 
 func free_skeleton_data(skeleton_data : ORC_DeferredGD_SkeletonData, registry : ORC_ProxyRegistry) -> bool:
 	if !skeleton_data.is_shared():
-		if skeleton_data.invert_bind_pose_array_buffer != RID():
-			ORC_RDHelper.get_rd().free_rid(skeleton_data.global_bone_pose_array_buffer)
-			skeleton_data.global_bone_pose_array_buffer = RID()
+		skeleton_data.invert_bind_pose_array_buffer.free_rid()
 	return destroy_and_unregister_data(skeleton_data, registry, skeleton_data.unique_id)
 
 func free_omni_light_data(omni_light_data : ORC_DeferredGD_OmniLightData, registry : ORC_ProxyRegistry) -> bool:
+	omni_light_data.packed_shadow_matrices_uniform_buffer.free_rid()
+	for key in omni_light_data.shadow_matrices_uniform_buffers.keys():
+		omni_light_data.shadow_matrices_uniform_buffers[key].free_rid()
 	return destroy_and_unregister_data(omni_light_data, registry)
 
 func free_spot_light_data(spot_light_data : ORC_DeferredGD_SpotLightData, registry : ORC_ProxyRegistry) -> bool:
+	spot_light_data.shadow_matrices_uniform_buffer.free_rid()
 	return destroy_and_unregister_data(spot_light_data, registry)
 
 func free_directional_light_data(directional_light_data : ORC_DeferredGD_DirectionalLightData, registry : ORC_ProxyRegistry) -> bool:
+	directional_light_data.shadow_matrices_uniform_buffer.free_rid()
 	return destroy_and_unregister_data(directional_light_data, registry)

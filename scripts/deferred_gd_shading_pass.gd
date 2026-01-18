@@ -7,24 +7,44 @@ var screen_quad_primitive : ORC_ProceduralPrimitive
 var invert_sphere_primitive : ORC_ProceduralPrimitive
 var invert_cone_primitive : ORC_ProceduralPrimitive
 
-var albedo_map_sampler : RID
-var normal_map_sampler : RID
-var position_map_sampler : RID
-var orm_map_sampler : RID
+var albedo_map_sampler : ORC_SamplerRID
+var normal_map_sampler : ORC_SamplerRID
+var position_map_sampler : ORC_SamplerRID
+var orm_map_sampler : ORC_SamplerRID
 
-var main_or_xplus_shadow_map_sampler : RID
-var xminus_shadow_map_sampler : RID
-var yplus_shadow_map_sampler : RID
-var yminus_shadow_map_sampler : RID
-var zplus_shadow_map_sampler : RID
-var zminus_shadow_map_sampler : RID
+var main_or_xplus_shadow_map_sampler : ORC_SamplerRID
+var xminus_shadow_map_sampler : ORC_SamplerRID
+var yplus_shadow_map_sampler : ORC_SamplerRID
+var yminus_shadow_map_sampler : ORC_SamplerRID
+var zplus_shadow_map_sampler : ORC_SamplerRID
+var zminus_shadow_map_sampler : ORC_SamplerRID
+
+var vert_uniform_set : ORC_SetRID
+var frag_uniform_set : ORC_SetRID
+var global_uniform_buffer : ORC_BufferRID
+
+var light_matrice_uniform_set : ORC_SetRID
 
 var vert_uniforms : Array[RDUniform]
 var frag_uniforms : Array[RDUniform]
-	
 
 func setup_override() -> void:
 	super()
+
+	albedo_map_sampler = ORC_SamplerRID.new()
+	normal_map_sampler = ORC_SamplerRID.new()
+	position_map_sampler = ORC_SamplerRID.new()
+	orm_map_sampler = ORC_SamplerRID.new()
+	main_or_xplus_shadow_map_sampler = ORC_SamplerRID.new()
+	xminus_shadow_map_sampler = ORC_SamplerRID.new()
+	yplus_shadow_map_sampler = ORC_SamplerRID.new()
+	yminus_shadow_map_sampler = ORC_SamplerRID.new()
+	zplus_shadow_map_sampler = ORC_SamplerRID.new()
+	zminus_shadow_map_sampler = ORC_SamplerRID.new()
+	vert_uniform_set = ORC_SetRID.new()
+	frag_uniform_set = ORC_SetRID.new()
+	global_uniform_buffer = ORC_BufferRID.new()
+	light_matrice_uniform_set = ORC_SetRID.new()
 
 	var vf_info : ORC_VertexFormatInfo = ORC_VertexFormatInfo.new()
 	vf_info.is_2d = true
@@ -36,17 +56,17 @@ func setup_override() -> void:
 	invert_sphere_primitive = ORC_ProceduralPrimitiveFactory.create_inverted_sphere()
 	invert_cone_primitive = ORC_ProceduralPrimitiveFactory.create_inverted_cone()
 
-	albedo_map_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	normal_map_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	position_map_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	orm_map_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+	albedo_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+	normal_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+	position_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+	orm_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
 
-	main_or_xplus_shadow_map_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	xminus_shadow_map_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	yplus_shadow_map_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	yminus_shadow_map_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	zplus_shadow_map_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	zminus_shadow_map_sampler = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+	main_or_xplus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+	xminus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+	yplus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+	yminus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+	zplus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
+	zminus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
 
 # TODO : Optimize and try to provide helpers / boiler plate for common patterns (pso batching, resource reuseage etc...)
 # Other passes are also candidates for this refactor
@@ -54,27 +74,26 @@ func render_override() -> void:
 	var cam_matrices_uniform : RDUniform= RDUniform.new()
 	cam_matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	cam_matrices_uniform.binding = 0
-	cam_matrices_uniform.add_id(deferred_gd_renderer.current_cam_data.matrices_uniform_buffer)
+	cam_matrices_uniform.add_id(deferred_gd_renderer.current_cam_data.matrices_uniform_buffer.rid)
 
 	var cam_world_pos : Vector3 = deferred_gd_renderer.current_cam_data.view_transform.affine_inverse().origin
 	var cam_pos_floats_array : PackedFloat32Array = [cam_world_pos.x, cam_world_pos.y, cam_world_pos.z, 1.0]
 	var bytes : PackedByteArray =  cam_pos_floats_array.to_byte_array()
 
-	var width : float = ProjectSettings.get_setting("display/window/size/viewport_width")
-	var height :float = ProjectSettings.get_setting("display/window/size/viewport_height")
-	var float_array : PackedFloat32Array = PackedFloat32Array([width, height, 0.0, 0.0])
+	var window_size : Vector2i = DisplayServer.window_get_size()
+	var float_array : PackedFloat32Array = PackedFloat32Array([window_size.x as float, window_size.y as float, 0.0, 0.0])
 	bytes.append_array(float_array.to_byte_array())
 
-	var global_uniform_buffer : RID = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+	global_uniform_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 	var global_uniform : RDUniform= RDUniform.new()
 	global_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	global_uniform.binding = 0
-	global_uniform.add_id(global_uniform_buffer)
+	global_uniform.add_id(global_uniform_buffer.rid)
 
-	var albedo_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(deferred_gd_renderer.get_attachment("Albedo"), albedo_map_sampler, 1)
-	var normal_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(deferred_gd_renderer.get_attachment("Normal"), normal_map_sampler, 2)
-	var position_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(deferred_gd_renderer.get_attachment("Position"), position_map_sampler, 3)
-	var orm_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(deferred_gd_renderer.get_attachment("ORM"), orm_map_sampler, 4)
+	var albedo_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(deferred_gd_renderer.get_attachment("Albedo"), albedo_map_sampler.rid, 1)
+	var normal_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(deferred_gd_renderer.get_attachment("Normal"), normal_map_sampler.rid, 2)
+	var position_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(deferred_gd_renderer.get_attachment("Position"), position_map_sampler.rid, 3)
+	var orm_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(deferred_gd_renderer.get_attachment("ORM"), orm_map_sampler.rid, 4)
 
 	vert_uniforms = [cam_matrices_uniform]
 	frag_uniforms = [global_uniform, albedo_uniform, normal_uniform, position_uniform, orm_uniform]
@@ -82,8 +101,6 @@ func render_override() -> void:
 	var is_first_light : bool = true
 	var previous_pso : ORC_PSO = null
 	var draw_list : int = -1
-	var vert_uniform_set : RID = RID()
-	var frag_uniform_set : RID = RID()
 
 	for light_data : ORC_DeferredGD_LightData in deferred_gd_renderer.no_shadow_light_data:
 		var vf : int = vf_2d if light_data.has_flag("DIRECTIONAL") else vf_3d
@@ -92,17 +109,16 @@ func render_override() -> void:
 			previous_pso = pso
 			if draw_list != -1:
 				ORC_RDHelper.get_rd().draw_list_end()
-				ORC_RDHelper.get_rd().free_rid(vert_uniform_set)
-				ORC_RDHelper.get_rd().free_rid(frag_uniform_set)
 
-			vert_uniform_set = ORC_RDHelper.get_rd().uniform_set_create(vert_uniforms, pso.shader_program, 1)
-			frag_uniform_set = ORC_RDHelper.get_rd().uniform_set_create(frag_uniforms, pso.shader_program, 0)
+
+			vert_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create(vert_uniforms, pso.shader_program, 1)
+			frag_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create(frag_uniforms, pso.shader_program, 0)
 			var clear_colors : Array[Color] = [Color(0.0, 0.0, 0.0, 1.0)]
 			var draw_flags : int = RenderingDevice.DRAW_CLEAR_ALL if is_first_light else RenderingDevice.DRAW_IGNORE_ALL
 			draw_list = ORC_RDHelper.get_rd().draw_list_begin(framebuffer, draw_flags, clear_colors)
 			
-			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, vert_uniform_set, 1)
-			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, frag_uniform_set, 0)
+			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, vert_uniform_set.rid, 1)
+			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, frag_uniform_set.rid, 0)
 			ORC_RDHelper.get_rd().draw_list_bind_render_pipeline(draw_list, pso.pipeline)
 
 			is_first_light = false
@@ -155,28 +171,28 @@ func get_omni_light_matrices_uniform(omni_data : ORC_DeferredGD_OmniLightData) -
 	var light_matrices_uniform : RDUniform = RDUniform.new()
 	light_matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	light_matrices_uniform.binding = 0
-	light_matrices_uniform.add_id(omni_data.packed_shadow_matrices_uniform_buffer)
+	light_matrices_uniform.add_id(omni_data.packed_shadow_matrices_uniform_buffer.rid)
 	return light_matrices_uniform
 
 func get_spot_light_matrices_uniform(spot_data : ORC_DeferredGD_SpotLightData) -> RDUniform:
 	var light_matrices_uniform : RDUniform = RDUniform.new()
 	light_matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	light_matrices_uniform.binding = 0
-	light_matrices_uniform.add_id(spot_data.shadow_matrices_uniform_buffer)
+	light_matrices_uniform.add_id(spot_data.shadow_matrices_uniform_buffer.rid)
 	return light_matrices_uniform
 
 func get_directional_light_matrices_uniform(directional_data : ORC_DeferredGD_DirectionalLightData) -> RDUniform:
 	var light_matrices_uniform : RDUniform = RDUniform.new()
 	light_matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
 	light_matrices_uniform.binding = 0
-	light_matrices_uniform.add_id(directional_data.shadow_matrices_uniform_buffer)
+	light_matrices_uniform.add_id(directional_data.shadow_matrices_uniform_buffer.rid)
 	return light_matrices_uniform
 
 func get_directional_frag_uniforms_with_shadow_maps() -> Array[RDUniform]:
 	var frag_uniforms_with_shadow_maps : Array[RDUniform]
 	frag_uniforms_with_shadow_maps.append_array(frag_uniforms)
 	var shadow_attachment : RID = renderer.get_attachment(renderer.MAIN_OR_XPlus_SHADOW_ATTACH)
-	var shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, main_or_xplus_shadow_map_sampler, 5)
+	var shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, main_or_xplus_shadow_map_sampler.rid, 5)
 	frag_uniforms_with_shadow_maps.append(shadow_uniform)
 
 	return frag_uniforms_with_shadow_maps
@@ -185,17 +201,17 @@ func get_omni_frag_uniforms_with_shadow_maps() -> Array[RDUniform]:
 	var frag_uniforms_with_shadow_maps : Array[RDUniform]
 	frag_uniforms_with_shadow_maps.append_array(frag_uniforms)
 	var shadow_attachment : RID = renderer.get_attachment(renderer.MAIN_OR_XPlus_SHADOW_ATTACH)
-	var main_or_xplus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, main_or_xplus_shadow_map_sampler, 5)
+	var main_or_xplus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, main_or_xplus_shadow_map_sampler.rid, 5)
 	shadow_attachment = renderer.get_attachment(renderer.XMinus_SHADOW_ATTACH)
-	var xminus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, xminus_shadow_map_sampler, 6)
+	var xminus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, xminus_shadow_map_sampler.rid, 6)
 	shadow_attachment = renderer.get_attachment(renderer.YPlus_SHADOW_ATTACH)
-	var yplus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, yplus_shadow_map_sampler, 7)
+	var yplus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, yplus_shadow_map_sampler.rid, 7)
 	shadow_attachment = renderer.get_attachment(renderer.YMinus_SHADOW_ATTACH)
-	var yminus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, yminus_shadow_map_sampler, 8)
+	var yminus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, yminus_shadow_map_sampler.rid, 8)
 	shadow_attachment = renderer.get_attachment(renderer.ZPlus_SHADOW_ATTACH)
-	var zplus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, zplus_shadow_map_sampler, 9)
+	var zplus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, zplus_shadow_map_sampler.rid, 9)
 	shadow_attachment = renderer.get_attachment(renderer.ZMinus_SHADOW_ATTACH)
-	var zminus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, zminus_shadow_map_sampler, 10)
+	var zminus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, zminus_shadow_map_sampler.rid, 10)
 	frag_uniforms_with_shadow_maps.append_array([main_or_xplus_shadow_uniform, xminus_shadow_uniform, yplus_shadow_uniform, yminus_shadow_uniform, zplus_shadow_uniform, zminus_shadow_uniform])
 	
 	return frag_uniforms_with_shadow_maps
@@ -204,7 +220,7 @@ func get_spot_frag_uniforms_with_shadow_maps() -> Array[RDUniform]:
 	var frag_uniforms_with_shadow_maps : Array[RDUniform]
 	frag_uniforms_with_shadow_maps.append_array(frag_uniforms)
 	var shadow_attachment : RID = renderer.get_attachment(renderer.MAIN_OR_XPlus_SHADOW_ATTACH)
-	var shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, main_or_xplus_shadow_map_sampler, 5)
+	var shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, main_or_xplus_shadow_map_sampler.rid, 5)
 	frag_uniforms_with_shadow_maps.append(shadow_uniform)
 
 	return frag_uniforms_with_shadow_maps
@@ -214,18 +230,17 @@ func shadow_casting_light_draw_call(light_data : ORC_DeferredGD_LightData, frag_
 	var vf : int = vf_2d if is_directional else vf_3d
 	var pso : ORC_PSO = (pso_factories["Light"] as ORC_PSOFactory).get_or_create_pso(light_data.get_flags_mask(), vf)
 	# TODO : vert_uniforms & frag_uniforms were set during render_override, need to refactor this
-	var vert_uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create(vert_uniforms, pso.shader_program, 1)
-	var frag_uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create(frag_uniforms_with_shadow_maps, pso.shader_program, 0)
-	
-	var light_matrice_uniform_set : RID = ORC_RDHelper.get_rd().uniform_set_create([light_matrices_uniform], pso.shader_program, 2)
+	vert_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create(vert_uniforms, pso.shader_program, 1)
+	frag_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create(frag_uniforms_with_shadow_maps, pso.shader_program, 0)
+	light_matrice_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create([light_matrices_uniform], pso.shader_program, 2)
 	
 	var clear_colors : Array[Color] = [Color(0.0, 0.0, 0.0, 1.0)]
 	var draw_flags = RenderingDevice.DRAW_IGNORE_ALL
 	var draw_list : int = ORC_RDHelper.get_rd().draw_list_begin(framebuffer, draw_flags, clear_colors)
 
-	ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, vert_uniform_set, 1)
-	ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, frag_uniform_set, 0)
-	ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, light_matrice_uniform_set, 2)
+	ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, vert_uniform_set.rid, 1)
+	ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, frag_uniform_set.rid, 0)
+	ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, light_matrice_uniform_set.rid, 2)
 	ORC_RDHelper.get_rd().draw_list_bind_render_pipeline(draw_list, pso.pipeline)
 	
 	ORC_RDHelper.get_rd().draw_list_bind_vertex_array(draw_list, primitive.get_vertex_array())
@@ -242,10 +257,20 @@ func shadow_casting_light_draw_call(light_data : ORC_DeferredGD_LightData, frag_
 func cleanup_override() -> void:
 	super()
 
-	ORC_RDHelper.get_rd().free_rid(albedo_map_sampler)
-	ORC_RDHelper.get_rd().free_rid(normal_map_sampler)
-	ORC_RDHelper.get_rd().free_rid(position_map_sampler)
-	ORC_RDHelper.get_rd().free_rid(orm_map_sampler)
+	albedo_map_sampler.free_rid()
+	normal_map_sampler.free_rid()
+	position_map_sampler.free_rid()
+	orm_map_sampler.free_rid()
+	main_or_xplus_shadow_map_sampler.free_rid()
+	xminus_shadow_map_sampler.free_rid()
+	yplus_shadow_map_sampler.free_rid()
+	yminus_shadow_map_sampler.free_rid()
+	zplus_shadow_map_sampler.free_rid()
+	zminus_shadow_map_sampler.free_rid()
+	vert_uniform_set.free_rid()
+	frag_uniform_set.free_rid()
+	global_uniform_buffer.free_rid()
+	light_matrice_uniform_set.free_rid()
 
 	ORC_ProceduralPrimitiveFactory.free_rids(screen_quad_primitive)
 	ORC_ProceduralPrimitiveFactory.free_rids(invert_sphere_primitive)
