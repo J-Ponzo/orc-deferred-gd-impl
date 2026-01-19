@@ -1,18 +1,14 @@
 extends ORC_DeferredGDRendererPass
 class_name ORC_DeferredGDGeometryPass
 
-var matrices_uniform_set : ORC_SetRID
-var bone_pose_uniform_set : ORC_SetRID
-var bind_pose_uniform_set : ORC_SetRID
-var material_uniform_set : ORC_SetRID
+var matrices_uniform_set : ORC_SetRID = ORC_SetRID.new()
+var bone_pose_uniform_set : ORC_SetRID = ORC_SetRID.new()
+var bind_pose_uniform_set : ORC_SetRID = ORC_SetRID.new()
+var material_uniform_set : ORC_SetRID = ORC_SetRID.new()
 
 func setup_override() -> void:
 	super()
 	print("ORC_DeferredGDGeometryPass.setup()")
-	matrices_uniform_set = ORC_SetRID.new()
-	bone_pose_uniform_set = ORC_SetRID.new()
-	bind_pose_uniform_set = ORC_SetRID.new()
-	material_uniform_set = ORC_SetRID.new()
 
 func render_override() -> void:
 	if deferred_gd_renderer.current_cam_data == null:
@@ -86,8 +82,4 @@ func render_override() -> void:
 
 func cleanup_override() -> void:
 	super_cleanup()
-	matrices_uniform_set.free_rid()
-	bone_pose_uniform_set.free_rid()
-	bind_pose_uniform_set.free_rid()
-	material_uniform_set.free_rid()
 	print("ORC_DeferredGDGeometryPass.cleanup()")

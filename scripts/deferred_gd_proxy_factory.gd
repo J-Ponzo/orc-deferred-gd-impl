@@ -472,7 +472,14 @@ func free_mesh_data(mesh_data : ORC_DeferredGD_MeshData, registry : ORC_ProxyReg
 		if !destroy_and_unregister_data(surface_data, registry):
 			success = false
 	
-	return success &&  destroy_and_unregister_data(mesh_data, registry)
+	if mesh_data.skeleton_data != null:
+		if !free_skeleton_data(mesh_data.skeleton_data, registry):
+			success = false
+	if mesh_data.skin_data != null:
+		if !free_skin_data(mesh_data.skin_data, registry):
+			success = false
+	
+	return success && destroy_and_unregister_data(mesh_data, registry)
 
 func free_surface_data(surface_data : ORC_DeferredGD_SurfaceData, registry : ORC_ProxyRegistry) -> bool:
 	surface_data.vertex_array.free_rid()
@@ -509,7 +516,7 @@ func free_skin_data(skin_data : ORC_DeferredGD_SkinData, registry : ORC_ProxyReg
 
 func free_skeleton_data(skeleton_data : ORC_DeferredGD_SkeletonData, registry : ORC_ProxyRegistry) -> bool:
 	if !skeleton_data.is_shared():
-		skeleton_data.invert_bind_pose_array_buffer.free_rid()
+		skeleton_data.global_bone_pose_array_buffer.free_rid()
 	return destroy_and_unregister_data(skeleton_data, registry, skeleton_data.unique_id)
 
 func free_omni_light_data(omni_light_data : ORC_DeferredGD_OmniLightData, registry : ORC_ProxyRegistry) -> bool:

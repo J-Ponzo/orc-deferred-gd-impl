@@ -16,6 +16,8 @@ var opaque_surfaces_data : Array[ORC_DeferredGD_SurfaceData]
 var no_shadow_light_data : Array[ORC_DeferredGD_LightData]
 var shadow_light_data : Array[ORC_DeferredGD_LightData]
 
+# TODO : remove this while refacto shadow framebuffer / attachment creation
+var fisrt_setup : bool = true
 func setup_override() -> void:
 	shadow_attach_def = ORC_AttachmentFormat_Def.new()
 	shadow_attach_def.format = RenderingDevice.DATA_FORMAT_D32_SFLOAT
@@ -23,12 +25,14 @@ func setup_override() -> void:
 	shadow_attach_def.width = 4096
 	shadow_attach_def.height = 4096
 
-	create_attachment(MAIN_OR_XPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
-	create_attachment(XMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
-	create_attachment(YPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
-	create_attachment(YMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
-	create_attachment(ZPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
-	create_attachment(ZMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+	if fisrt_setup:
+		create_attachment(MAIN_OR_XPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+		create_attachment(XMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+		create_attachment(YPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+		create_attachment(YMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+		create_attachment(ZPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+		create_attachment(ZMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+		fisrt_setup = false
 
 func pre_render_override() -> void:
 	super_pre_render()
@@ -78,4 +82,8 @@ func get_render_target_override() -> RID:
 	return get_attachment("PostProcessed")
 
 func cleanup_override() -> void:
+	current_cam_data = null
+	opaque_surfaces_data.clear()
+	no_shadow_light_data.clear()
+	shadow_light_data.clear()
 	pass

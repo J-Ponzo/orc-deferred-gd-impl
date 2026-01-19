@@ -2,18 +2,14 @@ extends ORC_DeferredGDRendererPass
 class_name ORC_DeferredGDPostProcessPass
 
 var screen_quad_primitive : ORC_ProceduralPrimitive
-var shaded_map_sampler : ORC_SamplerRID
-var global_uniform_buffer : ORC_BufferRID
-var uniform_set : ORC_SetRID
+var shaded_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
+var global_uniform_buffer : ORC_BufferRID = ORC_BufferRID.new()
+var uniform_set : ORC_SetRID = ORC_SetRID.new()
 
-var window_size_last_frame : Vector2i
+var window_size_last_frame : Vector2i = Vector2i(-1, -1)
 
 func setup_override() -> void:
 	super()
-
-	shaded_map_sampler = ORC_SamplerRID.new()
-	global_uniform_buffer = ORC_BufferRID.new()
-	uniform_set = ORC_SetRID.new()
 	
 	screen_quad_primitive = ORC_ProceduralPrimitiveFactory.create_screen_quad()
 	shaded_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
@@ -49,9 +45,5 @@ func render_override() -> void:
 
 func cleanup_override() -> void:
 	super()
-
+	window_size_last_frame = Vector2i(-1, -1)
 	ORC_ProceduralPrimitiveFactory.free_rids(screen_quad_primitive)
-
-	global_uniform_buffer.free_rid()
-	shaded_map_sampler.free_rid()
-	uniform_set.free_rid()
