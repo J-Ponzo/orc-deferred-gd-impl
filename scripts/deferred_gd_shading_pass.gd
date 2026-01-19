@@ -7,29 +7,30 @@ var screen_quad_primitive : ORC_ProceduralPrimitive
 var invert_sphere_primitive : ORC_ProceduralPrimitive
 var invert_cone_primitive : ORC_ProceduralPrimitive
 
-var albedo_map_sampler : ORC_SamplerRID
-var normal_map_sampler : ORC_SamplerRID
-var position_map_sampler : ORC_SamplerRID
-var orm_map_sampler : ORC_SamplerRID
+# TODO : propagate to all files the direct initialization of SafeRID members
+var albedo_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
+var normal_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
+var position_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
+var orm_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
 
-var main_or_xplus_shadow_map_sampler : ORC_SamplerRID
-var xminus_shadow_map_sampler : ORC_SamplerRID
-var yplus_shadow_map_sampler : ORC_SamplerRID
-var yminus_shadow_map_sampler : ORC_SamplerRID
-var zplus_shadow_map_sampler : ORC_SamplerRID
-var zminus_shadow_map_sampler : ORC_SamplerRID
+var main_or_xplus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
+var xminus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
+var yplus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
+var yminus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
+var zplus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
+var zminus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
 
-var vert_uniform_set : ORC_SetRID
-var frag_uniform_set : ORC_SetRID
-var global_uniform_buffer : ORC_BufferRID
+var vert_uniform_set : ORC_SetRID = ORC_SetRID.new()
+var frag_uniform_set : ORC_SetRID = ORC_SetRID.new()
+var global_uniform_buffer : ORC_BufferRID = ORC_BufferRID.new()
 
-var light_matrice_uniform_set : ORC_SetRID
+var light_matrice_uniform_set : ORC_SetRID = ORC_SetRID.new()
 
-var shadow_framebuffers : Dictionary[StringName, RID]
+var shadow_framebuffers : Dictionary[StringName, RID] 
 
-var uniform_set : ORC_SetRID
-var bone_pose_uniform_set : ORC_SetRID
-var bind_pose_uniform_set : ORC_SetRID
+var uniform_set : ORC_SetRID = ORC_SetRID.new()
+var bone_pose_uniform_set : ORC_SetRID = ORC_SetRID.new()
+var bind_pose_uniform_set : ORC_SetRID = ORC_SetRID.new()
 
 var vf_static : int
 var vf_skeletal : int
@@ -43,21 +44,6 @@ var frag_uniforms : Array[RDUniform]
 
 func setup_override() -> void:
 	super()
-
-	albedo_map_sampler = ORC_SamplerRID.new()
-	normal_map_sampler = ORC_SamplerRID.new()
-	position_map_sampler = ORC_SamplerRID.new()
-	orm_map_sampler = ORC_SamplerRID.new()
-	main_or_xplus_shadow_map_sampler = ORC_SamplerRID.new()
-	xminus_shadow_map_sampler = ORC_SamplerRID.new()
-	yplus_shadow_map_sampler = ORC_SamplerRID.new()
-	yminus_shadow_map_sampler = ORC_SamplerRID.new()
-	zplus_shadow_map_sampler = ORC_SamplerRID.new()
-	zminus_shadow_map_sampler = ORC_SamplerRID.new()
-	vert_uniform_set = ORC_SetRID.new()
-	frag_uniform_set = ORC_SetRID.new()
-	global_uniform_buffer = ORC_BufferRID.new()
-	light_matrice_uniform_set = ORC_SetRID.new()
 
 	var vf_info : ORC_VertexFormatInfo = ORC_VertexFormatInfo.new()
 	vf_info.is_2d = true
