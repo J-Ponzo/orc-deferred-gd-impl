@@ -42,6 +42,11 @@ var shadow_framebuffer_format : int
 var vert_uniforms : Array[RDUniform]
 var frag_uniforms : Array[RDUniform]
 
+var shadow_cubemap_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
+var shadow_cubemap_texture : ORC_TextureRID = ORC_TextureRID.new()	# TODO : Check why it s not an attachment
+var face_views : Array[RID] = []	# TODO : Check what type it is
+var face_framebuffers : Array[RID] = []
+
 func setup_override() -> void:
 	super()
 
@@ -89,6 +94,29 @@ func setup_override() -> void:
 	create_shadow_framebuffer(ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH)
 	create_shadow_framebuffer(ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH)
 	create_shadow_framebuffer(ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH)
+
+	setup_shadow_cubemap_resources()
+
+func setup_shadow_cubemap_resources() -> void:
+	var format := RDTextureFormat.new()
+	format.width = 4096
+	format.height = 4096
+	format.texture_type = RenderingDevice.TEXTURE_TYPE_CUBE
+	format.array_layers = 6
+	format.format = RenderingDevice.DATA_FORMAT_D32_SFLOAT
+	format.usage_bits = (
+		RenderingDevice.TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
+		RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
+	)
+	shadow_cubemap_texture.rid = ORC_RDHelper.get_rd().texture_create(format, RDTextureView.new())
+
+	for face_idx in range(6):
+		var face_view := RDTextureView.new()
+		var slice_rid : RID = ORC_RDHelper.get_rd().texture_create_shared_from_slice(face_view, shadow_cubemap_texture.rid, face_idx, 0)
+		face_views.append(slice_rid)
+
+		var fb : RID = ORC_RDHelper.get_rd().framebuffer_create([face_views[face_idx]])		# TODO : check if this method is better than the used one with fb_format
+		face_framebuffers.append(fb)
 
 func create_shadow_framebuffer(attach_name : StringName) -> void:
 	var shadow_attachments : Array[RID] = [deferred_gd_renderer.get_attachment(attach_name)]
