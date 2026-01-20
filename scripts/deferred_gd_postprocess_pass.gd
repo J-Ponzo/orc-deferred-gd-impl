@@ -32,7 +32,7 @@ func render_override() -> void:
 	uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create([global_uniform, shaded_uniform], direct_psos["post_process"].shader_program, 0)
 	var clear_colors = [Color(0.0, 0.0, 0.0)]
 	var draw_flags = RenderingDevice.DRAW_CLEAR_ALL
-	var draw_list = ORC_RDHelper.get_rd().draw_list_begin(framebuffer, draw_flags, clear_colors)
+	var draw_list = ORC_RDHelper.get_rd().draw_list_begin(get_framebuffer("Main"), draw_flags, clear_colors)
 
 	ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, uniform_set.rid, 0)
 	ORC_RDHelper.get_rd().draw_list_bind_render_pipeline(draw_list, direct_psos["post_process"].pipeline)

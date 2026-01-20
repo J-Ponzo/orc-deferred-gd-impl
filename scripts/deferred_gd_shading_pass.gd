@@ -148,7 +148,7 @@ func draw_all_no_shadow_lights() -> void:
 			frag_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create(frag_uniforms, pso.shader_program, 0)
 			var clear_colors : Array[Color] = [Color(0.0, 0.0, 0.0, 1.0)]
 			var draw_flags : int = RenderingDevice.DRAW_CLEAR_ALL if is_first_light else RenderingDevice.DRAW_IGNORE_ALL
-			draw_list = ORC_RDHelper.get_rd().draw_list_begin(framebuffer, draw_flags, clear_colors)
+			draw_list = ORC_RDHelper.get_rd().draw_list_begin(get_framebuffer("Main"), draw_flags, clear_colors)
 			
 			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, vert_uniform_set.rid, 1)
 			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, frag_uniform_set.rid, 0)
@@ -198,7 +198,7 @@ func single_render_call(light_data : ORC_DeferredGD_LightData) -> void:
 		light_matrices_uniform = get_spot_light_matrices_uniform(light_data as ORC_DeferredGD_SpotLightData)
 		is_directional = false
 
-	shadow_casting_light_draw_call(light_data, frag_uniforms_with_shadow_maps, light_matrices_uniform, framebuffer, light_primitive, is_directional)
+	shadow_casting_light_draw_call(light_data, frag_uniforms_with_shadow_maps, light_matrices_uniform, get_framebuffer("Main"), light_primitive, is_directional)
 
 func get_omni_light_matrices_uniform(omni_data : ORC_DeferredGD_OmniLightData) -> RDUniform:
 	var light_matrices_uniform : RDUniform = RDUniform.new()

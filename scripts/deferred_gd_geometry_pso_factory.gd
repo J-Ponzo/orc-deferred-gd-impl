@@ -21,4 +21,4 @@ func create_pso_override(flags_mask : int, vertex_format : int, vertex_src : Str
 		var blend_attachment : RDPipelineColorBlendStateAttachment = RDPipelineColorBlendStateAttachment.new()
 		pso_info.color_blend_state.attachments.append(blend_attachment)
 
-	return ORC_RDHelper.create_pso(pso_info, self.render_pass.framebuffer_format)
+	return ORC_RDHelper.create_pso(pso_info, self.render_pass.get_framebuffer_format("Main"))

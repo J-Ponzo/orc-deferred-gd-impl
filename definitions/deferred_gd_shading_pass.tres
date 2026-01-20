@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=15 format=3 uid="uid://b2b365v2njtst"]
+[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=16 format=3 uid="uid://b2b365v2njtst"]
 
 [ext_resource type="Script" uid="uid://cgf0wrkdwkdto" path="res://addons/open-render-craft/scripts/definitions/pso_def.gd" id="1_ajpht"]
 [ext_resource type="Script" uid="uid://c1fvan06uwqox" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_shading_pass.gd" id="2_jt7vp"]
@@ -10,6 +10,11 @@
 [ext_resource type="Script" uid="uid://cgbidtu67o75j" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_shadow_pso_factory.gd" id="7_q31dj"]
 
 [sub_resource type="Resource" id="Resource_mllt6"]
+script = ExtResource("2_s2q3u")
+color_keys = Array[StringName]([&"Shaded"])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_d0mcj"]
 script = ExtResource("2_s2q3u")
 color_keys = Array[StringName]([&"Shaded"])
 metadata/_custom_type_script = "uid://xkekl1qfnapr"
@@ -48,6 +53,9 @@ script = ExtResource("2_opxry")
 pass_name = &"Shading"
 pass_impl = SubResource("Resource_ajpht")
 fb_format_def = SubResource("Resource_mllt6")
+fb_format_defs = Dictionary[StringName, ExtResource("2_s2q3u")]({
+&"Main": SubResource("Resource_d0mcj")
+})
 pso_factory_defs = Dictionary[StringName, ExtResource("5_mllt6")]({
 &"Light": SubResource("Resource_sfxxk"),
 &"Shadow": SubResource("Resource_xde04")
