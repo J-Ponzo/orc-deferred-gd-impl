@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=10 format=3 uid="uid://c866i80mmtvql"]
+[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=9 format=3 uid="uid://c866i80mmtvql"]
 
 [ext_resource type="Script" uid="uid://cgf0wrkdwkdto" path="res://addons/open-render-craft/scripts/definitions/pso_def.gd" id="1_khxjq"]
 [ext_resource type="Script" uid="uid://xkekl1qfnapr" path="res://addons/open-render-craft/scripts/definitions/framebuffer_format_def.gd" id="2_l7uur"]
@@ -6,12 +6,6 @@
 [ext_resource type="Script" uid="uid://bdv3nfrrrhnm3" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_transparent_pass.gd" id="2_yig65"]
 [ext_resource type="Script" uid="uid://dc1h8f6w8okcw" path="res://addons/open-render-craft/scripts/definitions/gd_impl_def.gd" id="3_khxjq"]
 [ext_resource type="Script" uid="uid://byv4yjobnmtgf" path="res://addons/open-render-craft/scripts/definitions/pso_factory_def.gd" id="4_l7uur"]
-
-[sub_resource type="Resource" id="Resource_vu8vt"]
-script = ExtResource("2_l7uur")
-depth_key = &"Depth"
-color_keys = Array[StringName]([&"Shaded"])
-metadata/_custom_type_script = "uid://xkekl1qfnapr"
 
 [sub_resource type="Resource" id="Resource_0hg65"]
 script = ExtResource("2_l7uur")
@@ -28,7 +22,6 @@ metadata/_custom_type_script = "uid://dc1h8f6w8okcw"
 script = ExtResource("2_qydj4")
 pass_name = &"Transparent"
 pass_impl = SubResource("Resource_l7uur")
-fb_format_def = SubResource("Resource_vu8vt")
 fb_format_defs = Dictionary[StringName, ExtResource("2_l7uur")]({
 &"Main": SubResource("Resource_0hg65")
 })
