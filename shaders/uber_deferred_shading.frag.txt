@@ -80,11 +80,10 @@ layout(set = 0, binding = 11) uniform samplerCube shadow_cubemap;
 #ifdef CAST_SHADOW
 
 #ifdef OMNI
-float shadow_omni_cube_compute(vec3 light_dir, vec3 world_position) {
-	vec3 to_light = world_position - light_position;
-	float shadow_depth = texture(shadow_cubemap, to_light).r;
+float linear_shadow_compute(vec3 light_dir, float diastance) {
+	float shadow_depth = texture(shadow_cubemap, -light_dir).r;
 
-	float current_depth = length(to_light) / light_range;
+	float current_depth = diastance / light_range;
 	float bias = 0.01;
 	float shadow = current_depth - bias > shadow_depth ? 0.0 : 1.0;
 	return shadow;
@@ -190,7 +189,7 @@ void main() {
 
 #ifdef CAST_SHADOW
 #ifdef OMNI
-	attenuation_factor *= shadow_omni_cube_compute(light_dir, world_position);
+	attenuation_factor *= linear_shadow_compute(light_dir, distance);
 	// attenuation_factor *= shadow_compute(light_dir, world_position);
 #else
 	attenuation_factor *= shadow_compute(light_dir, world_position);
