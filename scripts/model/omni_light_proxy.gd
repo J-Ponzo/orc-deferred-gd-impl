@@ -114,16 +114,34 @@ func update_override() -> void:
 		bytes.append_array(ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH]))
 		bytes.append_array(ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH]))
 		bytes.append_array(ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH]))
-		bytes.append_array(ORC_RDHelper.proj_to_bytes(proj))
+		bytes.append_array(ORC_RDHelper.proj_to_bytes(proj)) 
 		primary_data.packed_shadow_matrices_uniform_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
+# static var omni_view_dirs : Dictionary[StringName, Vector3] = {
+# 	ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH : Vector3(1, 0, 0),
+# 	ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH :  Vector3(-1, 0, 0),
+# 	ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH :  Vector3(0, 1, 0),
+# 	ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH :  Vector3(0, -1, 0),
+# 	ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH :  Vector3(0, 0, 1),
+# 	ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH :  Vector3(0, 0, -1),
+# }
+
+# static var omni_view_ups : Dictionary[StringName, Vector3] = {
+# 	ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH :  Vector3(0, -1, 0),
+# 	ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH :  Vector3(0, -1, 0),
+# 	ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH :  Vector3(0, 0, 1),
+# 	ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH :  Vector3(0, 0, -1),
+# 	ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH :  Vector3(0, -1, 0),
+# 	ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH :  Vector3(0, -1, 0),
+# }
+
 static var omni_view_dirs : Dictionary[StringName, Vector3] = {
-	ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH : Vector3(1, 0, 0),
-	ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH :  Vector3(-1, 0, 0),
-	ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH :  Vector3(0, 1, 0),
-	ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH :  Vector3(0, -1, 0),
-	ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH :  Vector3(0, 0, 1),
-	ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH :  Vector3(0, 0, -1),
+	ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH : Vector3(-1, 0, 0),
+	ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH :  Vector3(1, 0, 0),
+	ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH :  Vector3(0, -1, 0),
+	ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH :  Vector3(0, 1, 0),
+	ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH :  Vector3(0, 0, -1),
+	ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH :  Vector3(0, 0, 1),
 }
 
 static var omni_view_ups : Dictionary[StringName, Vector3] = {

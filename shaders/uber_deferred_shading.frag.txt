@@ -71,12 +71,26 @@ layout(set = 0, binding = 7) uniform sampler2D yplus_shadow_tex;
 layout(set = 0, binding = 8) uniform sampler2D yminus_shadow_tex;
 layout(set = 0, binding = 9) uniform sampler2D zplus_shadow_tex;
 layout(set = 0, binding = 10) uniform sampler2D zminus_shadow_tex;
+layout(set = 0, binding = 11) uniform samplerCube shadow_cubemap;
 #endif
 #endif
 
 #include "res://orc-renderers-impl/orc-deferred-gd-impl/shaders/light.glslinc.txt"
 
 #ifdef CAST_SHADOW
+
+#ifdef OMNI
+float shadow_omni_cube_compute(vec3 light_dir, vec3 world_position) {
+	vec3 to_light = world_position - light_position;
+	float shadow_depth = texture(shadow_cubemap, to_light).r;
+
+	float current_depth = length(to_light) / light_range;
+	float bias = 0.01;
+	float shadow = current_depth - bias > shadow_depth ? 0.0 : 1.0;
+	return shadow;
+}
+#endif
+
 float shadow_compute(vec3 light_dir, vec3 world_position) {
 #ifdef OMNI
 	// TODO use cubemap to cut branches
@@ -118,6 +132,8 @@ float shadow_compute(vec3 light_dir, vec3 world_position) {
 			shadow_depth = texture(zminus_shadow_tex, shadow_uv).r;
 			break;
 	}
+	// vec3 to_light = world_position - light_position;
+	// shadow_depth = texture(shadow_cubemap, light_dir).r;
 #else
 	shadow_depth = texture(main_or_xplus_shadow_tex, shadow_uv).r;
 #endif
@@ -173,7 +189,12 @@ void main() {
 #endif
 
 #ifdef CAST_SHADOW
+#ifdef OMNI
+	attenuation_factor *= shadow_omni_cube_compute(light_dir, world_position);
+	// attenuation_factor *= shadow_compute(light_dir, world_position);
+#else
 	attenuation_factor *= shadow_compute(light_dir, world_position);
+#endif
 #endif
 
 	vec3 diffuse_light = vec3(0.0);
