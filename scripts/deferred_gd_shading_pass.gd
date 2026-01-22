@@ -154,14 +154,16 @@ func render_override() -> void:
 	vert_uniforms = [cam_matrices_uniform]
 	frag_uniforms = [global_uniform, albedo_uniform, normal_uniform, position_uniform, orm_uniform]
 
+	is_first_light = true
+
 	draw_all_no_shadow_lights()
 
 	for light_data : ORC_DeferredGD_LightData in deferred_gd_renderer.shadow_light_data:
 		single_shadow_map_draw_pass(light_data)
 		single_shadow_light_render_call(light_data)
 
+var is_first_light : bool
 func draw_all_no_shadow_lights() -> void:
-	var is_first_light : bool = true
 	var previous_pso : ORC_PSO = null
 	var draw_list : int = -1
 
@@ -178,13 +180,12 @@ func draw_all_no_shadow_lights() -> void:
 			frag_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create(frag_uniforms, pso.shader_program, 0)
 			var clear_colors : Array[Color] = [Color(0.0, 0.0, 0.0, 1.0)]
 			var draw_flags : int = RenderingDevice.DRAW_CLEAR_ALL if is_first_light else RenderingDevice.DRAW_IGNORE_ALL
+			is_first_light = false
 			draw_list = ORC_RDHelper.get_rd().draw_list_begin(get_framebuffer("Main"), draw_flags, clear_colors)
 			
 			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, vert_uniform_set.rid, 1)
 			ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, frag_uniform_set.rid, 0)
 			ORC_RDHelper.get_rd().draw_list_bind_render_pipeline(draw_list, pso.pipeline)
-
-			is_first_light = false
 
 		var primitive : ORC_ProceduralPrimitive = screen_quad_primitive
 		if light_data is ORC_DeferredGD_OmniLightData:
@@ -299,9 +300,9 @@ func shadow_light_draw_call(light_data : ORC_DeferredGD_LightData, frag_uniforms
 	light_matrice_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create([light_matrices_uniform], pso.shader_program, 2)
 	
 	var clear_colors : Array[Color] = [Color(0.0, 0.0, 0.0, 1.0)]
-	var draw_flags = RenderingDevice.DRAW_IGNORE_ALL
+	var draw_flags : int = RenderingDevice.DRAW_CLEAR_ALL if is_first_light else RenderingDevice.DRAW_IGNORE_ALL
 	var draw_list : int = ORC_RDHelper.get_rd().draw_list_begin(framebuffer, draw_flags, clear_colors)
-
+	is_first_light = false
 	ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, vert_uniform_set.rid, 1)
 	ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, frag_uniform_set.rid, 0)
 	ORC_RDHelper.get_rd().draw_list_bind_uniform_set(draw_list, light_matrice_uniform_set.rid, 2)
