@@ -71,6 +71,8 @@ layout(set = 0, binding = 7) uniform sampler2D yplus_shadow_tex;
 layout(set = 0, binding = 8) uniform sampler2D yminus_shadow_tex;
 layout(set = 0, binding = 9) uniform sampler2D zplus_shadow_tex;
 layout(set = 0, binding = 10) uniform sampler2D zminus_shadow_tex;
+#endif
+#if defined(OMNI) || defined(SPOT)
 layout(set = 0, binding = 11) uniform samplerCube shadow_cubemap;
 #endif
 #endif
@@ -79,12 +81,22 @@ layout(set = 0, binding = 11) uniform samplerCube shadow_cubemap;
 
 #ifdef CAST_SHADOW
 
+#if defined(OMNI) || defined(SPOT)
+float linear_shadow_compute(vec3 light_dir, vec3 world_position, float distance) {
 #ifdef OMNI
-float linear_shadow_compute(vec3 light_dir, float diastance) {
 	float shadow_depth = texture(shadow_cubemap, -light_dir).r;
-
-	float current_depth = diastance / light_range;
-	float bias = 0.01;
+#else
+	vec4 light_clip = light.projection * light.view * vec4(world_position, 1.0);
+	vec3 light_ndc = light_clip.xyz / light_clip.w;
+	vec2 shadow_uv = light_ndc.xy * 0.5 + 0.5;
+	shadow_uv = clamp(shadow_uv, 0.0, 1.0);
+    float cu = shadow_uv.x * 2.0 - 1.0;
+    float cv = shadow_uv.y * 2.0 - 1.0;
+    vec3 cubemap_dir = vec3(1.0, -cv, -cu);
+    float shadow_depth = texture(shadow_cubemap, cubemap_dir).r;
+#endif
+	float current_depth = distance / light_range;
+	float bias = 0.001;
 	float shadow = current_depth - bias > shadow_depth ? 0.0 : 1.0;
 	return shadow;
 }
@@ -188,8 +200,8 @@ void main() {
 #endif
 
 #ifdef CAST_SHADOW
-#ifdef OMNI
-	attenuation_factor *= linear_shadow_compute(light_dir, distance);
+#if defined(OMNI) || defined(SPOT)
+	attenuation_factor *= linear_shadow_compute(light_dir, world_position, distance);
 	// attenuation_factor *= shadow_compute(light_dir, world_position);
 #else
 	attenuation_factor *= shadow_compute(light_dir, world_position);
