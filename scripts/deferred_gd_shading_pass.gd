@@ -91,6 +91,9 @@ func setup_shadow_cubemap_resources() -> void:
 	)
 	shadow_cubemap_texture.rid = ORC_RDHelper.get_rd().texture_create(format, RDTextureView.new())
 
+	var shadow_attachment_format : RDAttachmentFormat = ORC_RendererFactory.create_attachment_format(deferred_gd_renderer.shadow_attach_def)
+	shadow_framebuffer_format = ORC_RDHelper.get_rd().framebuffer_format_create([shadow_attachment_format])
+
 	for face_idx in range(6):
 		var face_view := RDTextureView.new()
 		var slice_rid : RID = ORC_RDHelper.get_rd().texture_create_shared_from_slice(face_view, shadow_cubemap_texture.rid, face_idx, 0)
