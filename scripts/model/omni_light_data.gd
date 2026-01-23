@@ -8,6 +8,7 @@ var location : Vector3
 var range : float
 var attenuation : float
 
+# TODO : Find a way to encapsulate this in a cubemap shadow data structure or something
 # TODO : shadow_matrices_uniform_buffers & packed_shadow_matrices_uniform_buffer are exclty the same data but in different layouts. The former is used in shadow_pass and the later in shading_pass. This is not optimal. Refacto needed.
 var shadow_matrices_uniform_buffers : Dictionary[StringName, ORC_BufferRID] = {
 	ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH : ORC_BufferRID.new(),

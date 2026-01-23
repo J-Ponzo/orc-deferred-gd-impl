@@ -59,7 +59,6 @@ func update_override() -> void:
 			light_proj = construct_directional_proj(corners, light_view_transform)
 			primary_data.faked_light_position = dirty_fake_position_return
 			primary_data.faked_light_range = dirty_fake_range_return
-			print(dirty_fake_position_return, dirty_fake_range_return)
 
 		var bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(Projection(light_view))
 		bytes.append_array(ORC_RDHelper.proj_to_bytes(light_proj))

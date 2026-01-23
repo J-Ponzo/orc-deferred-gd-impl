@@ -13,13 +13,6 @@ var normal_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
 var position_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
 var orm_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
 
-var main_or_xplus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
-var xminus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
-var yplus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
-var yminus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
-var zplus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
-var zminus_shadow_map_sampler : ORC_SamplerRID = ORC_SamplerRID.new()
-
 var vert_uniform_set : ORC_SetRID = ORC_SetRID.new()
 var frag_uniform_set : ORC_SetRID = ORC_SetRID.new()
 var global_uniform_buffer : ORC_BufferRID = ORC_BufferRID.new()
@@ -67,13 +60,6 @@ func setup_override() -> void:
 	position_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
 	orm_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
 
-	main_or_xplus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	xminus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	yplus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	yminus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	zplus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-	zminus_shadow_map_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
-
 	matrices_uniform_set = ORC_SetRID.new()
 	bone_pose_uniform_set = ORC_SetRID.new()
 	bind_pose_uniform_set = ORC_SetRID.new()
@@ -87,18 +73,9 @@ func setup_override() -> void:
 	static_flag_mask = deferred_gd_renderer.scene_proxy.get_mask_from_flags([])
 	skeletal_flag_mask = deferred_gd_renderer.scene_proxy.get_mask_from_flags(["SKELETAL"])
 
-	# TODO : why not seting things up in a data driven way ? 
-	var shadow_attachment_format : RDAttachmentFormat = ORC_RendererFactory.create_attachment_format(deferred_gd_renderer.shadow_attach_def)
-	shadow_framebuffer_format = ORC_RDHelper.get_rd().framebuffer_format_create([shadow_attachment_format])
-	create_shadow_framebuffer(ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH)
-	create_shadow_framebuffer(ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH)
-	create_shadow_framebuffer(ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH)
-	create_shadow_framebuffer(ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH)
-	create_shadow_framebuffer(ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH)
-	create_shadow_framebuffer(ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH)
-
 	setup_shadow_cubemap_resources()
 
+# TODO : why not seting things up in a data driven way ? 
 func setup_shadow_cubemap_resources() -> void:
 	shadow_cubemap_sampler.rid = ORC_RDHelper.get_rd().sampler_create(ORC_RDHelper.create_sampler_state())
 
@@ -119,7 +96,7 @@ func setup_shadow_cubemap_resources() -> void:
 		var slice_rid : RID = ORC_RDHelper.get_rd().texture_create_shared_from_slice(face_view, shadow_cubemap_texture.rid, face_idx, 0)
 		face_views.append(slice_rid)
 
-		var fb : RID = ORC_RDHelper.get_rd().framebuffer_create([slice_rid])		# TODO : check if this method is better than the used one with fb_format
+		var fb : RID = ORC_RDHelper.get_rd().framebuffer_create([slice_rid], shadow_framebuffer_format)		# TODO : check if this method is better than the used one with fb_format
 		face_framebuffers.append(fb)
 
 func create_shadow_framebuffer(attach_name : StringName) -> void:
@@ -254,43 +231,28 @@ func get_directional_light_matrices_uniform(directional_data : ORC_DeferredGD_Di
 	light_matrices_uniform.add_id(directional_data.shadow_matrices_uniform_buffer.rid)
 	return light_matrices_uniform
 
+# TODO : unify all these 3 methods into one with parameters
 func get_directional_frag_uniforms_with_shadow_maps() -> Array[RDUniform]:
 	var frag_uniforms_with_shadow_maps : Array[RDUniform]
 	frag_uniforms_with_shadow_maps.append_array(frag_uniforms)
-	var shadow_attachment : RID = renderer.get_attachment(renderer.MAIN_OR_XPlus_SHADOW_ATTACH)
-	var shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, main_or_xplus_shadow_map_sampler.rid, 5)
-	var shadow_cubemap_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_cubemap_texture.rid, shadow_cubemap_sampler.rid, 11)
-	frag_uniforms_with_shadow_maps.append_array([shadow_uniform, shadow_cubemap_uniform])
+	var shadow_cubemap_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_cubemap_texture.rid, shadow_cubemap_sampler.rid, 5)
+	frag_uniforms_with_shadow_maps.append(shadow_cubemap_uniform)
 
 	return frag_uniforms_with_shadow_maps
 
 func get_omni_frag_uniforms_with_shadow_maps() -> Array[RDUniform]:
 	var frag_uniforms_with_shadow_maps : Array[RDUniform]
 	frag_uniforms_with_shadow_maps.append_array(frag_uniforms)
-	var shadow_attachment : RID = renderer.get_attachment(renderer.MAIN_OR_XPlus_SHADOW_ATTACH)
-	var main_or_xplus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, main_or_xplus_shadow_map_sampler.rid, 5)
-	shadow_attachment = renderer.get_attachment(renderer.XMinus_SHADOW_ATTACH)
-	var xminus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, xminus_shadow_map_sampler.rid, 6)
-	shadow_attachment = renderer.get_attachment(renderer.YPlus_SHADOW_ATTACH)
-	var yplus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, yplus_shadow_map_sampler.rid, 7)
-	shadow_attachment = renderer.get_attachment(renderer.YMinus_SHADOW_ATTACH)
-	var yminus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, yminus_shadow_map_sampler.rid, 8)
-	shadow_attachment = renderer.get_attachment(renderer.ZPlus_SHADOW_ATTACH)
-	var zplus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, zplus_shadow_map_sampler.rid, 9)
-	shadow_attachment = renderer.get_attachment(renderer.ZMinus_SHADOW_ATTACH)
-	var zminus_shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, zminus_shadow_map_sampler.rid, 10)
-	var shadow_cubemap_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_cubemap_texture.rid, shadow_cubemap_sampler.rid, 11)
-	frag_uniforms_with_shadow_maps.append_array([main_or_xplus_shadow_uniform, xminus_shadow_uniform, yplus_shadow_uniform, yminus_shadow_uniform, zplus_shadow_uniform, zminus_shadow_uniform, shadow_cubemap_uniform])
+	var shadow_cubemap_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_cubemap_texture.rid, shadow_cubemap_sampler.rid, 5)
+	frag_uniforms_with_shadow_maps.append(shadow_cubemap_uniform)
 	
 	return frag_uniforms_with_shadow_maps
 
 func get_spot_frag_uniforms_with_shadow_maps() -> Array[RDUniform]:
 	var frag_uniforms_with_shadow_maps : Array[RDUniform]
 	frag_uniforms_with_shadow_maps.append_array(frag_uniforms)
-	var shadow_attachment : RID = renderer.get_attachment(renderer.MAIN_OR_XPlus_SHADOW_ATTACH)
-	var shadow_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_attachment, main_or_xplus_shadow_map_sampler.rid, 5)
-	var shadow_cubemap_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_cubemap_texture.rid, shadow_cubemap_sampler.rid, 11)
-	frag_uniforms_with_shadow_maps.append_array([shadow_uniform, shadow_cubemap_uniform])
+	var shadow_cubemap_uniform : RDUniform = ORC_RDHelper.create_texture_sampler_uniform(shadow_cubemap_texture.rid, shadow_cubemap_sampler.rid, 5)
+	frag_uniforms_with_shadow_maps.append(shadow_cubemap_uniform)
 
 	return frag_uniforms_with_shadow_maps
 
@@ -346,26 +308,8 @@ func directional_draw_pass(light_data : ORC_DeferredGD_DirectionalLightData) -> 
 
 func omni_shadow_map_draw_pass(light_data : ORC_DeferredGD_OmniLightData) -> void:
 	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.opaque_surfaces_data
-	var shadow_framebuffer_name : StringName = ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH
-	var shadow_framebuffer : RID = shadow_framebuffers[shadow_framebuffer_name]
-	shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffers[shadow_framebuffer_name], shadow_framebuffer)
-	shadow_framebuffer_name = ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH
-	shadow_framebuffer = shadow_framebuffers[shadow_framebuffer_name]
-	shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffers[shadow_framebuffer_name], shadow_framebuffer)
-	shadow_framebuffer_name = ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH
-	shadow_framebuffer = shadow_framebuffers[shadow_framebuffer_name]
-	shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffers[shadow_framebuffer_name], shadow_framebuffer)
-	shadow_framebuffer_name = ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH
-	shadow_framebuffer = shadow_framebuffers[shadow_framebuffer_name]
-	shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffers[shadow_framebuffer_name], shadow_framebuffer)
-	shadow_framebuffer_name = ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH
-	shadow_framebuffer = shadow_framebuffers[shadow_framebuffer_name]
-	shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffers[shadow_framebuffer_name], shadow_framebuffer)
-	shadow_framebuffer_name = ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH
-	shadow_framebuffer = shadow_framebuffers[shadow_framebuffer_name]
-	shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffers[shadow_framebuffer_name], shadow_framebuffer)
 
-	shadow_framebuffer = face_framebuffers[0]
+	var shadow_framebuffer : RID = face_framebuffers[0]
 	var shadow_matrices_buffer : ORC_BufferRID = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH]
 	shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, shadow_framebuffer)
 
@@ -391,7 +335,6 @@ func omni_shadow_map_draw_pass(light_data : ORC_DeferredGD_OmniLightData) -> voi
 
 func spot_shadow_map_draw_pass(light_data : ORC_DeferredGD_SpotLightData) -> void:
 	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.opaque_surfaces_data
-	# var shadow_framebuffer : RID = shadow_framebuffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH]
 	var shadow_framebuffer : RID = face_framebuffers[0]
 	shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffer, shadow_framebuffer)
 
@@ -406,7 +349,7 @@ func shadow_map_draw_pass(light_data : ORC_DeferredGD_LightData, surfaces_data :
 	var additional_flags : int = 0
 	var linear_params_uniform : RDUniform = RDUniform.new()
 	var is_directional : bool = light_data is ORC_DeferredGD_DirectionalLightData
-	var is_linear : bool = light_data is ORC_DeferredGD_OmniLightData || light_data is ORC_DeferredGD_SpotLightData || is_directional
+	var is_linear : bool = light_data is ORC_DeferredGD_OmniLightData || light_data is ORC_DeferredGD_SpotLightData || is_directional	# Useless now everthing is linear
 	if is_linear:
 		additional_flags = deferred_gd_renderer.scene_proxy.get_mask_from_flags(["LINEAR_SHADOW_MAP"])
 		var floats_buffer : PackedFloat32Array = PackedFloat32Array()
