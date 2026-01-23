@@ -256,49 +256,10 @@ func single_shadow_map_draw_pass(light_data : ORC_DeferredGD_LightData) -> void:
 	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.opaque_surfaces_data
 
 	if light_data.has_flag("OMNI"):
-		var shadow_matrices_buffer : ORC_BufferRID = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH]
-		shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 0)
-		shadow_matrices_buffer = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH]
-		shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 1)
-		shadow_matrices_buffer = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH]
-		shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 2)
-		shadow_matrices_buffer = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH]
-		shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 3)
-		shadow_matrices_buffer = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH]
-		shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 4)
-		shadow_matrices_buffer = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH]
-		shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 5)
+		for i in range(6):
+			shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffers[i], i)
 	else:
 		shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffer)
-
-func directional_draw_pass(light_data : ORC_DeferredGD_DirectionalLightData) -> void:
-	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.opaque_surfaces_data
-	shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffer)
-
-func omni_shadow_map_draw_pass(light_data : ORC_DeferredGD_OmniLightData) -> void:
-	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.opaque_surfaces_data
-
-	var shadow_matrices_buffer : ORC_BufferRID = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH]
-	shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 0)
-
-	shadow_matrices_buffer = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH]
-	shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 1)
-
-	shadow_matrices_buffer = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH]
-	shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 2)
-
-	shadow_matrices_buffer = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH]
-	shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 3)
-
-	shadow_matrices_buffer = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH]
-	shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 4)
-
-	shadow_matrices_buffer = light_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH]
-	shadow_map_draw_pass(light_data, surfaces_data, shadow_matrices_buffer, 5)
-
-func spot_shadow_map_draw_pass(light_data : ORC_DeferredGD_SpotLightData) -> void:
-	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.opaque_surfaces_data
-	shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffer)
 
 var linear_params_buffer : ORC_BufferRID = ORC_BufferRID.new()
 var omni_params_uniform_set : ORC_SetRID = ORC_SetRID.new()

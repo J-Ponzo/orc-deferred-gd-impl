@@ -521,8 +521,8 @@ func free_skeleton_data(skeleton_data : ORC_DeferredGD_SkeletonData, registry : 
 
 func free_omni_light_data(omni_light_data : ORC_DeferredGD_OmniLightData, registry : ORC_ProxyRegistry) -> bool:
 	omni_light_data.packed_shadow_matrices_uniform_buffer.free_rid()
-	for key in omni_light_data.shadow_matrices_uniform_buffers.keys():
-		omni_light_data.shadow_matrices_uniform_buffers[key].free_rid()
+	for buffer : ORC_BufferRID in omni_light_data.shadow_matrices_uniform_buffers:
+		buffer.free_rid()
 	return destroy_and_unregister_data(omni_light_data, registry)
 
 func free_spot_light_data(spot_light_data : ORC_DeferredGD_SpotLightData, registry : ORC_ProxyRegistry) -> bool:

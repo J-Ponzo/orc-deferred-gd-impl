@@ -1,12 +1,14 @@
 extends ORC_RendererBase
 class_name ORC_DeferredGDRenderer
 
-const MAIN_OR_XPlus_SHADOW_ATTACH = "Main_Or_+X_Shadow_Attach"
-const XMinus_SHADOW_ATTACH = "-X_Shadow_Attach"
-const YPlus_SHADOW_ATTACH = "+Y_Shadow_Attach"
-const YMinus_SHADOW_ATTACH = "-Y_Shadow_Attach"
-const ZPlus_SHADOW_ATTACH = "+Z_Shadow_Attach"
-const ZMinus_SHADOW_ATTACH = "-Z_Shadow_Attach"
+# TODO : Remove
+# const MAIN_OR_XPlus_SHADOW_ATTACH = "Main_Or_+X_Shadow_Attach"
+# const XMinus_SHADOW_ATTACH = "-X_Shadow_Attach"
+# const YPlus_SHADOW_ATTACH = "+Y_Shadow_Attach"
+# const YMinus_SHADOW_ATTACH = "-Y_Shadow_Attach"
+# const ZPlus_SHADOW_ATTACH = "+Z_Shadow_Attach"
+# const ZMinus_SHADOW_ATTACH = "-Z_Shadow_Attach"
+const SHADOW_ATTACH_PREFIX = "Shadow_Attach_Face_"
 
 # TODO : make a c++ Info variant for this so we can access it from both gdscript and c++
 var shadow_attach_def : ORC_AttachmentFormat_Def
@@ -26,12 +28,8 @@ func setup_override() -> void:
 	shadow_attach_def.height = 4096
 
 	if fisrt_setup:
-		create_attachment(MAIN_OR_XPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
-		create_attachment(XMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
-		create_attachment(YPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
-		create_attachment(YMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
-		create_attachment(ZPlus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
-		create_attachment(ZMinus_SHADOW_ATTACH, ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
+		for i in range(6):
+			create_attachment(get_shadow_attach_name(i), ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
 		fisrt_setup = false
 
 func pre_render_override() -> void:
@@ -87,3 +85,6 @@ func cleanup_override() -> void:
 	no_shadow_light_data.clear()
 	shadow_light_data.clear()
 	pass
+
+func get_shadow_attach_name(face_index : int) -> String:
+	return SHADOW_ATTACH_PREFIX + str(face_index)

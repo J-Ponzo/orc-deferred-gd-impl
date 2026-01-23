@@ -62,13 +62,10 @@ func update_override() -> void:
 
 	if has_shadow_changed || has_moved:
 		# TODO compute that in model
-		var view : Dictionary[StringName, Projection]		# Might be better with an array. But it's more readable like this
-		view[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH] = construct_omni_view_face(ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH, primary_data.location)
-		view[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH] = construct_omni_view_face(ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH, primary_data.location)
-		view[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH] = construct_omni_view_face(ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH, primary_data.location)
-		view[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH] = construct_omni_view_face(ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH, primary_data.location)
-		view[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH] = construct_omni_view_face(ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH, primary_data.location)
-		view[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH] = construct_omni_view_face(ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH, primary_data.location)
+		var view : Array[Projection]
+		view.resize(6)		# TODO : Can we do this in 1 line initialization ?
+		for i in range(6):
+			view[i] = construct_omni_view_face(i, primary_data.location)
 
 		var fov: float = 90.0
 		var aspect: float = 1.0
@@ -76,65 +73,70 @@ func update_override() -> void:
 		var far: float = primary_data.range
 		var proj : Projection = Projection.create_perspective(fov, aspect, near, far)
 
-		# X+
+		# TODO : roll in for loop
 		var proj_bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(proj)
-		var bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH])
-		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		var bytes : PackedByteArray
+		for i in range(6):
+			bytes = ORC_RDHelper.proj_to_bytes(view[i])
+			bytes.append_array(proj_bytes)
+			primary_data.shadow_matrices_uniform_buffers[i].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
-		# X-
-		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH])
-		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		# # X+
+		# var proj_bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(proj)
+		# var bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(view[0])
+		# bytes.append_array(proj_bytes)
+		# primary_data.shadow_matrices_uniform_buffers[0].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
-		# Y+
-		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH])
-		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		# # X-
+		# bytes = ORC_RDHelper.proj_to_bytes(view[1])
+		# bytes.append_array(proj_bytes)
+		# primary_data.shadow_matrices_uniform_buffers[1].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
-		# Y-
-		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH])
-		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		# # Y+
+		# bytes = ORC_RDHelper.proj_to_bytes(view[2])
+		# bytes.append_array(proj_bytes)
+		# primary_data.shadow_matrices_uniform_buffers[2].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
-		# Z+
-		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH])
-		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		# # Y-
+		# bytes = ORC_RDHelper.proj_to_bytes(view[3])
+		# bytes.append_array(proj_bytes)
+		# primary_data.shadow_matrices_uniform_buffers[3].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
-		# Z-
-		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH])
-		bytes.append_array(proj_bytes)
-		primary_data.shadow_matrices_uniform_buffers[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		# # Z+
+		# bytes = ORC_RDHelper.proj_to_bytes(view[4])
+		# bytes.append_array(proj_bytes)
+		# primary_data.shadow_matrices_uniform_buffers[4].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+
+		# # Z-
+		# bytes = ORC_RDHelper.proj_to_bytes(view[5])
+		# bytes.append_array(proj_bytes)
+		# primary_data.shadow_matrices_uniform_buffers[5].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 		# All matrices for shading pass
-		bytes = ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH])
-		bytes.append_array(ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH]))
-		bytes.append_array(ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH]))
-		bytes.append_array(ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH]))
-		bytes.append_array(ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH]))
-		bytes.append_array(ORC_RDHelper.proj_to_bytes(view[ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH]))
+		bytes.clear()
+		for i in range(6):
+			bytes.append_array(ORC_RDHelper.proj_to_bytes(view[i]))
 		bytes.append_array(ORC_RDHelper.proj_to_bytes(proj)) 
 		primary_data.packed_shadow_matrices_uniform_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
-static var omni_view_dirs : Dictionary[StringName, Vector3] = {
-	ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH : Vector3(-1, 0, 0),
-	ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH :  Vector3(1, 0, 0),
-	ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH :  Vector3(0, -1, 0),
-	ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH :  Vector3(0, 1, 0),
-	ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH :  Vector3(0, 0, -1),
-	ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH :  Vector3(0, 0, 1),
-}
+static var omni_view_dirs : Array[Vector3] = [
+	Vector3(-1, 0, 0),
+	Vector3(1, 0, 0),
+	Vector3(0, -1, 0),
+	Vector3(0, 1, 0),
+	Vector3(0, 0, -1),
+	Vector3(0, 0, 1),
+]
 
-static var omni_view_ups : Dictionary[StringName, Vector3] = {
-	ORC_DeferredGDRenderer.MAIN_OR_XPlus_SHADOW_ATTACH :  Vector3(0, -1, 0),
-	ORC_DeferredGDRenderer.XMinus_SHADOW_ATTACH :  Vector3(0, -1, 0),
-	ORC_DeferredGDRenderer.YPlus_SHADOW_ATTACH :  Vector3(0, 0, 1),
-	ORC_DeferredGDRenderer.YMinus_SHADOW_ATTACH :  Vector3(0, 0, -1),
-	ORC_DeferredGDRenderer.ZPlus_SHADOW_ATTACH :  Vector3(0, -1, 0),
-	ORC_DeferredGDRenderer.ZMinus_SHADOW_ATTACH :  Vector3(0, -1, 0),
-}
+static var omni_view_ups : Array[Vector3] = [
+	Vector3(0, -1, 0),
+	Vector3(0, -1, 0),
+	Vector3(0, 0, 1),
+	Vector3(0, 0, -1),
+	Vector3(0, -1, 0),
+	Vector3(0, -1, 0),
+]
 
-static func construct_omni_view_face(face_key : StringName, omni_light_position) -> Projection:
-	var look : Transform3D = Transform3D(Basis.looking_at(-omni_view_dirs[face_key], omni_view_ups[face_key]), omni_light_position)
+static func construct_omni_view_face(face_index : int, omni_light_position) -> Projection:
+	var look : Transform3D = Transform3D(Basis.looking_at(-omni_view_dirs[face_index], omni_view_ups[face_index]), omni_light_position)
 	return Projection(look.affine_inverse())
