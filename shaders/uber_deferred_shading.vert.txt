@@ -1,5 +1,9 @@
 #version 450
 
+#if defined(CAST_SHADOW_OMNI) || defined(CAST_SHADOW_SPOT) || defined(CAST_SHADOW_DIRECTIONAL)
+#define CAST_SHADOW
+#endif
+
 #ifdef DIRECTIONAL
 layout(location = 0) in vec2 a_position;
 #else
@@ -13,6 +17,10 @@ layout(push_constant) uniform PushConstants {
     float light_intensity;
     vec3 light_color;
     float _pad;		//16 bytes align
+#ifdef CAST_SHADOW
+	vec3 faked_light_position;
+	float faked_light_range;
+#endif
 #endif
 
 #if defined(OMNI) || defined(SPOT) 

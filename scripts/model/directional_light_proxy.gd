@@ -57,6 +57,8 @@ func update_override() -> void:
 			var light_view_transform : Transform3D = construct_directional_view_transform(corners, primary_data.direction)
 			light_view = Projection(light_view_transform)
 			light_proj = construct_directional_proj(corners, light_view_transform)
+			primary_data.faked_light_position = dirty_fake_position_return
+			primary_data.faked_light_range = dirty_fake_range_return
 
 		var bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(Projection(light_view))
 		bytes.append_array(ORC_RDHelper.proj_to_bytes(light_proj))
@@ -120,6 +122,8 @@ static func get_max_dist_based_corners(cam: Camera3D, max_dist : float) -> Array
 
 const DIRECTONAL_DRAWPASS_MARGIN_PERCENT = 0.0
 
+static var dirty_fake_position_return : Vector3
+static var dirty_fake_range_return : float
 static func construct_directional_view_transform(frustum_corners : Array[Vector3], diretional_light_direction : Vector3) -> Transform3D:
 	var z_axis : Vector3 = -diretional_light_direction
 	var tmp_up = Vector3.UP
@@ -156,6 +160,9 @@ static func construct_directional_view_transform(frustum_corners : Array[Vector3
 
 	var light_transform : Transform3D = Transform3D(light_basis, world_center)
 	var light_view : Transform3D = light_transform.affine_inverse()
+
+	dirty_fake_position_return = world_center
+	dirty_fake_range_return = dz;
 
 	return light_view
 

@@ -19,6 +19,10 @@ layout(push_constant) uniform PushConstants {
     float light_intensity;
     vec3 light_color;
     float _pad;		//16 bytes align
+#ifdef CAST_SHADOW
+	vec3 faked_light_position;
+	float faked_light_range;
+#endif
 #endif
 
 #if defined(OMNI) || defined(SPOT)
@@ -72,7 +76,7 @@ layout(set = 0, binding = 8) uniform sampler2D yminus_shadow_tex;
 layout(set = 0, binding = 9) uniform sampler2D zplus_shadow_tex;
 layout(set = 0, binding = 10) uniform sampler2D zminus_shadow_tex;
 #endif
-#if defined(OMNI) || defined(SPOT)
+#if defined(OMNI) || defined(SPOT) || defined(DIRECTIONAL) //TODO remove define when ecverybody uses cubemap
 layout(set = 0, binding = 11) uniform samplerCube shadow_cubemap;
 #endif
 #endif
@@ -81,7 +85,7 @@ layout(set = 0, binding = 11) uniform samplerCube shadow_cubemap;
 
 #ifdef CAST_SHADOW
 
-#if defined(OMNI) || defined(SPOT)
+#if defined(OMNI) || defined(SPOT) || defined(DIRECTIONAL)	//TODO remove define when ecverybody uses cubemap
 float linear_shadow_compute(vec3 light_dir, vec3 world_position, float distance) {
 #ifdef OMNI
 	float shadow_depth = texture(shadow_cubemap, -light_dir).r;
@@ -95,6 +99,11 @@ float linear_shadow_compute(vec3 light_dir, vec3 world_position, float distance)
     vec3 cubemap_dir = vec3(1.0, -cv, -cu);
     float shadow_depth = texture(shadow_cubemap, cubemap_dir).r;
 #endif
+
+#ifdef DIRECTIONAL
+	float light_range = faked_light_range;
+#endif
+
 	float current_depth = distance / light_range;
 	float bias = 0.001;
 	float shadow = current_depth - bias > shadow_depth ? 0.0 : 1.0;
@@ -200,7 +209,12 @@ void main() {
 #endif
 
 #ifdef CAST_SHADOW
-#if defined(OMNI) || defined(SPOT)
+#if defined(OMNI) || defined(SPOT) || defined(DIRECTIONAL)	//TODO remove define when ecverybody uses cubemap
+#ifdef DIRECTIONAL	
+	vec3 light_position = faked_light_position;
+	float distance = length(light_position - world_position);
+#endif
+
 	attenuation_factor *= linear_shadow_compute(light_dir, world_position, distance);
 	// attenuation_factor *= shadow_compute(light_dir, world_position);
 #else
