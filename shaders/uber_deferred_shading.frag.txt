@@ -83,6 +83,8 @@ layout(set = 0, binding = 11) uniform samplerCube shadow_cubemap;
 
 #include "res://orc-renderers-impl/orc-deferred-gd-impl/shaders/light.glslinc.txt"
 
+vec4 dbg_frag_color = vec4(0.0);
+
 #ifdef CAST_SHADOW
 
 #if defined(OMNI) || defined(SPOT) || defined(DIRECTIONAL)	//TODO remove define when ecverybody uses cubemap
@@ -102,6 +104,7 @@ float linear_shadow_compute(vec3 light_dir, vec3 world_position, float distance)
 
 #ifdef DIRECTIONAL
 	float light_range = faked_light_range;
+	distance = dot(world_position - faked_light_position, -light_dir);
 #endif
 
 	float current_depth = distance / light_range;
@@ -189,7 +192,7 @@ void main() {
 #else
 	vec3 to_light = light_position - world_position;
 	float distance = length(to_light);
-	light_dir = normalize(to_light);
+	light_dir = normalize(to_light);	
 #endif
 
 	float attenuation_factor = 1.0;
