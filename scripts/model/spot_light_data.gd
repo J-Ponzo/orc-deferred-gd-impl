@@ -12,3 +12,6 @@ var angle : float
 var angle_attenuation : float
 
 var shadow_matrices_uniform_buffer : ORC_BufferRID = ORC_BufferRID.new()
+
+func get_shadow_framebuffer_name() -> StringName:
+	return ORC_DeferredGD_LightData._get_shadow_framebuffer_name(0, shadow_resolution)

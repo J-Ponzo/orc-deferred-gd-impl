@@ -19,3 +19,6 @@ var shadow_matrices_uniform_buffers : Array[ORC_BufferRID] = [
 ]
 
 var packed_shadow_matrices_uniform_buffer : ORC_BufferRID = ORC_BufferRID.new()
+
+func get_shadow_framebuffer_name(face_idx : int) -> StringName:
+	return ORC_DeferredGD_LightData._get_shadow_framebuffer_name(face_idx, shadow_resolution)

@@ -29,4 +29,4 @@ func create_pso_override(flags_mask : int, vertex_format : int, vertex_src : Str
 	blend_attachment.dst_alpha_blend_factor = RenderingDevice.BLEND_FACTOR_ONE
 	pso_info.color_blend_state.attachments.append(blend_attachment)
 
-	return ORC_RDHelper.create_pso(pso_info, self.render_pass.shadow_framebuffer_format)
+	return ORC_RDHelper.create_pso(pso_info, self.render_pass.get_framebuffer_format("ShadowCubeMap_1K_Face_0"))	# Faces 0 to 5 use the same format

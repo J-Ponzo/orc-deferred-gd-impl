@@ -1,17 +1,287 @@
-[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=15 format=3 uid="uid://b2b365v2njtst"]
+[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=65 format=3 uid="uid://b2b365v2njtst"]
 
 [ext_resource type="Script" uid="uid://cgf0wrkdwkdto" path="res://addons/open-render-craft/scripts/definitions/pso_def.gd" id="1_ajpht"]
 [ext_resource type="Script" uid="uid://c1fvan06uwqox" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_shading_pass.gd" id="2_jt7vp"]
 [ext_resource type="Script" uid="uid://bi1q4yltghow7" path="res://addons/open-render-craft/scripts/definitions/render_pass_def.gd" id="2_opxry"]
 [ext_resource type="Script" uid="uid://xkekl1qfnapr" path="res://addons/open-render-craft/scripts/definitions/framebuffer_format_def.gd" id="2_s2q3u"]
 [ext_resource type="Script" uid="uid://dc1h8f6w8okcw" path="res://addons/open-render-craft/scripts/definitions/gd_impl_def.gd" id="3_s2q3u"]
+[ext_resource type="Script" uid="uid://cwn75m20wuvc1" path="res://addons/open-render-craft/scripts/definitions/attachment_ref_def.gd" id="3_sfxxk"]
 [ext_resource type="Script" uid="uid://byv4yjobnmtgf" path="res://addons/open-render-craft/scripts/definitions/pso_factory_def.gd" id="5_mllt6"]
 [ext_resource type="Script" uid="uid://bqruhr32kavxa" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_shading_pso_factory.gd" id="6_mllt6"]
 [ext_resource type="Script" uid="uid://cgbidtu67o75j" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_shadow_pso_factory.gd" id="7_q31dj"]
 
+[sub_resource type="Resource" id="Resource_b5nip"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"Shaded"
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
 [sub_resource type="Resource" id="Resource_d0mcj"]
 script = ExtResource("2_s2q3u")
-color_keys = Array[StringName]([&"Shaded"])
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_b5nip")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_c2041"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_1K"
+layer = 0
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_ukp8k"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_c2041")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_nsuj3"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_1K"
+layer = 1
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_i3ask"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_nsuj3")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_7uxqk"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_1K"
+layer = 2
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_6fu1m"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_7uxqk")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_n3y30"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_1K"
+layer = 3
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_gi1tj"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_n3y30")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_8many"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_1K"
+layer = 4
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_0vdih"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_8many")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_t0sbm"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_1K"
+layer = 5
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_6jgso"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_t0sbm")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_s6woq"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_2K"
+layer = 0
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_uk66d"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_s6woq")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_by0q8"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_2K"
+layer = 1
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_5o45j"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_by0q8")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_dynlb"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_2K"
+layer = 2
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_ed0n6"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_dynlb")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_sgc6d"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_2K"
+layer = 3
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_xknmr"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_sgc6d")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_3o7a0"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_2K"
+layer = 4
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_l73jp"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_3o7a0")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_4jhpb"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_2K"
+layer = 5
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_dluey"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_4jhpb")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_yrfhd"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_4K"
+layer = 0
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_v3bst"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_yrfhd")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_bu8mw"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_4K"
+layer = 1
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_i4t4r"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_bu8mw")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_1p1ef"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_4K"
+layer = 2
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_ly6lb"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_1p1ef")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_fkhuf"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_4K"
+layer = 3
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_dcdsq"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_fkhuf")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_hj7ln"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_4K"
+layer = 4
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_h17fk"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_hj7ln")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_kq7ju"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_4K"
+layer = 5
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_o0etc"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_kq7ju")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_laq2a"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_8K"
+layer = 0
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_6kwe5"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_laq2a")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_cx6e5"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_8K"
+layer = 1
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_bkpkr"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_cx6e5")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_ui42c"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_8K"
+layer = 2
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_hakne"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_ui42c")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_dk8mh"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_8K"
+layer = 3
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_onuu7"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_dk8mh")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_ygja4"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_8K"
+layer = 4
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_sh6xc"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_ygja4")])
+metadata/_custom_type_script = "uid://xkekl1qfnapr"
+
+[sub_resource type="Resource" id="Resource_ivro3"]
+script = ExtResource("3_sfxxk")
+attachment_name = &"ShadowCubeMap_8K"
+layer = 5
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_x00j1"]
+script = ExtResource("2_s2q3u")
+attachment_refs = Array[ExtResource("3_sfxxk")]([SubResource("Resource_ivro3")])
 metadata/_custom_type_script = "uid://xkekl1qfnapr"
 
 [sub_resource type="Resource" id="Resource_ajpht"]
@@ -48,7 +318,31 @@ script = ExtResource("2_opxry")
 pass_name = &"Shading"
 pass_impl = SubResource("Resource_ajpht")
 fb_format_defs = Dictionary[StringName, ExtResource("2_s2q3u")]({
-&"Main": SubResource("Resource_d0mcj")
+&"Main": SubResource("Resource_d0mcj"),
+&"ShadowCubeMap_1K_Face_0": SubResource("Resource_ukp8k"),
+&"ShadowCubeMap_1K_Face_1": SubResource("Resource_i3ask"),
+&"ShadowCubeMap_1K_Face_2": SubResource("Resource_6fu1m"),
+&"ShadowCubeMap_1K_Face_3": SubResource("Resource_gi1tj"),
+&"ShadowCubeMap_1K_Face_4": SubResource("Resource_0vdih"),
+&"ShadowCubeMap_1K_Face_5": SubResource("Resource_6jgso"),
+&"ShadowCubeMap_2K_Face_0": SubResource("Resource_uk66d"),
+&"ShadowCubeMap_2K_Face_1": SubResource("Resource_5o45j"),
+&"ShadowCubeMap_2K_Face_2": SubResource("Resource_ed0n6"),
+&"ShadowCubeMap_2K_Face_3": SubResource("Resource_xknmr"),
+&"ShadowCubeMap_2K_Face_4": SubResource("Resource_l73jp"),
+&"ShadowCubeMap_2K_Face_5": SubResource("Resource_dluey"),
+&"ShadowCubeMap_4K_Face_0": SubResource("Resource_v3bst"),
+&"ShadowCubeMap_4K_Face_1": SubResource("Resource_i4t4r"),
+&"ShadowCubeMap_4K_Face_2": SubResource("Resource_ly6lb"),
+&"ShadowCubeMap_4K_Face_3": SubResource("Resource_dcdsq"),
+&"ShadowCubeMap_4K_Face_4": SubResource("Resource_h17fk"),
+&"ShadowCubeMap_4K_Face_5": SubResource("Resource_o0etc"),
+&"ShadowCubeMap_8K_Face_0": SubResource("Resource_6kwe5"),
+&"ShadowCubeMap_8K_Face_1": SubResource("Resource_bkpkr"),
+&"ShadowCubeMap_8K_Face_2": SubResource("Resource_hakne"),
+&"ShadowCubeMap_8K_Face_3": SubResource("Resource_onuu7"),
+&"ShadowCubeMap_8K_Face_4": SubResource("Resource_sh6xc"),
+&"ShadowCubeMap_8K_Face_5": SubResource("Resource_x00j1")
 })
 pso_factory_defs = Dictionary[StringName, ExtResource("5_mllt6")]({
 &"Light": SubResource("Resource_sfxxk"),

@@ -1,17 +1,42 @@
-[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=12 format=3 uid="uid://dhbqjo6gh4tjr"]
+[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=18 format=3 uid="uid://dhbqjo6gh4tjr"]
 
 [ext_resource type="Script" uid="uid://cgf0wrkdwkdto" path="res://addons/open-render-craft/scripts/definitions/pso_def.gd" id="1_uj2m6"]
 [ext_resource type="Script" uid="uid://bi1q4yltghow7" path="res://addons/open-render-craft/scripts/definitions/render_pass_def.gd" id="2_dh4a2"]
 [ext_resource type="Script" uid="uid://xkekl1qfnapr" path="res://addons/open-render-craft/scripts/definitions/framebuffer_format_def.gd" id="2_pqdpk"]
 [ext_resource type="Script" uid="uid://dwwrc2koqnai8" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_geometry_pass.gd" id="2_ys13t"]
+[ext_resource type="Script" uid="uid://cwn75m20wuvc1" path="res://addons/open-render-craft/scripts/definitions/attachment_ref_def.gd" id="3_07l57"]
 [ext_resource type="Script" uid="uid://dc1h8f6w8okcw" path="res://addons/open-render-craft/scripts/definitions/gd_impl_def.gd" id="3_uj2m6"]
 [ext_resource type="Script" uid="uid://byv4yjobnmtgf" path="res://addons/open-render-craft/scripts/definitions/pso_factory_def.gd" id="4_pqdpk"]
 [ext_resource type="Script" uid="uid://bck12y8cg4p1" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_geometry_pso_factory.gd" id="6_ikl52"]
 
+[sub_resource type="Resource" id="Resource_wdmm8"]
+script = ExtResource("3_07l57")
+attachment_name = &"Depth"
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_xollu"]
+script = ExtResource("3_07l57")
+attachment_name = &"Albedo"
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_iavbk"]
+script = ExtResource("3_07l57")
+attachment_name = &"Normal"
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_t2gcy"]
+script = ExtResource("3_07l57")
+attachment_name = &"Position"
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_me17t"]
+script = ExtResource("3_07l57")
+attachment_name = &"ORM"
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
 [sub_resource type="Resource" id="Resource_vdms2"]
 script = ExtResource("2_pqdpk")
-depth_key = &"Depth"
-color_keys = Array[StringName]([&"Albedo", &"Normal", &"Position", &"ORM"])
+attachment_refs = Array[ExtResource("3_07l57")]([SubResource("Resource_wdmm8"), SubResource("Resource_xollu"), SubResource("Resource_iavbk"), SubResource("Resource_t2gcy"), SubResource("Resource_me17t")])
 metadata/_custom_type_script = "uid://xkekl1qfnapr"
 
 [sub_resource type="Resource" id="Resource_pqdpk"]

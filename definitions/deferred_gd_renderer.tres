@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ORC_Renderer_Def" load_steps=60 format=3 uid="uid://dblhgea7ba65u"]
+[gd_resource type="Resource" script_class="ORC_Renderer_Def" load_steps=64 format=3 uid="uid://dblhgea7ba65u"]
 
 [ext_resource type="Script" uid="uid://b0c0mwr6sl3i8" path="res://addons/open-render-craft/scripts/definitions/attachment_format_def.gd" id="1_vtpec"]
 [ext_resource type="Script" uid="uid://do5oa0i2w0x2n" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/deferred_gd_proxy_factory.gd" id="2_4qxru"]
@@ -19,6 +19,13 @@
 [ext_resource type="Script" uid="uid://d4gisottqrub4" path="res://orc-renderers-impl/orc-deferred-gd-impl/scripts/model/directional_light_data.gd" id="10_e8vrw"]
 [ext_resource type="Resource" uid="uid://c866i80mmtvql" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_transparent_pass.tres" id="10_fcf0w"]
 [ext_resource type="Resource" uid="uid://bja25tp07qvb2" path="res://orc-renderers-impl/orc-deferred-gd-impl/definitions/deferred_gd_postprocess_pass.tres" id="11_7kcy5"]
+
+[sub_resource type="Resource" id="Resource_depth"]
+script = ExtResource("1_vtpec")
+attachment_name = &"Depth"
+format = 125
+usage_flags = Array[int]([4])
+metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
 
 [sub_resource type="Resource" id="Resource_albedo"]
 script = ExtResource("1_vtpec")
@@ -62,11 +69,48 @@ format = 96
 usage_flags = Array[int]([2, 1])
 metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
 
-[sub_resource type="Resource" id="Resource_depth"]
+[sub_resource type="Resource" id="Resource_0dach"]
 script = ExtResource("1_vtpec")
-attachment_name = &"Depth"
+attachment_name = &"ShadowCubeMap_1K"
 format = 125
-usage_flags = Array[int]([4])
+usage_flags = Array[int]([4, 1])
+width = 1024
+height = 1024
+texture_type = 3
+array_layers = 6
+metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
+
+[sub_resource type="Resource" id="Resource_g6l1w"]
+script = ExtResource("1_vtpec")
+attachment_name = &"ShadowCubeMap_2K"
+format = 125
+usage_flags = Array[int]([4, 1])
+width = 2048
+height = 2048
+texture_type = 3
+array_layers = 6
+metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
+
+[sub_resource type="Resource" id="Resource_kud5v"]
+script = ExtResource("1_vtpec")
+attachment_name = &"ShadowCubeMap_4K"
+format = 125
+usage_flags = Array[int]([4, 1])
+width = 4096
+height = 4096
+texture_type = 3
+array_layers = 6
+metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
+
+[sub_resource type="Resource" id="Resource_ovsbx"]
+script = ExtResource("1_vtpec")
+attachment_name = &"ShadowCubeMap_8K"
+format = 125
+usage_flags = Array[int]([4, 1])
+width = 8192
+height = 8192
+texture_type = 3
+array_layers = 6
 metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
 
 [sub_resource type="Resource" id="Resource_schyl"]
@@ -268,6 +312,6 @@ script = ExtResource("4_4qxru")
 renderer_impl = SubResource("Resource_55m0o")
 proxy_factory_impl = SubResource("Resource_schyl")
 renderer_pass_defs = Array[ExtResource("3_04l8g")]([ExtResource("7_mw4l4"), ExtResource("8_dmorg"), ExtResource("10_fcf0w"), ExtResource("11_7kcy5")])
-attachment_format_defs = Array[ExtResource("1_vtpec")]([SubResource("Resource_albedo"), SubResource("Resource_normal"), SubResource("Resource_orm"), SubResource("Resource_position"), SubResource("Resource_shaded"), SubResource("Resource_postprocessed"), SubResource("Resource_depth")])
+attachment_format_defs = Array[ExtResource("1_vtpec")]([SubResource("Resource_depth"), SubResource("Resource_albedo"), SubResource("Resource_normal"), SubResource("Resource_orm"), SubResource("Resource_position"), SubResource("Resource_shaded"), SubResource("Resource_postprocessed"), SubResource("Resource_0dach"), SubResource("Resource_g6l1w"), SubResource("Resource_kud5v"), SubResource("Resource_ovsbx")])
 proxy_queue_defs = Array[ExtResource("2_ce3ch")]([SubResource("Resource_demyq"), SubResource("Resource_2ve1y"), SubResource("Resource_hpioa"), SubResource("Resource_eyfpo"), SubResource("Resource_8verb"), SubResource("Resource_offot"), SubResource("Resource_ni5ol"), SubResource("Resource_io8al")])
 metadata/_custom_type_script = "uid://bugchofvgrin8"

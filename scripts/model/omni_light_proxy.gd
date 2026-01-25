@@ -73,44 +73,12 @@ func update_override() -> void:
 		var far: float = primary_data.range
 		var proj : Projection = Projection.create_perspective(fov, aspect, near, far)
 
-		# TODO : roll in for loop
 		var proj_bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(proj)
 		var bytes : PackedByteArray
 		for i in range(6):
 			bytes = ORC_RDHelper.proj_to_bytes(view[i])
 			bytes.append_array(proj_bytes)
 			primary_data.shadow_matrices_uniform_buffers[i].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
-
-		# # X+
-		# var proj_bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(proj)
-		# var bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(view[0])
-		# bytes.append_array(proj_bytes)
-		# primary_data.shadow_matrices_uniform_buffers[0].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
-
-		# # X-
-		# bytes = ORC_RDHelper.proj_to_bytes(view[1])
-		# bytes.append_array(proj_bytes)
-		# primary_data.shadow_matrices_uniform_buffers[1].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
-
-		# # Y+
-		# bytes = ORC_RDHelper.proj_to_bytes(view[2])
-		# bytes.append_array(proj_bytes)
-		# primary_data.shadow_matrices_uniform_buffers[2].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
-
-		# # Y-
-		# bytes = ORC_RDHelper.proj_to_bytes(view[3])
-		# bytes.append_array(proj_bytes)
-		# primary_data.shadow_matrices_uniform_buffers[3].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
-
-		# # Z+
-		# bytes = ORC_RDHelper.proj_to_bytes(view[4])
-		# bytes.append_array(proj_bytes)
-		# primary_data.shadow_matrices_uniform_buffers[4].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
-
-		# # Z-
-		# bytes = ORC_RDHelper.proj_to_bytes(view[5])
-		# bytes.append_array(proj_bytes)
-		# primary_data.shadow_matrices_uniform_buffers[5].rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
 
 		# All matrices for shading pass
 		bytes.clear()

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=20 format=3 uid="uid://bja25tp07qvb2"]
+[gd_resource type="Resource" script_class="ORC_RenderPassDef" load_steps=23 format=3 uid="uid://bja25tp07qvb2"]
 
 [ext_resource type="Script" uid="uid://cgf0wrkdwkdto" path="res://addons/open-render-craft/scripts/definitions/pso_def.gd" id="1_nrebm"]
 [ext_resource type="Script" uid="uid://bi1q4yltghow7" path="res://addons/open-render-craft/scripts/definitions/render_pass_def.gd" id="2_6u44x"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://byv4yjobnmtgf" path="res://addons/open-render-craft/scripts/definitions/pso_factory_def.gd" id="4_xtnmq"]
 [ext_resource type="Script" uid="uid://c3ghgnrwli3is" path="res://addons/open-render-craft/scripts/definitions/pso_rasterization_def.gd" id="5_63mns"]
 [ext_resource type="Script" uid="uid://dlbhrl3tgxkem" path="res://addons/open-render-craft/scripts/definitions/vertex_format_def.gd" id="6_06m7i"]
+[ext_resource type="Script" uid="uid://cwn75m20wuvc1" path="res://addons/open-render-craft/scripts/definitions/attachment_ref_def.gd" id="8_djee0"]
 
 [sub_resource type="Resource" id="Resource_ud366"]
 script = ExtResource("2_ud366")
@@ -41,10 +42,19 @@ depth_stencil_state = SubResource("Resource_kbp1e")
 blend_attachments = Array[ExtResource("2_ud366")]([SubResource("Resource_ud366")])
 metadata/_custom_type_script = "uid://cgf0wrkdwkdto"
 
+[sub_resource type="Resource" id="Resource_63mns"]
+script = ExtResource("8_djee0")
+attachment_name = &"Depth"
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
+[sub_resource type="Resource" id="Resource_otght"]
+script = ExtResource("8_djee0")
+attachment_name = &"PostProcessed"
+metadata/_custom_type_script = "uid://cwn75m20wuvc1"
+
 [sub_resource type="Resource" id="Resource_06m7i"]
 script = ExtResource("2_xtnmq")
-depth_key = &"Depth"
-color_keys = Array[StringName]([&"PostProcessed"])
+attachment_refs = Array[ExtResource("8_djee0")]([SubResource("Resource_63mns"), SubResource("Resource_otght")])
 metadata/_custom_type_script = "uid://xkekl1qfnapr"
 
 [sub_resource type="Resource" id="Resource_xtnmq"]
