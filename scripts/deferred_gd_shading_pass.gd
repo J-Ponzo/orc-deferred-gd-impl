@@ -18,6 +18,8 @@ var vert_uniform_set : ORC_SetRID = ORC_SetRID.new()
 var frag_uniform_set : ORC_SetRID = ORC_SetRID.new()
 var global_uniform_buffer : ORC_BufferRID = ORC_BufferRID.new()
 var linear_uniform_set : ORC_SetRID = ORC_SetRID.new()
+var linear_shadow_params_buffer : ORC_BufferRID = ORC_BufferRID.new()
+var omni_params_uniform_set : ORC_SetRID = ORC_SetRID.new()
 
 var light_matrice_uniform_set : ORC_SetRID = ORC_SetRID.new()
 
@@ -116,7 +118,6 @@ func draw_all_no_shadow_lights() -> void:
 			if draw_list != -1:
 				ORC_RDHelper.get_rd().draw_list_end()
 
-
 			vert_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create(vert_uniforms, pso.shader_program, 1)
 			frag_uniform_set.rid = ORC_RDHelper.get_rd().uniform_set_create(frag_uniforms, pso.shader_program, 0)
 			var clear_colors : Array[Color] = [Color(0.0, 0.0, 0.0, 1.0)]
@@ -214,7 +215,6 @@ func shadow_light_draw_call(light_data : ORC_DeferredGD_LightData, frag_uniforms
 
 func single_shadow_map_draw_pass(light_data : ORC_DeferredGD_LightData) -> void:
 	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.opaque_surfaces_data
-
 	var shadow_framebuffer : RID
 	if light_data.has_flag("OMNI"):
 		for i in range(6):
@@ -224,8 +224,6 @@ func single_shadow_map_draw_pass(light_data : ORC_DeferredGD_LightData) -> void:
 		shadow_framebuffer = get_framebuffer(light_data.get_shadow_framebuffer_name())
 		shadow_map_draw_pass(light_data, surfaces_data, light_data.shadow_matrices_uniform_buffer, shadow_framebuffer)
 
-var linear_shadow_params_buffer : ORC_BufferRID = ORC_BufferRID.new()
-var omni_params_uniform_set : ORC_SetRID = ORC_SetRID.new()
 func shadow_map_draw_pass(light_data : ORC_DeferredGD_LightData, surfaces_data : Array[ORC_DeferredGD_SurfaceData], shadow_matrices_buffer : ORC_BufferRID, shadow_framebuffer : RID) -> void:	
 	var matrices_uniform : RDUniform = RDUniform.new()
 	matrices_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_UNIFORM_BUFFER
