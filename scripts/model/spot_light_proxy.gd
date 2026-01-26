@@ -15,87 +15,52 @@ func update_override() -> void:
 	
 	var has_changed = false 
 	if node.global_position != location_last_frame:
-		primary_data.location = node.global_position
 		location_last_frame = node.global_position
-		primary_data.light_params_buffer_floats[0] = primary_data.location.x
-		primary_data.light_params_buffer_floats[1] = primary_data.location.y
-		primary_data.light_params_buffer_floats[2] = primary_data.location.z
+		primary_data.update_location(node)
 		has_changed = true
 
 	if node.spot_range != range_last_frame:
-		primary_data.range = node.spot_range
 		range_last_frame = node.spot_range
-		primary_data.light_params_buffer_floats[12] = primary_data.range
+		primary_data.update_range(node)
 		has_changed = true
 
 	if -node.global_basis.z != direction_last_frame:
-		primary_data.direction = -node.global_basis.z
 		direction_last_frame = -node.global_basis.z
-		primary_data.light_params_buffer_floats[4] = primary_data.direction.x
-		primary_data.light_params_buffer_floats[5] = primary_data.direction.y
-		primary_data.light_params_buffer_floats[6] = primary_data.direction.z
+		primary_data.update_direction(node)
 		has_changed = true
 
 	if node.spot_angle != angle_last_frame:
-		primary_data.angle = deg_to_rad(node.spot_angle)
 		angle_last_frame = node.spot_angle
-		primary_data.light_params_buffer_floats[3] = primary_data.angle
+		primary_data.update_angle(node)
+		has_changed = true
+
+	if node.light_color != color_last_frame:
+		color_last_frame = node.light_color
+		primary_data.update_color(node)
+		has_changed = true
+
+	if node.light_energy != intensity_last_frame:
+		intensity_last_frame = node.light_energy
+		primary_data.update_intensity(node)
+		has_changed = true
+
+	if node.spot_attenuation != attenuation_last_frame:
+		attenuation_last_frame = node.spot_attenuation
+		primary_data.update_attenuation(node)
+		has_changed = true
+
+	if node.spot_angle_attenuation != angle_attenuation_last_frame:
+		angle_attenuation_last_frame = node.spot_angle_attenuation
+		primary_data.update_angle_attenuation(node)
 		has_changed = true
 
 	var has_moved = false 
 	if has_changed:
-		var radius = primary_data.range * tan(primary_data.angle)
-		var basis : Basis = Basis.IDENTITY
-		basis.x = radius * node.global_basis.x.normalized()
-		basis.y = radius * node.global_basis.y.normalized()
-		basis.z = primary_data.range * node.global_basis.z.normalized()
-		var global_transform : Transform3D
-		global_transform.basis = basis
-		global_transform.origin = primary_data.location
-		primary_data.model_matrix_bytes = ORC_RDHelper.proj_to_bytes(Projection(global_transform))
+		primary_data.update_model_matrix(node)
 		has_moved = true 
 
-	if node.light_color != color_last_frame:
-		primary_data.color = node.light_color
-		color_last_frame = node.light_color
-		var linear_color : Color = primary_data.color.srgb_to_linear()
-		primary_data.light_params_buffer_floats[8] = linear_color.r
-		primary_data.light_params_buffer_floats[9] = linear_color.g
-		primary_data.light_params_buffer_floats[10] = linear_color.b
-		has_changed = true
-
-	if node.light_energy != intensity_last_frame:
-		primary_data.intensity = node.light_energy
-		intensity_last_frame = node.light_energy
-		primary_data.light_params_buffer_floats[7] = primary_data.intensity
-		has_changed = true
-
-	if node.spot_attenuation != attenuation_last_frame:
-		primary_data.attenuation = node.spot_attenuation
-		attenuation_last_frame = node.spot_attenuation
-		primary_data.light_params_buffer_floats[13] = primary_data.attenuation
-		has_changed = true
-
-	if node.spot_angle_attenuation != angle_attenuation_last_frame:
-		primary_data.angle_attenuation = node.spot_angle_attenuation
-		angle_attenuation_last_frame = node.spot_angle_attenuation
-		primary_data.light_params_buffer_floats[11] = primary_data.angle_attenuation
-		has_changed = true
-
-	# TODO handle light_buffer_bytes values directly to improve performance
 	if has_changed:
-		primary_data.light_buffer_bytes = primary_data.light_params_buffer_floats.to_byte_array()
+		primary_data.update_light_buffer_bytes()
 
 	if has_shadow_changed || has_moved:
-		var view : Projection = Projection(node.global_transform.affine_inverse())
-
-		var proj : Projection = Projection()
-		var fov: float = 2.0 * rad_to_deg(primary_data.angle)
-		var aspect: float = 1.0
-		var near: float = 0.01
-		var far: float = primary_data.range
-		proj = Projection.create_perspective(fov, aspect, near, far)
-
-		var bytes : PackedByteArray = ORC_RDHelper.proj_to_bytes(view)
-		bytes.append_array(ORC_RDHelper.proj_to_bytes(proj))
-		primary_data.shadow_matrices_uniform_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+		primary_data.update_shadow_data(node)

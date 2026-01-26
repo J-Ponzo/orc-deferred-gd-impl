@@ -13,7 +13,6 @@ func update_override() -> void:
 	var has_changed = false 
 	var has_moved = false 
 	if node.global_position != location_last_frame:
-		primary_data.location = node.global_position
 		location_last_frame = node.global_position
 		primary_data.update_location(node)
 		has_changed = true
@@ -40,7 +39,7 @@ func update_override() -> void:
 		has_changed = true
 
 	if has_shadow_changed || has_moved:
-		primary_data.update_shadow_data()
+		primary_data.update_shadow_data(node)
 		if has_moved:
 			primary_data.update_model_matrix() 
 		if has_changed:

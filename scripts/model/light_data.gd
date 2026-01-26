@@ -31,11 +31,13 @@ static func _get_shadow_framebuffer_name(face_idx : int, resolution : EShadowRes
 	var face_idx_affix : StringName = _get_face_idx_affix(face_idx)
 	return StringName("ShadowCubeMap_" + resolution_affix + "_" + face_idx_affix)
 
-# TODO handle light_buffer_bytes values directly to improve performance
 var light_params_buffer_floats : PackedFloat32Array
 var light_buffer_bytes : PackedByteArray
-var shadow_enabled : bool
 var shadow_resolution : EShadowResolution = EShadowResolution.RESOLUTION_8K
 
 func get_shadow_texture_name() -> StringName:
 	return ORC_DeferredGD_LightData._get_shadow_texture_name(shadow_resolution)
+
+# TODO handle light_buffer_bytes values directly to improve performance
+func update_light_buffer_bytes() -> void:
+	light_buffer_bytes = light_params_buffer_floats.to_byte_array()

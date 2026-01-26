@@ -77,12 +77,9 @@ func update_model_matrix() -> void:
 	global_transform.origin = location
 	model_matrix_bytes = ORC_RDHelper.proj_to_bytes(Projection(global_transform))
 
-# TODO handle light_buffer_bytes values directly to improve performance
-func update_light_buffer_bytes() -> void:
-	light_buffer_bytes = light_params_buffer_floats.to_byte_array()
+func update_shadow_data(omni_node : OmniLight3D) -> void:
+	set_flag("CAST_SHADOW_OMNI", omni_node.shadow_enabled)
 
-func update_shadow_data() -> void:
-	# TODO compute that in model
 	var view : Array[Projection]
 	view.resize(6)
 	for i in range(6):
@@ -115,6 +112,7 @@ func initialize_all(omni_node : OmniLight3D) -> void:
 	update_color(omni_node)
 	update_intensity(omni_node)
 	update_attenuation(omni_node)
+
 	update_model_matrix()
+	update_shadow_data(omni_node)
 	update_light_buffer_bytes()
-	update_shadow_data()

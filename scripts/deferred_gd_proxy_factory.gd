@@ -324,76 +324,19 @@ static func try_extract_orm_from_material(material : BaseMaterial3D) -> Texture2
 func create_omni_light_data_from(omni_node : OmniLight3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_OmniLightData:
 	var omni_data : ORC_DeferredGD_OmniLightData = create_and_register_primary(ORC_DeferredGD_OmniLightData, registry)
 	omni_data.set_flag("OMNI", true)
-	omni_data.set_flag("CAST_SHADOW_OMNI", omni_node.shadow_enabled)
 	omni_data.initialize_all(omni_node)
 	return omni_data
 
 func create_spot_light_data_from(spot_node : SpotLight3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_SpotLightData:
 	var spot_data : ORC_DeferredGD_SpotLightData = create_and_register_primary(ORC_DeferredGD_SpotLightData, registry)
 	spot_data.set_flag("SPOT", true)
-	spot_data.set_flag("CAST_SHADOW_SPOT", spot_node.shadow_enabled)
-	spot_data.color = spot_node.light_color
-	spot_data.intensity = spot_node.light_energy
-	spot_data.location = spot_node.global_position
-	spot_data.direction = -spot_node.global_basis.z
-	spot_data.angle = deg_to_rad(spot_node.spot_angle)
-	spot_data.angle_attenuation = spot_node.spot_angle_attenuation
-	spot_data.range = spot_node.spot_range
-	spot_data.attenuation = spot_node.spot_attenuation
-
-	var radius = spot_data.range * tan(spot_data.angle)
-	var basis : Basis = Basis.IDENTITY
-	basis.x = radius * spot_node.global_basis.x.normalized()
-	basis.y = radius * spot_node.global_basis.y.normalized()
-	basis.z = spot_data.range * spot_node.global_basis.z.normalized()
-	var global_transform : Transform3D
-	global_transform.basis = basis
-	global_transform.origin = spot_data.location
-	spot_data.model_matrix_bytes = ORC_RDHelper.proj_to_bytes(Projection(global_transform))
-
-	spot_data.light_params_buffer_floats.append(spot_data.location.x)
-	spot_data.light_params_buffer_floats.append(spot_data.location.y)
-	spot_data.light_params_buffer_floats.append(spot_data.location.z)
-	spot_data.light_params_buffer_floats.append(spot_data.angle)
-	spot_data.light_params_buffer_floats.append(spot_data.direction.x)
-	spot_data.light_params_buffer_floats.append(spot_data.direction.y)
-	spot_data.light_params_buffer_floats.append(spot_data.direction.z)
-	spot_data.light_params_buffer_floats.append(spot_data.intensity)
-	var linear_color : Color = spot_data.color.srgb_to_linear()
-	spot_data.light_params_buffer_floats.append(linear_color.r)
-	spot_data.light_params_buffer_floats.append(linear_color.g)
-	spot_data.light_params_buffer_floats.append(linear_color.b)
-	spot_data.light_params_buffer_floats.append(spot_data.angle_attenuation)
-	spot_data.light_params_buffer_floats.append(spot_data.range)
-	spot_data.light_params_buffer_floats.append(spot_data.attenuation)
-	spot_data.light_params_buffer_floats.append(0.0)
-	spot_data.light_params_buffer_floats.append(0.0)
-
-	spot_data.light_buffer_bytes = spot_data.light_params_buffer_floats.to_byte_array()
-
+	spot_data.initialize_all(spot_node)
 	return spot_data
 
 func create_directional_light_data_from(directional_node : DirectionalLight3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_DirectionalLightData:
 	var directional_data : ORC_DeferredGD_DirectionalLightData = create_and_register_primary(ORC_DeferredGD_DirectionalLightData, registry)
 	directional_data.set_flag("DIRECTIONAL", true)
-	directional_data.set_flag("CAST_SHADOW_DIRECTIONAL", directional_node.shadow_enabled)
-	directional_data.color = directional_node.light_color
-	directional_data.intensity = directional_node.light_energy
-	directional_data.direction = -directional_node.global_basis.z
-	directional_data.shadow_max_distance = directional_node.directional_shadow_max_distance
-
-	directional_data.light_params_buffer_floats.append(directional_data.direction.x)
-	directional_data.light_params_buffer_floats.append(directional_data.direction.y)
-	directional_data.light_params_buffer_floats.append(directional_data.direction.z)
-	directional_data.light_params_buffer_floats.append(directional_data.intensity)
-	var linear_color : Color = directional_data.color.srgb_to_linear()
-	directional_data.light_params_buffer_floats.append(linear_color.r)
-	directional_data.light_params_buffer_floats.append(linear_color.g)
-	directional_data.light_params_buffer_floats.append(linear_color.b)
-	directional_data.light_params_buffer_floats.append(0.0)
-
-	directional_data.light_buffer_bytes = directional_data.light_params_buffer_floats.to_byte_array()
-
+	directional_data.initialize_all(directional_node)
 	return directional_data
 
 func free_proxy_override(proxy_object : ORC_ProxyObject) -> bool:
