@@ -1,36 +1,13 @@
 extends ORC_RendererBase
 class_name ORC_DeferredGDRenderer
 
-# TODO : Remove
-# const MAIN_OR_XPlus_SHADOW_ATTACH = "Main_Or_+X_Shadow_Attach"
-# const XMinus_SHADOW_ATTACH = "-X_Shadow_Attach"
-# const YPlus_SHADOW_ATTACH = "+Y_Shadow_Attach"
-# const YMinus_SHADOW_ATTACH = "-Y_Shadow_Attach"
-# const ZPlus_SHADOW_ATTACH = "+Z_Shadow_Attach"
-# const ZMinus_SHADOW_ATTACH = "-Z_Shadow_Attach"
-const SHADOW_ATTACH_PREFIX = "Shadow_Attach_Face_"
-
-# TODO : make a c++ Info variant for this so we can access it from both gdscript and c++
-var shadow_attach_def : ORC_AttachmentFormat_Def
-
 var current_cam_data : ORC_DeferredGD_CameraData
 var opaque_surfaces_data : Array[ORC_DeferredGD_SurfaceData]
 var no_shadow_light_data : Array[ORC_DeferredGD_LightData]
 var shadow_light_data : Array[ORC_DeferredGD_LightData]
 
-# TODO : remove this while refacto shadow framebuffer / attachment creation
-var fisrt_setup : bool = true
 func setup_override() -> void:
-	shadow_attach_def = ORC_AttachmentFormat_Def.new()
-	shadow_attach_def.format = RenderingDevice.DATA_FORMAT_D32_SFLOAT
-	shadow_attach_def.usage_flags = [RenderingDevice.TEXTURE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT]
-	shadow_attach_def.width = 4096
-	shadow_attach_def.height = 4096
-
-	if fisrt_setup:
-		for i in range(6):
-			create_attachment(get_shadow_attach_name(i), ORC_RendererFactory.create_texture_attachment(shadow_attach_def))
-		fisrt_setup = false
+	pass
 
 func pre_render_override() -> void:
 	super_pre_render()
@@ -81,6 +58,3 @@ func cleanup_override() -> void:
 	no_shadow_light_data.clear()
 	shadow_light_data.clear()
 	pass
-
-func get_shadow_attach_name(face_index : int) -> String:
-	return SHADOW_ATTACH_PREFIX + str(face_index)

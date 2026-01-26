@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="ORC_AttachmentFormat_Def" load_steps=2 format=3 uid="uid://3stysha7w2gg"]
-
-[ext_resource type="Script" uid="uid://b0c0mwr6sl3i8" path="res://addons/open-render-craft/scripts/definitions/attachment_format_def.gd" id="1_trycb"]
-
-[resource]
-script = ExtResource("1_trycb")
-format = 125
-usage_flags = Array[int]([4])
-metadata/_custom_type_script = "uid://b0c0mwr6sl3i8"
