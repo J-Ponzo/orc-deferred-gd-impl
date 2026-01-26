@@ -325,35 +325,7 @@ func create_omni_light_data_from(omni_node : OmniLight3D, registry : ORC_ProxyRe
 	var omni_data : ORC_DeferredGD_OmniLightData = create_and_register_primary(ORC_DeferredGD_OmniLightData, registry)
 	omni_data.set_flag("OMNI", true)
 	omni_data.set_flag("CAST_SHADOW_OMNI", omni_node.shadow_enabled)
-	omni_data.color = omni_node.light_color
-	omni_data.intensity = omni_node.light_energy
-	omni_data.location = omni_node.global_position
-	omni_data.range = omni_node.omni_range
-	omni_data.attenuation = omni_node.omni_attenuation
-
-	var global_transform : Transform3D
-	var basis : Basis
-	basis = basis.scaled(Vector3(omni_data.range, omni_data.range, omni_data.range))
-	global_transform.basis = basis
-	global_transform.origin = omni_data.location
-	omni_data.model_matrix_bytes = ORC_RDHelper.proj_to_bytes(Projection(global_transform))
-
-	omni_data.light_params_buffer_floats.append(omni_data.location.x)
-	omni_data.light_params_buffer_floats.append(omni_data.location.y)
-	omni_data.light_params_buffer_floats.append(omni_data.location.z)
-	omni_data.light_params_buffer_floats.append(omni_data.intensity)
-	var linear_color : Color = omni_data.color.srgb_to_linear()
-	omni_data.light_params_buffer_floats.append(linear_color.r)
-	omni_data.light_params_buffer_floats.append(linear_color.g)
-	omni_data.light_params_buffer_floats.append(linear_color.b)
-	omni_data.light_params_buffer_floats.append(omni_data.range)
-	omni_data.light_params_buffer_floats.append(0.0)
-	omni_data.light_params_buffer_floats.append(0.0)
-	omni_data.light_params_buffer_floats.append(0.0)
-	omni_data.light_params_buffer_floats.append(omni_data.attenuation)
-
-	omni_data.light_buffer_bytes = omni_data.light_params_buffer_floats.to_byte_array()
-
+	omni_data.initialize_all(omni_node)
 	return omni_data
 
 func create_spot_light_data_from(spot_node : SpotLight3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_SpotLightData:
