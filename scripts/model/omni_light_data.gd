@@ -8,7 +8,6 @@ var location : Vector3
 var range : float
 var attenuation : float
 
-# TODO : Can we do this in one line intitialization ?
 var shadow_matrices_uniform_buffers : Array[ORC_BufferRID] = [
 	ORC_BufferRID.new(), 
 	ORC_BufferRID.new(), 

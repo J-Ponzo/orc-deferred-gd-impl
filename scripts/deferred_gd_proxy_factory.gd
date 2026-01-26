@@ -493,7 +493,6 @@ func free_surface_data(surface_data : ORC_DeferredGD_SurfaceData, registry : ORC
 	
 	return success && destroy_and_unregister_data(surface_data, registry)
 
-# TODO add try_free_rid in helper
 func free_topology_data(topology_data : ORC_DeferredGD_TopologyData, registry : ORC_ProxyRegistry) -> bool:
 	if !topology_data.is_shared():
 		topology_data.index_array.free_rid()

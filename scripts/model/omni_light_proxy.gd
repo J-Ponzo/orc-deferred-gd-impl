@@ -63,7 +63,7 @@ func update_override() -> void:
 	if has_shadow_changed || has_moved:
 		# TODO compute that in model
 		var view : Array[Projection]
-		view.resize(6)		# TODO : Can we do this in 1 line initialization ?
+		view.resize(6)
 		for i in range(6):
 			view[i] = construct_omni_view_face(i, primary_data.location)
 
