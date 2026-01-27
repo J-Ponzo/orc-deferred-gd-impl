@@ -35,14 +35,7 @@ func create_data_from_override(node : Node, registry : ORC_ProxyRegistry) -> ORC
 
 func create_camera_data_from(cam_node : Camera3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_CameraData:
 	var cam_data : ORC_DeferredGD_CameraData = create_and_register_primary(ORC_DeferredGD_CameraData, registry)
-	cam_data.view_transform = cam_node.get_camera_transform().affine_inverse()
-	cam_data.view_matrix_bytes = ORC_RDHelper.proj_to_bytes(Projection(cam_data.view_transform))
-	cam_data.projection_matrix_bytes = ORC_RDHelper.proj_to_bytes(cam_node.get_camera_projection().flipped_y())
-
-	var bytes = cam_data.view_matrix_bytes
-	bytes.append_array(cam_data.projection_matrix_bytes)
-
-	cam_data.matrices_uniform_buffer.rid = ORC_RDHelper.get_rd().uniform_buffer_create(bytes.size(), bytes)
+	cam_data.initialize_all(cam_node)
 	return cam_data
 	
 func create_mesh_data_from(mesh_node : MeshInstance3D, registry : ORC_ProxyRegistry) -> ORC_DeferredGD_MeshData:
