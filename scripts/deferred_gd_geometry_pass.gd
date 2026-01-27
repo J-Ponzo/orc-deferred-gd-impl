@@ -23,7 +23,7 @@ func render_override() -> void:
 	var previous_pso : ORC_PSO = null
 	var draw_list : int = -1
 
-	for surface_data : ORC_DeferredGD_SurfaceData in deferred_gd_renderer.opaque_surfaces_data:
+	for surface_data : ORC_DeferredGD_SurfaceData in deferred_gd_renderer.shaded_opaque_surfaces_data:
 		var pso : ORC_PSO = (pso_factories["Material"] as ORC_PSOFactory).get_or_create_pso(surface_data.get_flags_mask(), surface_data.vertex_format)
 		if pso != previous_pso:
 			previous_pso = pso

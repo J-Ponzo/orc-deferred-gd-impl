@@ -214,7 +214,7 @@ func shadow_light_draw_call(light_data : ORC_DeferredGD_LightData, frag_uniforms
 	ORC_RDHelper.get_rd().draw_list_end()
 
 func single_shadow_map_draw_pass(light_data : ORC_DeferredGD_LightData) -> void:
-	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.opaque_surfaces_data
+	var surfaces_data : Array[ORC_DeferredGD_SurfaceData] = deferred_gd_renderer.shadow_opaque_surfaces_data
 	var shadow_framebuffer : RID
 	if light_data.has_flag("OMNI"):
 		for i in range(6):

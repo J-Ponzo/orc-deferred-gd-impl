@@ -2,7 +2,8 @@ extends ORC_RendererBase
 class_name ORC_DeferredGDRenderer
 
 var current_cam_data : ORC_DeferredGD_CameraData
-var opaque_surfaces_data : Array[ORC_DeferredGD_SurfaceData]
+var shaded_opaque_surfaces_data : Array[ORC_DeferredGD_SurfaceData]
+var shadow_opaque_surfaces_data : Array[ORC_DeferredGD_SurfaceData]
 var no_shadow_light_data : Array[ORC_DeferredGD_LightData]
 var shadow_light_data : Array[ORC_DeferredGD_LightData]
 
@@ -17,10 +18,14 @@ func pre_render_override() -> void:
 			current_cam_data = camera_data
 			break
 	
-	var non_casted_surfaces_data : Array = scene_proxy.fetch_queue_data("opaque_surfaces")
-	opaque_surfaces_data.clear()
-	for surface_data : ORC_DeferredGD_SurfaceData in non_casted_surfaces_data:
-		opaque_surfaces_data.append(surface_data)
+	var non_casted_data : Array = scene_proxy.fetch_queue_data("shaded_opaque_surfaces_data")
+	shaded_opaque_surfaces_data.clear()
+	for surface_data : ORC_DeferredGD_SurfaceData in non_casted_data:
+		shaded_opaque_surfaces_data.append(surface_data)
+	non_casted_data = scene_proxy.fetch_queue_data("shadow_opaque_surfaces_data")
+	shadow_opaque_surfaces_data.clear()
+	for surface_data : ORC_DeferredGD_SurfaceData in non_casted_data:
+		shadow_opaque_surfaces_data.append(surface_data)
 
 	no_shadow_light_data.clear()
 	var no_shadow_omni_data : Array = scene_proxy.fetch_queue_data("omnis_no_shadow")
@@ -54,7 +59,7 @@ func get_render_target_override() -> RID:
 
 func cleanup_override() -> void:
 	current_cam_data = null
-	opaque_surfaces_data.clear()
+	shaded_opaque_surfaces_data.clear()
 	no_shadow_light_data.clear()
 	shadow_light_data.clear()
 	pass
