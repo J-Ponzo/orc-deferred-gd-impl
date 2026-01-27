@@ -40,5 +40,5 @@ func update_override() -> void:
 	if has_changed:
 		primary_data.update_light_buffer_bytes()
 
-	if has_shadow_changed || has_moved || current_cam != null && current_cam.proxy_object.has_cam_changed:
+	if has_shadow_changed || has_moved || current_cam.proxy_object.has_cam_changed:
 		primary_data.update_shadow_data(node, current_cam)

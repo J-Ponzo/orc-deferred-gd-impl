@@ -54,6 +54,8 @@ func update_max_shadow_distance(directional_light_node : DirectionalLight3D) -> 
 
 func update_shadow_data(directional_light_node : DirectionalLight3D, current_cam : ORC_DeferredGD_CameraData) -> void: 
 	set_flag("CAST_SHADOW_DIRECTIONAL", directional_light_node.shadow_enabled)
+	if !directional_light_node.shadow_enabled:
+		return
 
 	var light_proj : Projection
 	var light_view : Projection

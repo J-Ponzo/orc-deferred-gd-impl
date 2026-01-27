@@ -79,6 +79,8 @@ func update_model_matrix() -> void:
 
 func update_shadow_data(omni_node : OmniLight3D) -> void:
 	set_flag("CAST_SHADOW_OMNI", omni_node.shadow_enabled)
+	if !omni_node.shadow_enabled:
+		return
 
 	var view : Array[Projection]
 	view.resize(6)

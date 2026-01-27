@@ -68,6 +68,8 @@ func update_model_matrix(spot_node : SpotLight3D) -> void:
 
 func update_shadow_data(spot_node : SpotLight3D) -> void:
 	set_flag("CAST_SHADOW_SPOT", spot_node.shadow_enabled)
+	if !spot_node.shadow_enabled:
+		return
 
 	var view : Projection = Projection(spot_node.global_transform.affine_inverse())
 
