@@ -7,6 +7,11 @@ var direction_last_frame : Vector3
 var shadow_max_distance_last_frame : float
 
 func update_override() -> void:
+	# An active camera is required to compute directional light shadows.
+	var current_cam : ORC_DeferredGD_CameraData = ORC_RendererBase.get_instance().current_cam_data
+	if current_cam == null:
+		return
+
 	super()
 
 	var has_changed = false 
@@ -35,6 +40,5 @@ func update_override() -> void:
 	if has_changed:
 		primary_data.update_light_buffer_bytes()
 
-	var current_cam : ORC_DeferredGD_CameraData = ORC_RendererBase.get_instance().current_cam_data
 	if has_shadow_changed || has_moved || current_cam != null && current_cam.proxy_object.has_cam_changed:
 		primary_data.update_shadow_data(node, current_cam)
